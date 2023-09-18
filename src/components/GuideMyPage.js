@@ -125,6 +125,17 @@ function GuideMyPage() {
           <button onClick={toggleEditing}>編集</button>
         )}
       </div>
+    <footer>
+        <div>
+            <a href="/guide/message">メッセージ</a>
+        </div>
+        <div>
+            <a href="/guide/schedule">マイスケジュール</a>
+        </div>
+        <div>
+            <a href="/guide/mypage">マイページ</a>
+        </div>
+    </footer>
     </div>
   );
 }

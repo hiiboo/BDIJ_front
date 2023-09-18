@@ -93,12 +93,13 @@ function GuestPage() {
             />
           </div>
           <div>
-            <label>ガイドの時給</label>
+            <label>ガイドの金額</label>
             <input
               type="number"
               value={hourlyRate}
               onChange={(e) => setHourlyRate(e.target.value)}
             />
+            × 時間    
           </div>
           <div>
             <label>支払い方法</label>
