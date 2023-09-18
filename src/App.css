@@ -1,0 +1,51 @@
+/* src/App.css */
+
+/* グローバルなスタイルをリセットします（オプション） */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Appコンポーネントのスタイル */
+.App {
+  text-align: center;
+}
+
+/* タイトルのスタイル */
+h1 {
+  font-size: 2rem;
+  margin-top: 20px;
+}
+
+/* サブタイトルのスタイル */
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* ロゴ画像のスタイル */
+.logo {
+  max-width: 50%;
+  height: auto;
+}
+
+.guide-card {
+  width: calc(50% - 20px);
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.guide-card img {
+  max-width: 100%;
+  height: auto;
+}
+
+.guide-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  overflow-x: auto;
+  padding: 10px;
+}
