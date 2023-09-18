@@ -7,6 +7,7 @@ import GuidePage from './components/GuidePage'; // ガイドページコンポ�
 import GuideProfile from './components/GuideProfile'; // ガイドプロフィールコンポーネント
 import GuideMyPage from './components/GuideMyPage'; // ガイドマイページコンポーネント
 import GuideMessageBox from './components/GuideMessageBox'; // ガイドマイページコンポーネント
+import GuideTimePage from './components/GuideTimePage';
 
 import GuestPage from './components/GuestPage'; // ゲストページコンポーネント
 import GuestRegister from './components/GuestRegister'; // ゲストレジスターコンポーネント
@@ -30,6 +31,7 @@ function App() {
           <Route path="/guide/profile/:id" element={<GuideProfile />} />
           <Route path="/guide/mypage" element={<GuideMyPage />} />
           <Route path="/guide/message" element={<GuideMessageBox />} />
+          <Route path="/guide-time-page" element={<GuideTimePage />} />
 
           <Route path="/guest" element={<GuestPage />} />
           <Route path="/guest/register" element={<GuestRegister />} />

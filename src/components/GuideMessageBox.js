@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import GuestMessageDetail from './GuestMessageDetail'; // ゲストメッセージ詳細コンポーネントをインポート
+import { Link } from 'react-router-dom'; // React RouterのLinkをインポート
 
 function GuideMessageBox() {
   const [messages, setMessages] = useState([
@@ -124,7 +124,12 @@ function GuideMessageBox() {
             value={guest.draftMessage || ''}
             onChange={(e) => handleChatInputChange(e, guest.id)}
           ></textarea>
-          <button onClick={() => sendChatMessage(guest.id)}>送信</button>
+          <div><button onClick={() => sendChatMessage(guest.id)}>送信</button></div>
+          
+          {/* ガイドスタートボタンを追加 */}
+          <Link to="/guide-time-page">
+            <button>ガイドを開始</button>
+          </Link>
         </div>
       ))}
     </div>
