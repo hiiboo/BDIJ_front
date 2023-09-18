@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // useHistory から useNavigate に変更
 
 function AuthForm() {
   // 新しいステートを追加
@@ -58,7 +59,9 @@ function AuthForm() {
     setHourlyRate(e.target.value);
   };
 
-  const handleSignUp = () => {
+  const navigate = useNavigate(); // useHistory から useNavigate に変更
+
+  const handleSignUp = async () => {
     // フォームの値をまとめてリクエストに含めて送信するロジックを実装
     const formData = {
       displayName,
@@ -74,7 +77,29 @@ function AuthForm() {
       hourlyRate,
     };
 
-    // サーバーにデータを送信するためのAPI呼び出しを行うか、適切な方法を選択
+    try {
+      const response = await fetch('YOUR_API_ENDPOINT_HERE', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 他の必要なヘッダーを追加
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        // ユーザーが正常に登録された場合の処理
+        // ユーザーをガイドマイページにリダイレクトするなどの操作を行います
+        navigate('/guide/mypage'); // リダイレクトをここで実行
+      } else {
+        // エラーレスポンスを処理するためのコード
+        // エラーメッセージを表示するか、適切なエラーハンドリングを行います
+        console.error('Registration failed');
+      }
+    } catch (error) {
+      // ネットワークエラーやその他のエラーを処理
+      console.error('Network error:', error);
+    }
   };
 
   return (
