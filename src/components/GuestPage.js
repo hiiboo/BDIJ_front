@@ -93,7 +93,7 @@ function GuestPage() {
         />
       </div>
       <div>
-        <label>支払い方法</label>
+        <label>支払い方法　</label>
         <input
           type="text"
           value={paymentMethod}
