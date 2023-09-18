@@ -7,9 +7,11 @@ import GuidePage from './components/GuidePage'; // ガイドページコンポ�
 import GuideProfile from './components/GuideProfile'; // ガイドプロフィールコンポーネント
 import GuideMyPage from './components/GuideMyPage'; // ガイドマイページコンポーネント
 import GuideMessageBox from './components/GuideMessageBox'; // ガイドマイページコンポーネント
+
 import GuestPage from './components/GuestPage'; // ゲストページコンポーネント
 import GuestRegister from './components/GuestRegister'; // ゲストレジスターコンポーネント
 import GuestMyPage from './components/GuestMyPage'; // GuestMyPageをインポート
+import GuestMessageBox from './components/GuestMessageBox'; // GuestMessageBoxコンポーネントをインポート
 
 function App() {
   return (
@@ -31,7 +33,8 @@ function App() {
 
           <Route path="/guest" element={<GuestPage />} />
           <Route path="/guest/register" element={<GuestRegister />} />
-          <Route path="/guest/mypage" component={<GuestMyPage />} />
+          <Route path="/guest/mypage" element={<GuestMyPage />} />
+          <Route path="/guest/message" element={<GuestMessageBox />} />
         </Routes>
       </div>
     </Router>

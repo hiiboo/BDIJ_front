@@ -1,16 +1,19 @@
-// src/components/GuestMypage.js
+// src/components/GuestMyPage.js
 import React from 'react';
+import { Link } from 'react-router-dom'; // リンク用のコンポーネントをインポート
 
-function GuestMypage() {
+function GuestMyPage() {
   return (
     <div>
       <h2>ゲストマイページ</h2>
       {/* ゲストマイページのコンテンツをここに追加 */}
-      <p>ここにゲストマイページの内容を表示します。</p>
+      <p>ここにゲストのマイページの内容を表示します。</p>
       {/* 編集画面へのリンク */}
-      <a href="/guest/mypage/edit">編集</a>
+      <Link to="/guest/edit">編集</Link> {/* Link コンポーネントを使用 */}
+      {/* メッセージへのリンク */}
+      <Link to="/guest/message">メッセージ</Link> {/* メッセージへのリンクを追加 */}
     </div>
   );
 }
 
-export default GuestMypage;
+export default GuestMyPage;

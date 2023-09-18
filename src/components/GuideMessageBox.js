@@ -15,6 +15,9 @@ function GuideMessageBox() {
     },
   ]);
 
+  // 選択されたメッセージの依頼内容を表示するステート
+  const [selectedMessage, setSelectedMessage] = useState(null);
+
   // 新しいメッセージを入力するためのステート
   const [newMessage, setNewMessage] = useState('');
 
@@ -40,7 +43,11 @@ function GuideMessageBox() {
       <h2>メッセージボックス</h2>
       <div className="message-list">
         {messages.map((message) => (
-          <div key={message.id} className="message">
+          <div
+            key={message.id}
+            className="message"
+            onClick={() => setSelectedMessage(message)} // メッセージをクリックしたときに選択されたメッセージを設定
+          >
             <strong>{message.sender}:</strong> {message.message}
           </div>
         ))}
@@ -54,6 +61,13 @@ function GuideMessageBox() {
         />
         <button onClick={sendMessage}>送信</button>
       </div>
+
+      {selectedMessage && (
+        <div>
+          <h3>依頼内容</h3>
+          <p>{selectedMessage.message}</p>
+        </div>
+      )}
     </div>
   );
 }
