@@ -1,0 +1,24 @@
+.Accepted {
+    // Acceptedの時のスタイル
+    background-color: white;
+    & .logo {
+        background-image: url("/logo.png");
+    }
+}
+
+.Started {
+// Startedの時のスタイル
+    background-color: #FF5A4B;
+    & .logo {
+        background-image: url("/logo_2.png");
+    }
+}
+
+.container {
+    text-align: center;
+    margin: 1rem;
+}
+
+.logo {
+    width: 5rem;
+}

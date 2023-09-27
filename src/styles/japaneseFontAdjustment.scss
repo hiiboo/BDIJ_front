@@ -1,0 +1,26 @@
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", HelveticaNeue, "游ゴシック体", YuGothic, "游ゴシック Medium", "Yu Gothic Medium", "游ゴシック", "Yu Gothic", "Sogoe UI", Verdana, "メイリオ", Meiryo, sans-serif;
+}
+
+b, strong, .bold {
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", HelveticaNeue, "游ゴシック体", YuGothic, "游ゴシック", "Yu Gothic", "Sogoe UI", Verdana, "メイリオ", Meiryo, sans-serif;
+    font-weight: bold;
+}
+
+// IE11 のみ適用
+_:lang(x)::-ms-backdrop, .selector {
+    font-family: "Segoe UI", "メイリオ", Meiryo, sans-serif;
+}
+
+// 文字間隔の自動調整
+@media (min-width: 1024px) {
+    body {
+    -webkit-font-feature-settings: "palt" 1;
+    font-feature-settings: "palt" 1;
+    letter-spacing: .04em;
+    }
+}

@@ -1,0 +1,87 @@
+.header {
+    background-color: white;
+    height: 4.3rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    padding-top: 0.8rem;
+    padding-bottom: 1.5rem;
+
+    .hamburger, .icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-top: 0.5rem;
+    }
+
+    .menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(8, 9, 26, 0.85);
+        color: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99;
+
+        .cancel {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: #FFFFFF;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+            width: 80%;
+
+            li {
+                margin: 1.2rem 0;
+                padding: 0.6rem 0;
+                cursor: pointer;
+                border: 1px solid #FFFFFF;
+                &:hover, &:focus {
+                    background-color: #FFFFFF;
+                    color: #08131a;
+                }
+            }
+        }
+    }
+
+    .logo {
+        padding-left: 0.04rem;
+    }
+    .logoContainer {
+        margin: 0;
+        padding: 0;
+        text-align: start;
+    }
+    .logoText {
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #08131A;
+        line-height: 0.2rem;
+        margin: 0;
+    }
+    .logoBox{
+        position: relative;
+        width: 8.5rem;
+    }
+    .menubox {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 5rem;
+    }
+}

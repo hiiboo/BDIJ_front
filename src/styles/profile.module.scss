@@ -1,0 +1,34 @@
+.main {
+    text-align: center;
+    padding: 0 1rem 1rem 1rem;
+}
+.title {
+    margin-bottom: 0.5rem;
+}
+
+.stars {
+    svg {
+        display: inline;
+        width: 10%;
+    }
+}
+.iconContainer{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 2rem;
+}
+.iconBox{
+    display: block;
+    border-radius: 50%;
+    width: 10rem;
+    height: 10rem;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+.icon {
+    aspect-ratio: 1/1;
+    width: 100%;
+    height: 100%;
+}
