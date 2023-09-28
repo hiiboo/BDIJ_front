@@ -3,51 +3,19 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { utils } from '../utils/utils';
 
-enum BookingStatus {
-  OfferPending,
-  Accepted,
-  Started,
-  Finished,
-  Reviewed,
-  Cancelled,
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  BookingData,
+  PageProps
+} from '../types/types';
 
-// <-- ---------- interface ---------- -->
-
-interface userData {
-  id: number;
-  user_type: string;
-  lastBookingStatus: BookingStatus | null;
-  status: string;
-}
-
-interface BookingData {
-    id: number;
-    guide_id: number;
-    guide_firstName?: string;
-    guide_lastName?: string;
-    guide_image?: string;
-    guest_id: number;
-    guest_firstName?: string;
-    guest_lastName?: string;
-    guest_image?: string;
-    startDate: string;
-    startTime: string;
-    endDate: string;
-    endTime: string;
-    total_guest: number;
-    comment: string;
-    created_at: Date;
-    booking_status?: BookingStatus;
-}
-
-// BookingButtonコンポーネントのPropsの型定義
-interface PageProps {
-  userData: userData;
-  BookingData: BookingData | null;
-}
-
-const BookingButton: React.FC<PageProps> = ({ userData, BookingData }) => {
+const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData }) => {
 
   const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
@@ -61,10 +29,8 @@ const BookingButton: React.FC<PageProps> = ({ userData, BookingData }) => {
 
   const handleAcceptOffer = () => {
     const securedAxios = createSecuredAxiosInstance();
-    securedAxios.post('/api/acceptOffer', {
-      bookingId: BookingData?.id,
-      guideId: userData.id, // userDataにidが含まれていることを確認してください
-    })
+    const booking_id = bookingData?.id
+    securedAxios.post(`/api/{$booking_id}/acceptoffer`, {})
     .then(() => {
       router.reload();
     })
@@ -73,10 +39,8 @@ const BookingButton: React.FC<PageProps> = ({ userData, BookingData }) => {
 
   const handleCancelOffer = () => {
     const securedAxios = createSecuredAxiosInstance();
-    securedAxios.post('/api/cancelOffer', {
-      bookingId: BookingData?.id,
-      guideId: userData.id, // userDataにidが含まれていることを確認してください
-    })
+    const booking_id = bookingData?.id
+    securedAxios.post(`/api/{$booking_id}/canceloffer`, {})
     .then(() => {
       router.reload();
     })
@@ -84,9 +48,13 @@ const BookingButton: React.FC<PageProps> = ({ userData, BookingData }) => {
   };
 
   const renderButton = () => {
+    if(!userData) {
+      alert('userData is null');
+      return null;
+    }
     const { user_type } = userData;
-    // BookingDataがnullか、booking_statusがnullの場合の処理
-    if (!BookingData || BookingData.booking_status == null) {
+    // bookingDataがnullか、booking_statusがnullの場合の処理
+    if (!bookingData || bookingData.booking_status == null) {
       return (
         <div>
           <Link href="/guest/offer/box">
@@ -95,9 +63,9 @@ const BookingButton: React.FC<PageProps> = ({ userData, BookingData }) => {
         </div>
       );
     }
-    const { booking_status } = BookingData;
+    const { booking_status } = bookingData;
 
-    if (user_type === 'guest') {
+    if (user_type === UserType.Guest) {
       switch (booking_status) {
         case BookingStatus.OfferPending:
           return <Button onClick={handleCancelNoFee}>キャンセルする</Button>;
@@ -138,7 +106,7 @@ const BookingButton: React.FC<PageProps> = ({ userData, BookingData }) => {
         default:
           return null;
       }
-    } else if (user_type === 'guide') {
+    } else if (user_type === UserType.Guide) {
       switch (booking_status) {
         case BookingStatus.Accepted:
           return (

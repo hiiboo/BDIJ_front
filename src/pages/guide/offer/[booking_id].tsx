@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
-import styles from '../../../../styles/profile.module.scss';
+import styles from '../../../styles/profile.module.scss';
 
 import { utils } from '../../../utils/utils';
 import GuestProfile from '../../../components/GuestProfile';
@@ -14,74 +14,19 @@ import {
     TabsList,
     TabsTrigger,
   } from "@/components/ui/tabs"
+  import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    BookingData,
+    PageProps
+} from '../../../types/types';
 
-// <-- ---------- enum ---------- -->
-
-enum LanguageLevel {
-    Beginner,
-    Elementary,
-    Intermediate,
-    UpperIntermediate,
-    Advanced,
-    Proficiency,
-}
-
-enum IsActive {
-    active,
-    inactive,
-}
-
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface PageProps {
-    isLoggedIn: boolean;
-    userData?: any;
-}
-
-interface GuestData {
-    id: number;
-    email: string;
-    profile_image?: string;
-    firstName: string;
-    lastName: string;
-    review_rate: number;
-    review_sum: number;
-    created_at: Date;
-}
-
-interface BookingData {
-    id: number;
-    guide_id: number;
-    guide_firstName?: string;
-    guide_lastName?: string;
-    guide_image?: string;
-    guest_id: number;
-    guest_firstName?: string;
-    guest_lastName?: string;
-    guest_image?: string;
-    startDate: string;
-    startTime: string;
-    endDate: string;
-    endTime: string;
-    hourly_rate: number;
-    total_guest: number;
-    comment: string;
-    created_at: Date;
-    booking_status?: BookingStatus;
-}
-
-// BookingDataのinterfaceも本来必要
-
-function OfferById({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
 
     const [guestData, setGuestData] = useState<GuestData | null>(null);
     const [bookingId, setBookingId] = useState<number | null>(null);
@@ -101,6 +46,7 @@ function OfferById({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     }, [router.isReady]);
 
     useEffect(() => {
+
         if (!bookingId) {
             // booking_idが存在しない場合、エラーハンドリングを行うか、別のページにリダイレクトします。
             console.error("booking_id is missing");
@@ -108,26 +54,28 @@ function OfferById({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
         const fetchBookingData = async () => {
             try {
-              const securedAxios = createSecuredAxiosInstance();
-              const response = await securedAxios.get(`/api/booking/{$bookingId}`);
-              setBookingData(response.data);
+                const securedAxios = createSecuredAxiosInstance();
+                const response = await securedAxios.get(`/api/booking/${bookingId}`);
+                const bookingData = response.data;
+
+                // GuideDataのhourly_rateを取得
+                const guestResponse = await securedAxios.get(`/api/booking/guest/${bookingId}`);
+                const guestData = guestResponse.data;
+                setGuestData(guestData);
+
+                // bookingDataにhourly_rateを追加
+                const updatedBookingData = {
+                    ...bookingData,
+                    hourly_rate: guestData.hourly_rate,
+                };
+                setBookingData(updatedBookingData);
+
             } catch (error) {
-              console.error('Failed to fetch booking data', error);
+                console.error('Failed to fetch data', error);
             }
         }
 
-        const fetchGuestDataByBookingId = async () => {
-            try {
-                const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/api/booking/guest/{$bookingId}`);
-                setGuestData(response.data);
-            } catch (error) {
-            console.error('Failed to fetch guest data', error);
-            };
-        };
-
         fetchBookingData();
-        fetchGuestDataByBookingId();
     }, [bookingId]);
 
   // <-- ---------- 表示 ---------- -->
@@ -141,12 +89,12 @@ function OfferById({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 <TabsTrigger value="guide">Guide</TabsTrigger>
             </TabsList>
             <TabsContent value="guide">
-                {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} GuestData={guestData} />}
+                {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
             </TabsContent>
             <TabsContent value="guide">
-                <OfferInformation BookingData={bookingData} />
+                <OfferInformation isLoggedIn={isLoggedIn} bookingData={bookingData} />
             </TabsContent>
-            <BookingButton userData={userData} BookingData={bookingData} />
+            {userData && <BookingButton isLoggedIn={isLoggedIn} userData={userData} bookingData={bookingData} />}
         </Tabs>
         </main>
     </>

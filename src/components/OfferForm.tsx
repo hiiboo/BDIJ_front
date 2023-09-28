@@ -25,65 +25,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { utils } from '../utils/utils';
+import { constructDateTime } from '../utils/utils';
 import styles from '../styles/reservationForm.module.scss';
+import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    PageProps
+} from '../types/types';
 
-// <-- ---------- enum ---------- -->
-
-enum LanguageLevel {
-    Beginner,
-    Elementary,
-    Intermediate,
-    UpperIntermediate,
-    Advanced,
-    Proficiency,
-}
-
-enum IsActive {
-    active,
-    inactive,
-}
-
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface userData {
-    id: number;
-    user_type: string;
-    lastBookingStatus: BookingStatus | null;
-    status: string;
-}
-
-interface GuideData {
-    id: number;
-    profile_image?: string;
-    firstName: string;
-    lastName: string;
-    language_level: LanguageLevel;
-    introduction: string;
-    birthday: Date;
-    status: IsActive;
-    hourly_rate: number;
-    review_rate: number;
-    review_sum: number;
-    latitude?: number;
-    longitude?: number;
-    created_at: Date;
-}
-interface PageProps {
-    isLoggedIn: boolean;
-    userData?: userData;
-    GuideData: GuideData;
-}
-
-const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, GuideData }) => {
+const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => {
 
 // <-- ---------- 定数の定義 ---------- -->
 
@@ -138,6 +93,16 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, GuideData }) => 
     const isSubmitDisabled = invalidTime || invalidDate;
 
     const calculateTotalAmount = () => {
+        if (!guideData) {
+            // guideDataがnullまたはundefinedの場合、エラーメッセージを表示するなどの処理をここに記述
+            console.error('guideData is null or undefined');
+            return 0;
+        }
+        const { hourly_rate } = guideData;
+        if (hourly_rate === undefined) {
+            // hourly_rateがundefinedの場合、0を使用
+            return 0;
+        }
         // フォームからの値を監視
         const totalGuest = watch("total_guest");
 
@@ -150,7 +115,7 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, GuideData }) => 
         const end = new Date(endDateTimeStr);
 
         const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-        const baseAmount = GuideData.hourly_rate * hours;
+        const baseAmount = hourly_rate * hours;
 
         if (totalGuest > 1) {
             return baseAmount * totalGuest * 0.75;
@@ -160,26 +125,45 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, GuideData }) => 
     };
 
     const onSubmit = (data: z.infer<typeof reservationSchema>) => {
-        // GuideDataからhourly_rateを取得し、dataオブジェクトに追加
-        const dataWithHourlyRate = {
-            ...data,
-            hourly_rate: GuideData.hourly_rate,
-            guide_id: GuideData.id
+        if (!guideData || !userData) {
+            console.error('guideData or userData is null or undefined');
+            return;
+        }
+
+        const { id } = guideData;
+        const { id: userId } = userData;
+        if (id === undefined || userId === undefined) {
+            console.error('id is undefined');
+            return;
+        }
+
+        // startDate, endDate, startTime, endTimeからstart_timeとend_timeを作成
+        const { startDate, endDate, startTime, endTime, total_guest, comment } = data;
+        const { start_time, end_time } = constructDateTime(startDate, startTime, endDate, endTime);
+
+        // bookingPreDataの作成
+        const bookingPreData = {
+            start_time: start_time.toISOString(),
+            end_time: end_time.toISOString(),
+            total_guest: total_guest,
+            comment: comment,
+            guest_id: userId,
         };
 
+        // 以降の処理にbookingPreDataを使用
         if (isLoggedIn) {
-            if (userData?.user_type === 'guide') {
+            if (userData.user_type === 'guide') {
                 alert('ガイドは予約できません。');
             } else {
                 router.push({
                     pathname: '/guest/offer/confirmation',
-                    query: dataWithHourlyRate,
+                    query: bookingPreData,
                 });
             }
         } else {
             router.push({
                 pathname: '/guest/auth',
-                query: dataWithHourlyRate,
+                query: bookingPreData,
             });
         }
     };

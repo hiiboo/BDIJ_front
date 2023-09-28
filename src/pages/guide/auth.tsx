@@ -29,6 +29,27 @@ import styles from '../../styles/admin.module.scss';
 import { uploadImage } from '../../utils/uploadImage';
 import { utils } from '../../utils/utils';
 
+enum Gender {
+    male,
+    female,
+    other
+}
+
+enum LanguageLevel {
+    beginner,
+    elementary,
+    intermediate,
+    upper_intermediate,
+    advanced,
+    proficiency,
+}
+
+enum user_type {
+    guest,
+    guide
+}
+
+
 function GuideAuth(): JSX.Element {
 
 // <-- ---------- useState ---------- -->
@@ -80,20 +101,27 @@ function GuideAuth(): JSX.Element {
             console.log(firstName);
             console.log(lastName);
             console.log(iconUrl);
+            console.log(birthday);
+            console.log(gender);
+            console.log(languageLevel);
+            console.log(introduction);
+            console.log(hourlyRate);
+
             // CSRFトークンを取得
             await fetchCsrfToken();
-            const response = await axios.post(`${apiUrl}/auth/organizer/register`, {
+            const response = await axios.post(`${apiUrl}/auth/guide/register`, {
                 email,
                 password,
                 password_confirmation: passwordConfirmation,
-                firstName,
-                lastName,
+                first_name: firstName,
+                last_name: lastName,
                 profile_image: iconUrl,
                 birthday,
                 gender,
-                language_level: languageLevel,
+                level: languageLevel,
                 introduction,
                 hourly_rate: hourlyRate,
+                user_type: user_type.guide,
             }, {
                 withCredentials: true
             });
@@ -128,7 +156,7 @@ function GuideAuth(): JSX.Element {
             });
             console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
-            const response = await axios.post(`${apiUrl}/auth/organizer/login`, {
+            const response = await axios.post(`${apiUrl}/auth/user/login/`, {
                 email,
                 password,
             }, {
@@ -375,7 +403,7 @@ function GuideAuth(): JSX.Element {
 
                                     <div className="grid gap-2">
                                         <Label htmlFor="gender">Gender</Label>
-                                        <select id="gender" value={gender} onChange={e => setGender(e.target.value)}>
+                                        <select placeholder='' id="gender" value={gender} onChange={e => setGender(e.target.value)}>
                                             <option value="male">Male</option>
                                             <option value="female">Female</option>
                                             <option value="other">Other</option>
@@ -384,11 +412,11 @@ function GuideAuth(): JSX.Element {
 
                                     <div className="grid gap-2">
                                         <Label htmlFor="languageLevel">Available Languages</Label>
-                                        <select id="languageLevel" value={languageLevel} onChange={e => setLanguageLevel(e.target.value)}>
+                                        <select placeholder='' id="languageLevel" value={languageLevel} onChange={e => setLanguageLevel(e.target.value)}>
                                             <option value="beginner">Beginner</option>
                                             <option value="elementary">Elementary</option>
                                             <option value="intermediate">Intermediate</option>
-                                            <option value="upperintermediate">UpperIntermediate</option>
+                                            <option value="upper_intermediate">UpperIntermediate</option>
                                             <option value="advanced">Advanced</option>
                                             <option value="proficiency">Proficiency</option>
                                         </select>

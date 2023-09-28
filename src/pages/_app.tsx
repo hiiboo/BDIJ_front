@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios'
 import '../styles/globals.scss';
 import '../styles/font.scss';
 import JapaneseFontAdjustment from '../styles/japaneseFontAdjustment';
@@ -10,22 +9,16 @@ import { Providers } from '../../components/nextui/providers';
 import Header from '../components/Header';
 import { useRouter } from 'next/router';
 import { utils } from '../utils/utils';
-
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-}
-
-interface userData {
-    id: number;
-    user_type: string;
-    lastBookingStatus: BookingStatus | null;
-    status: string;
-}
+import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    PageProps
+} from '../types/types';
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -33,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-    const [userData, setUserData] = useState<userData | null>(null);
+    const [userData, setUserData] = useState<UserData | null>(null);
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -44,19 +37,19 @@ export default function App({ Component, pageProps }: AppProps) {
 // <-- ---------- 関数の定義 ---------- -->
 
     const checkAuth = async () => {
-        const storedToken = localStorage.getItem('organizer_token');
+        const storedToken = localStorage.getItem('user_token');
         if (storedToken) {
             try {
                 const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/organizer/check-auth`);
+                const response = await securedAxios.get(`/api/check-auth`);
+                console.log(response.data);
                 if (response.data && response.data.hasOwnProperty("isLoggedIn")) {
                     setIsLoggedIn(response.data.isLoggedIn);
 
                     // ログインしている場合、ユーザーの詳細情報をフェッチする
                     if (response.data.isLoggedIn) {
-                        const userDetails = await axios.get(`/user/details`, {
-                            withCredentials: true
-                        });
+                        const userDetails = await securedAxios.get(`/api/user`);
+                        console.log(userDetails.data);
                         setUserData(userDetails.data); // ユーザーの詳細情報をステートにセット
                     }
                 } else {
@@ -102,6 +95,13 @@ export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
 
     useEffect(() => {
+        const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
+
+        if (isTestMode) {
+            console.log("Test mode is enabled. Redirects are disabled.");
+            setIsLoading(false);
+            return;
+        }
         // checkAuth 関数が非同期処理を完了するまで、isLoading を true に設定
         const authenticate = async () => {
             await checkAuth();
@@ -112,11 +112,17 @@ export default function App({ Component, pageProps }: AppProps) {
     }, []);
 
     useEffect(() => {
+        const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
+
+        if (isTestMode) {
+            console.log("Test mode is enabled. Redirects are disabled.");
+            return;
+        }
         const path = router.asPath;
 
         // ログインしている場合
         if (isLoggedIn && userData) {
-            if (userData.user_type === 'guest') {
+            if (userData.user_type === UserType.Guest) {
                 if (path.startsWith('/guide') && !['/guide', '/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
                     alert('アクセス権限がありません');
                     router.back();
@@ -125,7 +131,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 if (path === '/guide') {
                     router.push('/guide/mypage');
                 }
-            } else if (userData.user_type === 'guide') {
+            } else if (userData.user_type === UserType.Guide) {
                 if (path.startsWith('/guest') && !['/guest', '/guest/guideprofile', '/guest/auth', '/guest/login', '/guest/signup'].includes(path)) {
                     alert('アクセス権限がありません');
                     router.back();
@@ -155,6 +161,12 @@ export default function App({ Component, pageProps }: AppProps) {
     }, [isLoggedIn, userData, router]);
 
     useEffect(() => {
+        const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
+
+        if (isTestMode) {
+            console.log("Test mode is enabled. Redirects are disabled.");
+            return;
+        }
         // 現在のパスを取得
         const currentPath = router.asPath;
 
@@ -196,10 +208,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
     useEffect(() => {
         if (isLoggedIn && userData) {
-            const { user_type, lastBookingStatus, status } = userData;
+            const { user_type, booking_status, status } = userData;
 
             // 条件に合致する場合、位置情報を取得し、APIに送信
-            if (user_type === 'guide' && (lastBookingStatus === BookingStatus.Reviewed || lastBookingStatus === BookingStatus.Cancelled || lastBookingStatus === null) && status === 'active') {
+            if (user_type === UserType.Guide && (booking_status === BookingStatus.Reviewed || booking_status === BookingStatus.Cancelled || booking_status === null) && status === UserStatus.Active) {
                 getLocation();
 
                 // 5分ごとに位置情報を取得し、APIに送信
@@ -221,7 +233,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <>
             <Providers>
             <AuthProvider checkAuth={checkAuth}>
-                <Header isLoggedIn={isLoggedIn} userData={userData} />
+                <Header isLoggedIn={isLoggedIn} userData={userData ?? undefined} />
                 <JapaneseFontAdjustment />
                 <Component {...pageProps} isLoggedIn={isLoggedIn} userData={userData} />
             </AuthProvider>

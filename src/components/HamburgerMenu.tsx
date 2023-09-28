@@ -13,37 +13,25 @@ import {
     MenubarTrigger,
 } from "@/components/shadcnui/menubar"
 
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-  }
+import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    PageProps
+} from '../types/types';
 
-  // <-- ---------- interface ---------- -->
-
-  interface userData {
-    id: number;
-    user_type: string;
-    lastBookingStatus: BookingStatus | null;
-    status: string;
-  }
-
-interface HamburgerMenuProps {
-    isLoggedIn: boolean;
-    userData?: userData;
-    handleLogout: () => void;
-}
-
-const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isLoggedIn, userData, handleLogout }) => {
+const HamburgerMenu: React.FC<PageProps> = ({ isLoggedIn, userData, handleLogout }) => {
     return (
         <>
             <MenubarTrigger className={styles.hamburger} style={{ padding:0 }}>
                 <PiUserCircle size="2rem" />
             </MenubarTrigger>
             <MenubarContent>
+            <MenubarItem onClick={handleLogout}>ログアウト</MenubarItem>
                 {isLoggedIn ? (
                     <>
                         <MenubarItem onClick={handleLogout}>ログアウト</MenubarItem>

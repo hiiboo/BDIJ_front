@@ -23,13 +23,21 @@
 .cardContainer {
     display: flex;
     flex-wrap: wrap;
-    justify-content: left;
+    justify-content: center;
+    & > a {
+        width: calc(33.333% - 1rem); // 3つのカードが横に並ぶようにします。
+    }
+    @media (max-width: 767px) {
+        & > a {
+            width: calc(50% - 1rem); // 2つのカードが横に並ぶようにします。
+        }
+    }
 }
 
 .card {
     max-width: 400px;
     margin: 0.5rem; // カード同士が2remの間隔で表示されるように調整
-    width: calc(33.333% - 1rem); // 3つのカードが横に並ぶようにします。
+
     box-sizing: border-box;
     p {
         margin: 0;
@@ -41,11 +49,6 @@
     }
 }
 
-@media (max-width: 767px) {
-    .card {
-        width: calc(50% - 1rem); // 2つのカードが横に並ぶようにします。
-    }
-}
 
 .cardHeader {
     align-items: center;

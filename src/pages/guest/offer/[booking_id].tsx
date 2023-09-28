@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
-import styles from '../../../../styles/profile.module.scss';
+import styles from '../../../styles/profile.module.scss';
 
 import { utils } from '../../../utils/utils';
 import GuideProfile from '../../../components/GuideProfile';
@@ -13,94 +13,21 @@ import {
     TabsContent,
     TabsList,
     TabsTrigger,
-  } from "@/components/ui/tabs"
+} from "@/components/ui/tabs"
 
-// <-- ---------- enum ---------- -->
+import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    BookingData,
+    PageProps
+} from '../../../types/types';
 
-enum LanguageLevel {
-    Beginner,
-    Elementary,
-    Intermediate,
-    UpperIntermediate,
-    Advanced,
-    Proficiency,
-}
-
-enum IsActive {
-    active,
-    inactive,
-}
-
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-}
-
-enum Gender {
-    male,
-    female,
-    other
-}
-
-// <-- ---------- interface ---------- -->
-
-interface userData {
-    id: number;
-    user_type: string;
-    lastBookingStatus: BookingStatus | null;
-    status: string;
-}
-
-interface GuideData {
-    id: number;
-    profile_image?: string;
-    firstName: string;
-    lastName: string;
-    gender: Gender;
-    language_level: LanguageLevel;
-    introduction: string;
-    birthday: Date;
-    status: IsActive;
-    hourly_rate: number;
-    review_rate: number;
-    review_sum: number;
-    latitude?: number;
-    longitude?: number;
-    created_at: Date;
-}
-
-interface BookingData {
-    id: number;
-    guide_id: number;
-    guide_firstName?: string;
-    guide_lastName?: string;
-    guide_image?: string;
-    guest_id: number;
-    guest_firstName?: string;
-    guest_lastName?: string;
-    guest_image?: string;
-    startDate: string;
-    startTime: string;
-    endDate: string;
-    endTime: string;
-    total_guest: number;
-    comment: string;
-    created_at: Date;
-    booking_status?: BookingStatus;
-    hourly_rate: number;
-}
-
-interface OfferInformationProps {
-    BookingData: BookingData | null;
-    isLoggedIn: boolean;
-    userData?: userData;
-}
-
-const OfferById: React.FC<OfferInformationProps> = ({ isLoggedIn, userData }) => {
+const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
 
     const [guideData, setGuideData] = useState<GuideData | null>(null);
     const [bookingId, setBookingId] = useState<number | null>(null);
@@ -120,6 +47,7 @@ const OfferById: React.FC<OfferInformationProps> = ({ isLoggedIn, userData }) =>
     }, [router.isReady]);
 
     useEffect(() => {
+
         if (!bookingId) {
             console.error("booking_id is missing");
             return;
@@ -163,12 +91,12 @@ const OfferById: React.FC<OfferInformationProps> = ({ isLoggedIn, userData }) =>
                 <TabsTrigger value="guide">Guide</TabsTrigger>
             </TabsList>
             <TabsContent value="guide">
-                {guideData && <GuideProfile isLoggedIn={isLoggedIn} userData={userData} GuideData={guideData} />}
+                {guideData && <GuideProfile isLoggedIn={isLoggedIn} userData={userData} guideData={guideData} />}
             </TabsContent>
             <TabsContent value="guide">
-                <OfferInformation BookingData={bookingData} />
+                <OfferInformation isLoggedIn={isLoggedIn} bookingData={bookingData} />
             </TabsContent>
-            {userData && <BookingButton userData={userData} BookingData={bookingData} />}
+            {userData && <BookingButton userData={userData} isLoggedIn={isLoggedIn} bookingData={bookingData} />}
         </Tabs>
         </main>
     </>

@@ -13,32 +13,18 @@ import {
 } from "@/components/shadcnui/menubar"
 import { Spacer } from "@nextui-org/react";
 import { utils } from "../utils/utils"
+import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    PageProps
+} from '../types/types';
 
-
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-  }
-
-  // <-- ---------- interface ---------- -->
-
-  interface userData {
-    id: number;
-    user_type: string;
-    lastBookingStatus: BookingStatus | null;
-    status: string;
-  }
-
-  interface HeaderProps {
-    isLoggedIn: boolean;
-    userData?: userData;
-  }
-
-function Header({ isLoggedIn, userData }: HeaderProps): JSX.Element {
+function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
     const { checkAuth } = useAuth();
     const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
@@ -55,11 +41,11 @@ function Header({ isLoggedIn, userData }: HeaderProps): JSX.Element {
     // ログアウト関数内の一部を変更
     const handleLogout = async () => {
         try {
-            const response = await axios.post(`${apiUrl}/auth/organizer/logout`, {}, {
+            const response = await axios.post(`${apiUrl}/auth/user/logout`, {}, {
                 withCredentials: true
             });
             if (response.status === 200 && response.data.message === "Logout successful") {
-                localStorage.removeItem('organizer_token');
+                localStorage.removeItem('user_token');
                 alert('Logout successful');
                 await checkAuth();
                 console.log("Logout successful", response);
@@ -79,18 +65,18 @@ function Header({ isLoggedIn, userData }: HeaderProps): JSX.Element {
     let notificationLink = "";
 
     if (userData) {
-        const { user_type, lastBookingStatus } = userData;
+        const { user_type, booking_status } = userData;
 
-        if (lastBookingStatus === BookingStatus.OfferPending) {
+        if (booking_status === BookingStatus.OfferPending) {
             notificationText = user_type === "guest" ? "Your offer is Pending" : "オファーを確認ください";
             notificationLink = user_type === "guest" ? "/guest/offer/box" : "/guide/offer/box";
-        } else if (lastBookingStatus === BookingStatus.Accepted) {
+        } else if (booking_status === BookingStatus.Accepted) {
             notificationText = user_type === "guest" ? "Your offer is Accepted" : "ガイド予定を確認する";
             notificationLink = user_type === "guest" ? "/guest/offer/box" : "/guide/offer/box";
-        } else if (lastBookingStatus === BookingStatus.Started) {
+        } else if (booking_status === BookingStatus.Started) {
             notificationText = user_type === "guest" ? "While Guiding" : "ガイド中です";
             notificationLink = user_type === "guest" ? "/guest/timer" : "/guide/timer";
-        } else if (lastBookingStatus === BookingStatus.Finished) {
+        } else if (booking_status === BookingStatus.Finished) {
             notificationText = user_type === "guest" ? "Please Review" : "レビューしてください";
             notificationLink = user_type === "guest" ? "/guest/review" : "/guide/review";
         }

@@ -21,55 +21,16 @@ import { utils } from '../../utils/utils';
 import GuideProfile from '../../components/GuideProfile';
 import StatusButton from '../../components/StatusButton';
 import styles from '../../styles/profile.module.scss';
-
-// <-- ---------- enum ---------- -->
-
-enum LanguageLevel {
-  Beginner,
-  Elementary,
-  Intermediate,
-  UpperIntermediate,
-  Advanced,
-  Proficiency,
-}
-
-enum IsActive {
-    active,
-    inactive,
-}
-
-enum Gender {
-  male,
-  female,
-  other
-}
-
-// <-- ---------- interface ---------- -->
-
-interface PageProps {
-  isLoggedIn: boolean;
-  userData?: any;
-}
-
-interface GuideData {
-  id: number;
-  email: string;
-  profile_image?: string;
-  firstName: string;
-  lastName: string;
-  gender: Gender;
-  language_level: LanguageLevel;
-  introduction: string;
-  birthday: Date;
-  occupation: string;
-  status: IsActive;
-  hourly_rate: number;
-  review_rate: number;
-  review_sum: number;
-  latitude?: number;
-  longitude?: number;
-  created_at: Date;
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  PageProps
+} from '../../types/types';
 
 function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
@@ -96,9 +57,10 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const [isLocationEnabled, setIsLocationEnabled] = useState(false);
-  const [isActive, setIsActive] = useState<boolean>(false); // ステータスを管理するための新しいステート
+  const [userStatus, setUserStatus] = useState<boolean>(false); // ステータスを管理するための新しいステート
 
   useEffect(() => {
+
     const fetchUserInfo = async () => {
       try {
         const securedAxios = createSecuredAxiosInstance();
@@ -112,7 +74,7 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         setLanguageLevel(response.data.language_level);
         setIntroduction(response.data.introduction);
         setHourlyRate(response.data.hourly_rate);
-        setIsActive(response.data.status === IsActive.active);
+        setUserStatus(response.data.status === UserStatus.Active);
       } catch (error) {
         console.error('Failed to fetch guide data', error);
       }
@@ -151,13 +113,13 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
   const handleStatusToggle = async () => {
     try {
-      const newStatus = isActive ? IsActive.inactive : IsActive.active;
+      const newStatus = userStatus ? UserStatus.Inactive : UserStatus.Active;
       const securedAxios = createSecuredAxiosInstance();
       const response = await securedAxios.put(`/api/guide/update-status`, { status: newStatus });
 
       if (response.status === 200) {
         alert('Status updated successfully');
-        setIsActive(newStatus === IsActive.active);
+        setUserStatus(newStatus === UserStatus.Active);
       } else {
         console.error("Update failed", response.data.message);
         alert('Update failed');
@@ -230,14 +192,13 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         </TabsList>
         <TabsContent value="view">
           {/* <h3>{email ? email : 'Loading...'} </h3> */}
-          <h3>{guideData ? guideData.email : 'Loading...'} </h3>
-          <GuideProfile isLoggedIn={isLoggedIn} userData={userData} GuideData={guideData} />
-          <StatusButton userData={userData} />
+          <GuideProfile isLoggedIn={isLoggedIn} userData={userData} guideData={guideData} />
+          <StatusButton isLoggedIn={isLoggedIn} userData={userData} />
           <div className="grid gap-2">
             <Label htmlFor="statusSwitch">Active</Label>
             <Switch
               id="statusSwitch"
-              checked={isActive}
+              checked={userStatus}
               onCheckedChange={handleStatusToggle}
             />
           </div>

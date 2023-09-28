@@ -10,7 +10,7 @@ export const utils = () => {
         baseURL: apiUrl,
         withCredentials: true,
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('organizer_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('user_token')}`
         }
     });
 
@@ -32,3 +32,32 @@ export const utils = () => {
         formatDateToCustom
     };
 };
+
+export function extractDateAndTime(startTime: Date, endTime: Date) {
+    // 日付と時刻をフォーマットする
+    const formatDate = (date: Date) => {
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD 形式
+    };
+
+    const formatTime = (date: Date) => {
+      return date.toISOString().split('T')[1].split(':').slice(0, 2).join(':'); // HH:mm 形式
+    };
+
+    return {
+        startDate: formatDate(startTime),
+        startTime: formatTime(startTime),
+        endDate: formatDate(endTime),
+        endTime: formatTime(endTime),
+    };
+}
+
+export function constructDateTime(startDate: string, startTime: string, endDate: string, endTime: string) {
+    // 日付と時刻を結合して Date オブジェクトを作成
+    const startDateTime = new Date(`${startDate}T${startTime}:00`); // YYYY-MM-DDTHH:mm:ss 形式
+    const endDateTime = new Date(`${endDate}T${endTime}:00`);
+
+    return {
+        start_time: startDateTime,
+        end_time: endDateTime,
+    };
+}

@@ -12,30 +12,18 @@ import {
     MenubarTrigger,
 } from "@/components/shadcnui/menubar"
 
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-  }
+import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    PageProps
+} from '../types/types';
 
-  // <-- ---------- interface ---------- -->
-
-  interface userData {
-    id: number;
-    user_type: string;
-    lastBookingStatus: BookingStatus | null;
-    status: string;
-  }
-
-interface UserMenuProps {
-    isLoggedIn: boolean;
-    userData?: userData;
-}
-
-const UserMenu: React.FC<UserMenuProps> = ({ isLoggedIn, userData }) => {
+const UserMenu: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
     return (
         <>
             <MenubarTrigger className={styles.icon} style={{ padding:0 }}>

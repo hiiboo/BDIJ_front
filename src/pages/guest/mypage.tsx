@@ -20,40 +20,16 @@ import { utils } from '../../utils/utils';
 import GuestProfile from '../../components/GuestProfile';
 import styles from '../../styles/profile.module.scss';
 import StatusButton from '../../components/StatusButton';
-
-enum BookingStatus {
-  OfferPending,
-  Accepted,
-  Started,
-  Finished,
-  Reviewed,
-  Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface userData {
-  id: number;
-  user_type: string;
-  lastBookingStatus: BookingStatus | null;
-  status: string;
-}
-
-interface PageProps {
-  isLoggedIn: boolean;
-  userData?: userData;
-}
-
-interface GuestData {
-    id: number;
-    email: string;
-    profile_image?: string;
-    firstName: string;
-    lastName: string;
-    review_rate: number;
-    review_sum: number;
-    created_at: Date;
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  PageProps
+} from '../../types/types';
 
 function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
@@ -159,7 +135,7 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         </TabsList>
         <TabsContent value="view">
           <h3>{email ? email : 'Loading...'} </h3>
-          {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} GuestData={guestData} />}
+          {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
         </TabsContent>
         <TabsContent value="edit">
         <Card>
@@ -268,7 +244,7 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
           </CardContent>
         </Card>
         </TabsContent>
-        {userData && <StatusButton userData={userData} />}
+        {userData && <StatusButton isLoggedIn={isLoggedIn} userData={userData} />}
       </Tabs>
     </main>
   );

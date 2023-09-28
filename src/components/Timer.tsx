@@ -2,37 +2,47 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { utils } from '../utils/utils';
 
-interface PageProps {
-  isLoggedIn: boolean;
-  userData?: any;
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  BookingData,
+  PageProps,
+} from '../types/types';
 
 function Timer({ isLoggedIn, userData }: PageProps): JSX.Element | null {
-    const [time, setTime] = useState<string | null>(null);
+  const [time, setTime] = useState<string | null>(null);
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const router = useRouter();
 
   useEffect(() => {
     if (!userData) return;
 
-    if (userData.lastBookingStatus === 'Accepted') {
-      const { start_date, start_time, end_date, end_time } = userData;
-      const startDate = new Date(`${start_date}T${start_time}`);
-      const endDate = new Date(`${end_date}T${end_time}`);
-      const presetTime = (endDate.getTime() - startDate.getTime()) / (1000 * 60);
-      setTime(formatDateToCustom(String(presetTime)));
-      return;
-    }
-
-    if (userData.lastBookingStatus === 'Started') {
+    if (userData.booking_status === BookingStatus.Accepted) {
       const securedAxios = createSecuredAxiosInstance();
       securedAxios.get('/api/timer')
         .then(response => {
-          const { current_time, start_date, start_time, end_date, end_time } = response.data;
-          const startDate = new Date(`${start_date}T${start_time}`);
-          const endDate = new Date(`${end_date}T${end_time}`);
-          const presetTime = (endDate.getTime() - startDate.getTime()) / (1000 * 60);
-          const targetTime = startDate.getTime() + presetTime * 60 * 1000;
+          const { start_time, end_time } = response.data;
+          // actual_start_timeも必要そう
+          const presetTime = (end_time.getTime() - start_time.getTime()) / (1000 * 60);
+          setTime(formatDateToCustom(String(presetTime)));
+          return;
+        })
+        .catch(error => console.error(error));
+    }
+    if (userData.booking_status === BookingStatus.Started) {
+      const securedAxios = createSecuredAxiosInstance();
+      securedAxios.get('/api/timer')
+        .then(response => {
+          const { accurate_start_time, current_time, end_time } = response.data;
+
+          // accurate_start_timeを基準にpresetTimeとtargetTimeを計算
+          const presetTime = (end_time.getTime() - accurate_start_time.getTime()) / (1000 * 60);
+          const targetTime = accurate_start_time.getTime() + presetTime * 60 * 1000;
 
           const intervalId = setInterval(() => {
             const currentTime = new Date(current_time).getTime();
@@ -41,16 +51,16 @@ function Timer({ isLoggedIn, userData }: PageProps): JSX.Element | null {
               clearInterval(intervalId);
               setTime('00:00');
 
-              // 5秒後からlastBookingStatusを取得するAPIを15秒ごとに呼び出し
+              // 5秒後からbook_statusを取得するAPIを15秒ごとに呼び出し
               setTimeout(() => {
                 const checkStatusIntervalId = setInterval(() => {
                   securedAxios.get('/api/checkLastBookingStatus')
                     .then(statusResponse => {
-                      if (statusResponse.data.lastBookingStatus === 'Ended') {
+                      if (statusResponse.data.book_status === 'Ended') {
                         clearInterval(checkStatusIntervalId);
-                        if (userData.type === 'guide') {
+                        if (userData.user_type === 'guide') {
                           router.push('/guide/review');
-                        } else if (userData.type === 'guest') {
+                        } else if (userData.user_type === 'guest') {
                           router.push('/guest/review');
                         }
                       }
@@ -73,8 +83,7 @@ function Timer({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
   return (
     <div>
-      <h1>タイマー</h1>
-      <p>{time}</p>
+      <h2>{time}</h2>
     </div>
   );
 }
