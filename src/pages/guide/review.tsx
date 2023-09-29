@@ -30,42 +30,17 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-enum BookingStatus {
-    OfferPending,
-    Accepted,
-    Started,
-    Finished,
-    Reviewed,
-    Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface PageProps {
-    isLoggedIn: boolean;
-    userData?: any;
-}
-
-interface BookingData {
-    id: number;
-    guide_id: number;
-    guide_firstName: string;
-    guide_lastName: string;
-    guide_image?: string;
-    guest_id: number;
-    guest_firstName: string;
-    guest_lastName: string;
-    guest_image?: string;
-    total_guest: number;
-    startDate: string;
-    startTime: string;
-    endDate: string;
-    endTime: string;
-    startConfirmation: Date;
-    endConfirmation: Date;
-    hourly_rate: number;
-    created_at: Date;
-}
+import {
+    BookingStatus,
+    LanguageLevel,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    BookingData,
+    PageProps,
+  } from '../../types/types';
 
 function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     const [bookingData, setBookingData] = useState<BookingData | null>(null);
@@ -88,8 +63,9 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 const securedAxios = createSecuredAxiosInstance();
                 const response = await securedAxios.get(`/api/booking/`);
                 setBookingData(response.data);
-                // lastBookingStatusがfinished以外の時は/にリダイレクト
-                if (userData && userData.lastBookingStatus !== BookingStatus.Finished) {
+                // booking_statusがfinished以外の時は/にリダイレクト
+                // ここばbookingData.booking_statusではない、userData.booking_statusを使う
+                if (userData && userData.booking_status !== BookingStatus.Finished) {
                     router.push('/');
                 }
             } catch (error) {
@@ -119,11 +95,8 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 // フォームから取得したデータに、追加のデータをマージ
                 const postData = {
                     ...data,
-                    reviewer_id: bookingData.guide_id,
-                    reviewee_id: bookingData.guest_id,
-                    booking_id: bookingData.id,
-                    booking_status: BookingStatus.Reviewed,
                 };
+                const booking_id = bookingData.id
 
                 // マージしたデータをPOSTリクエストのボディとして送信
                 const response = await axiosInstance.post('/api/review', postData);
@@ -138,24 +111,6 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
             // エラーハンドリングの処理を行う
         }
     };
-
-
-    const calculateTotalAmount = () => {
-        if (bookingData) {
-            const start = new Date(bookingData.startConfirmation);
-            const end = new Date(bookingData.endConfirmation);
-            const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-            const baseAmount = bookingData.hourly_rate * hours;
-
-            if (bookingData.total_guest > 1) {
-                return baseAmount * bookingData.total_guest * 0.75;
-            } else {
-                return baseAmount;
-            }
-        }
-        return 0;
-    };
-
 
 // <-- ---------- 表示 ---------- -->
 
@@ -173,7 +128,7 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 height={200}
                 className="rounded-full"
             />
-                <p>{bookingData?.guest_firstName} {bookingData?.guest_lastName}</p>
+                <p>{bookingData?.guest_first_name} {bookingData?.guest_last_name}</p>
             </div>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -248,7 +203,7 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                             <h3>Total amount</h3>
                             <p><small>Inclusive of tax</small></p>
                         </div>
-                        <p className='bold'>¥{calculateTotalAmount().toLocaleString()}</p>
+                        <p className='bold'>¥{bookingData?.total_amount}</p>
                     </div>
                     <p><small>Include yourself in the total count, excluding children aged 12 and below.</small></p>
                 </div>

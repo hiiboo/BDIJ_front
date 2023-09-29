@@ -74,12 +74,12 @@ function GuestAuth(): JSX.Element {
             console.log(iconUrl);
             // CSRFトークンを取得
             await fetchCsrfToken();
-            const response = await axios.post(`${apiUrl}/auth/organizer/register`, {
+            const response = await axios.post(`${apiUrl}/auth/guest/register`, {
                 email,
                 password,
                 password_confirmation: passwordConfirmation,
-                firstName,
-                lastName,
+                first_name: firstName,
+                last_name: lastName,
                 profile_image: iconUrl
             }, {
                 withCredentials: true
@@ -137,7 +137,7 @@ function GuestAuth(): JSX.Element {
             });
             console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
-            const response = await axios.post(`${apiUrl}/auth/organizer/login`, {
+            const response = await axios.post(`${apiUrl}/auth/user/login`, {
                 email,
                 password,
             }, {

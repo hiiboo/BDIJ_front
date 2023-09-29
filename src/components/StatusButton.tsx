@@ -3,27 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
-enum BookingStatus {
-  OfferPending,
-  Accepted,
-  Started,
-  Finished,
-  Reviewed,
-  Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface userData {
-  id: number;
-  user_type: string;
-  lastBookingStatus: BookingStatus | null;
-  status: string;
-}
-
-interface PageProps {
-  userData: userData;
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  BookingData,
+  PageProps,
+} from '../types/types';
 
 const StatusButton: React.FC<PageProps> = ({ userData }) => {
 
@@ -38,10 +28,15 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
   };
 
   const renderButton = () => {
-    const { user_type, lastBookingStatus } = userData;
+    if (!userData) {
+      return null;
+    }
+
+    const { user_type, booking_status } = userData;
+
 
     if (user_type === 'guest') {
-      switch (lastBookingStatus) {
+      switch (booking_status) {
         case BookingStatus.OfferPending:
           return <Button onClick={handleCancelNoFee}>Cancell</Button>;
         case BookingStatus.Accepted:
@@ -83,7 +78,7 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
           return null;
       }
     } else if (user_type === 'guide') {
-      switch (lastBookingStatus) {
+      switch (booking_status) {
         case BookingStatus.Accepted:
           return (
             <>

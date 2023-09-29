@@ -1,44 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import OfferBox from '../../../components/OfferBox';
 import { utils } from '../../../utils/utils';
-
-// <-- ---------- enum ---------- -->
-
-enum BookingStatus {
-  OfferPending,
-  Accepted,
-  Started,
-  Finished,
-  Reviewed,
-  Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface PageProps {
-  isLoggedIn: boolean;
-  userData?: any;
-}
-
-interface BookingData {
-  id: number;
-  guide_id: number;
-  guide_firstName?: string;
-  guide_lastName?: string;
-  guide_image?: string;
-  guest_id: number;
-  guest_firstName?: string;
-  guest_lastName?: string;
-  guest_image?: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  hourly_rate: number;
-  comment: string;
-  created_at: Date;
-  booking_status: BookingStatus;
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  BookingData,
+  PageProps
+} from '../../../types/types';
 
 function GuideOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
@@ -50,6 +23,7 @@ function GuideOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null 
 
 // <-- ---------- useEffect ---------- -->
   useEffect(() => {
+    
       const fetchBookings = async () => {
           try {
               const securedAxios = createSecuredAxiosInstance();

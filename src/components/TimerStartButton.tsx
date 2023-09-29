@@ -3,10 +3,17 @@ import { utils } from '../utils/utils';
 import { useRouter } from 'next/router';
 import { Button } from "@/components/ui/button";
 
-interface PageProps {
-    isLoggedIn: boolean;
-    userData?: any;
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  BookingData,
+  PageProps,
+} from '../types/types';
 
 function TimerStartButton({ userData, isLoggedIn }: PageProps): JSX.Element | null {
   const router = useRouter();
@@ -25,15 +32,15 @@ function TimerStartButton({ userData, isLoggedIn }: PageProps): JSX.Element | nu
 
   if (!userData) return null;
 
-  if (userData.lastBookingStatus === 'Accepted') {
-    if (userData.type === 'guide') {
+  if (userData.booking_status === BookingStatus.Accepted) {
+    if (userData.user_type === 'guide') {
       return (
         <div>
             <p>Guest opens the timer and presses the button to start.</p>
             <Button onClick={() => router.reload()}>Reload</Button>
         </div>
       );
-    } else if (userData.type === 'guest') {
+    } else if (userData.user_type === 'guest') {
       return (
         <div>
             <Button onClick={startGuide}>Start Guide</Button>
@@ -42,7 +49,7 @@ function TimerStartButton({ userData, isLoggedIn }: PageProps): JSX.Element | nu
     }
   }
 
-  if (userData.lastBookingStatus === 'Started') {
+  if (userData.booking_status === BookingStatus.Started) {
     return <p>While guiding</p>;
   }
 

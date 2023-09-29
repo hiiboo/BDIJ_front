@@ -8,71 +8,18 @@ import { Badge } from "@/components/ui/badge";
 import ReactStarsRating from 'react-awesome-stars-rating';
 import { utils } from '../utils/utils';
 import { image } from '@nextui-org/react';
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  PageProps
+} from '../types/types';
 
-// <-- ---------- enum ---------- -->
-
-enum LanguageLevel {
-  Beginner,
-  Elementary,
-  Intermediate,
-  UpperIntermediate,
-  Advanced,
-  Proficiency,
-}
-
-enum IsActive {
-  active,
-  inactive,
-}
-enum Gender {
-  male,
-  female,
-  other
-}
-
-enum BookingStatus {
-  OfferPending,
-  Accepted,
-  Started,
-  Finished,
-  Reviewed,
-  Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface userData {
-  id: number;
-  user_type: string;
-  lastBookingStatus: BookingStatus | null;
-  status: string;
-}
-
-interface PageProps {
-  isLoggedIn: boolean;
-  userData?: userData;
-  GuideData?: GuideData | null;
-}
-
-interface GuideData {
-  id: number;
-  profile_image?: string;
-  firstName: string;
-  lastName: string;
-  gender: Gender;
-  language_level: LanguageLevel;
-  introduction: string;
-  birthday: Date;
-  status: IsActive;
-  hourly_rate: number;
-  review_rate: number;
-  review_sum: number;
-  latitude?: number;
-  longitude?: number;
-  created_at: Date;
-}
-
-function GuideProfile({ isLoggedIn, userData, GuideData }: PageProps): JSX.Element | null {
+function GuideProfile({ isLoggedIn, userData, guideData }: PageProps): JSX.Element | null {
 
 // <-- ---------- 定数の定義 ---------- -->
 
@@ -81,6 +28,25 @@ function GuideProfile({ isLoggedIn, userData, GuideData }: PageProps): JSX.Eleme
   const HARAJUKU_STATION = {
     latitude: 35.6715,
     longitude: 139.7030,
+  };
+
+  const getLanguageLevelLabel = (level?: LanguageLevel) => {
+    switch (level) {
+      case LanguageLevel.Beginner:
+        return 'Beginner';
+      case LanguageLevel.Elementary:
+        return 'Elementary';
+      case LanguageLevel.Intermediate:
+        return 'Intermediate';
+      case LanguageLevel.UpperIntermediate:
+        return 'UpperIntermediate';
+      case LanguageLevel.Advanced:
+        return 'Advanced';
+      case LanguageLevel.Proficiency:
+        return 'Proficiency';
+      default:
+        return '';
+    }
   };
 
 // <-- ---------- 関数の定義 ---------- -->
@@ -110,6 +76,7 @@ function GuideProfile({ isLoggedIn, userData, GuideData }: PageProps): JSX.Eleme
   }
 
   function calculateAge(birthday: Date) {
+    if (!birthday) return null;
     const birthDate = new Date(birthday);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -128,8 +95,8 @@ function GuideProfile({ isLoggedIn, userData, GuideData }: PageProps): JSX.Eleme
     <>
       <div className={styles.iconContainer}>
         <span className={styles.iconBox}>
-          {GuideData && <Image
-            src={GuideData.profile_image ? GuideData.profile_image : '/image/user.jpeg'}
+          {guideData && <Image
+            src={guideData.profile_image ? guideData.profile_image : '/image/user.jpeg'}
             alt="icon"
             layout="fill"
             objectFit="cover"
@@ -137,20 +104,19 @@ function GuideProfile({ isLoggedIn, userData, GuideData }: PageProps): JSX.Eleme
           />}
         </span>
       </div>
-      <h1>{GuideData ? GuideData.firstName : 'Loading...'} {GuideData ? GuideData.lastName : 'Loading...'} <small>{GuideData ? GuideData.gender : 'Loading...'} / {GuideData ? calculateAge(GuideData.birthday) : 'Loading...'}</small></h1>
-      <p>1h ¥{GuideData ? GuideData.hourly_rate.toLocaleString() : 'Loading...'}</p>
-      {GuideData && <ReactStarsRating className={styles.stars} value={GuideData.review_rate} />}
-      <p><small>{GuideData ? `${GuideData.review_rate}（${GuideData.review_sum} comments）` : 'Loading...'}</small></p>
+      <h1>{guideData ? `${guideData.first_name} ${guideData.last_name} <small>${guideData.birthday ? calculateAge(guideData.birthday) : 'Loading...'}</small>` : 'Loading...'}</h1>
+      <p>1h ¥{guideData?.hourly_rate?.toLocaleString() ?? '0'}</p>
+      {guideData && <ReactStarsRating className={styles.stars} value={guideData.review_average} />}
+      <p><small>{guideData ? `${guideData.review_average}（${guideData.review_count} comments）` : 'Loading...'}</small></p>
       <p>
-        <span className='bold'>{GuideData && GuideData.latitude && GuideData.longitude
-          ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, GuideData.latitude, GuideData.longitude).toFixed(1)
+        <span className='bold'>{guideData && guideData.latitude && guideData.longitude
+          ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, guideData.latitude, guideData.longitude).toFixed(1)
           : '-'}km
         </span>
       </p>
       <p><small>from Harajuku</small></p>
-
-      {GuideData && <Badge>{LanguageLevel[GuideData.language_level]}</Badge>}
-      <p>{GuideData ? GuideData.introduction : 'Loading...'}</p>
+      {guideData?.language_level ? <Badge>{getLanguageLevelLabel(guideData?.language_level)}</Badge> : <Badge></Badge>}
+      <p>{guideData ? guideData.introduction : 'Loading...'}</p>
     </>
   );
 }

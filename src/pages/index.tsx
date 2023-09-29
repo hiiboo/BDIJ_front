@@ -22,17 +22,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import ReactStarsRating from 'react-awesome-stars-rating';
 import { utils } from '../utils/utils';
-
-// <-- ---------- enum ---------- -->
-
-enum LanguageLevel {
-  Beginner,
-  Elementary,
-  Intermediate,
-  UpperIntermediate,
-  Advanced,
-  Proficiency,
-}
+import {
+  BookingStatus,
+  LanguageLevel,
+  UserType,
+  UserStatus,
+  UserData,
+  GuestData,
+  GuideData,
+  PageProps
+} from '../types/types';
 
 enum SortOption {
   Newest,
@@ -42,43 +41,6 @@ enum SortOption {
   MostExpensive,
   LeastExpensive,
   Nearest,
-}
-
-enum BookingStatus {
-  OfferPending,
-  Accepted,
-  Started,
-  Finished,
-  Reviewed,
-  Cancelled,
-}
-
-// <-- ---------- interface ---------- -->
-
-interface userData {
-  id: number;
-  user_type: string;
-  lastBookingStatus: BookingStatus | null;
-  status: string;
-}
-
-interface PageProps {
-  isLoggedIn: boolean;
-  userData?: userData;
-}
-
-interface GuideData {
-  id: number;
-  profile_image?: string;
-  firstName: string;
-  lastName: string;
-  language_level: LanguageLevel;
-  hourly_rate: number;
-  review_rate: number;
-  review_sum: number;
-  latitude?: number;
-  longitude?: number;
-  created_at: Date;
 }
 
 function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
@@ -99,6 +61,26 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     latitude: 35.6715,
     longitude: 139.7030,
   };
+
+  const getLanguageLevelLabel = (level?: LanguageLevel) => {
+    switch (level) {
+      case LanguageLevel.Beginner:
+        return 'Beginner';
+      case LanguageLevel.Elementary:
+        return 'Elementary';
+      case LanguageLevel.Intermediate:
+        return 'Intermediate';
+      case LanguageLevel.UpperIntermediate:
+        return 'UpperIntermediate';
+      case LanguageLevel.Advanced:
+        return 'Advanced';
+      case LanguageLevel.Proficiency:
+        return 'Proficiency';
+      default:
+        return '';
+    }
+  };
+
 
 // <-- ---------- 関数の定義 ---------- -->
 
@@ -134,7 +116,8 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         setIsLoading(true);
         const securedAxios = createSecuredAxiosInstance();
         const response = await securedAxios.get('/api/guide');
-        setGuides(response.data);
+        console.log(response.data);
+        // setGuides(response.data);
       } catch (error) {
         console.error('Failed to fetch guide data', error);
       } finally {
@@ -146,12 +129,18 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
   }, [isLoggedIn, userData, router]);
 
   useEffect(() => {
+    const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
+
+    if (isTestMode) {
+        console.log("Test mode is enabled. Redirects are disabled.");
+        return;
+    }
     // lastBookingStatus に基づいてリダイレクト処理
     if (isLoggedIn && userData) {
-      const { lastBookingStatus, user_type } = userData;
+      const { booking_status, user_type } = userData;
       let redirectPath = '';
 
-      switch (lastBookingStatus) {
+      switch (booking_status) {
         case BookingStatus.OfferPending:
         case BookingStatus.Accepted:
           redirectPath = `/${user_type}/offer/box`;
@@ -174,43 +163,64 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     }
   }, [isLoggedIn, userData, router]);
 
-  useEffect(() => {
-    let newSortedGuides = [...guides];
-    switch (sortOption) {
-      case SortOption.Newest:
-        newSortedGuides.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
-        break;
-      case SortOption.HighestRated:
-        newSortedGuides.sort((a, b) => b.review_rate - a.review_rate);
-        break;
-      case SortOption.MostReviewed:
-        newSortedGuides.sort((a, b) => b.review_sum - a.review_sum);
-        break;
-      case SortOption.HighestLanguageLevel:
-        newSortedGuides.sort((a, b) => b.language_level - a.language_level);
-        break;
-      case SortOption.MostExpensive:
-        newSortedGuides.sort((a, b) => b.hourly_rate - a.hourly_rate);
-        break;
-      case SortOption.LeastExpensive:
-        newSortedGuides.sort((a, b) => a.hourly_rate - b.hourly_rate);
-        break;
-        case SortOption.Nearest:
-          newSortedGuides.sort((a, b) => {
-            const distanceA = a.latitude && a.longitude
-              ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, a.latitude, a.longitude)
-              : Infinity;
-            const distanceB = b.latitude && b.longitude
-              ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, b.latitude, b.longitude)
-              : Infinity;
-            return distanceA !== Infinity || distanceB !== Infinity
-              ? distanceA - distanceB
-              : b.review_rate - a.review_rate;
-          });
-          break;
+useEffect(() => {
+  let newSortedGuides = [...guides];
+  const languageLevelToNumber = (level?: LanguageLevel) => {
+    switch (level) {
+      case LanguageLevel.Proficiency:
+        return 6;
+      case LanguageLevel.Advanced:
+        return 5;
+      case LanguageLevel.UpperIntermediate:
+        return 4;
+      case LanguageLevel.Intermediate:
+        return 3;
+      case LanguageLevel.Elementary:
+        return 2;
+      case LanguageLevel.Beginner:
+        return 1;
+      default:
+        return 0;
     }
-    setSortedGuides(newSortedGuides);
-  }, [sortOption, guides]);
+  };
+  switch (sortOption) {
+    case SortOption.Newest:
+      newSortedGuides.sort((a, b) => (b.created_at ? b.created_at.getTime() : 0) - (a.created_at ? a.created_at.getTime() : 0));
+      break;
+    // ... 同様に他のソートオプションも修正
+    case SortOption.HighestRated:
+      newSortedGuides.sort((a, b) => (b.review_rate || 0) - (a.review_rate || 0));
+      break;
+    case SortOption.MostReviewed:
+      newSortedGuides.sort((a, b) => (b.review_sum || 0) - (a.review_sum || 0));
+      break;
+    case SortOption.HighestLanguageLevel:
+      newSortedGuides.sort((a, b) =>
+        languageLevelToNumber(b.language_level) - languageLevelToNumber(a.language_level)
+      );
+      break;
+    case SortOption.MostExpensive:
+      newSortedGuides.sort((a, b) => (b.hourly_rate || 0) - (a.hourly_rate || 0));
+      break;
+    case SortOption.LeastExpensive:
+      newSortedGuides.sort((a, b) => (a.hourly_rate || 0) - (b.hourly_rate || 0));
+      break;
+    case SortOption.Nearest:
+      newSortedGuides.sort((a, b) => {
+        const distanceA = a.latitude && a.longitude
+          ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, a.latitude, a.longitude)
+          : Infinity;
+        const distanceB = b.latitude && b.longitude
+          ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, b.latitude, b.longitude)
+          : Infinity;
+        return distanceA !== Infinity || distanceB !== Infinity
+          ? distanceA - distanceB
+          : (b.review_rate || 0) - (a.review_rate || 0);
+      });
+      break;
+  }
+  setSortedGuides(newSortedGuides);
+}, [sortOption, guides]);
 
 // <-- ---------- 表示 ---------- -->
 
@@ -282,14 +292,14 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                   </span>
                 </CardHeader>
                 <CardContent>
-                  <CardTitle>{guide.firstName} {guide.lastName}</CardTitle>
+                  <CardTitle>{guide.first_name} {guide.last_name}</CardTitle>
                   <CardDescription>
-                    <span className='bold'>{guide.latitude && guide.longitude
+                    <span className='bold'>{guide.latitude !== undefined && guide.longitude !== undefined
                       ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, guide.latitude, guide.longitude).toFixed(1)
                       : '-'}km</span><br/><small>from Harajuku</small>
                   </CardDescription>
-                  <Badge>{LanguageLevel[guide.language_level]}</Badge>
-                  <CardDescription>1h ¥{guide.hourly_rate.toLocaleString()}</CardDescription>
+                  {guide.language_level && <Badge>{getLanguageLevelLabel(guide.language_level)}</Badge>}
+                  <CardDescription>1h ¥{guide.hourly_rate ? guide.hourly_rate.toLocaleString() : 0}</CardDescription>
                   <ReactStarsRating className={styles.stars} value={guide.review_rate} />
                   <CardDescription><small>{guide.review_rate}（{guide.review_sum}comments）</small></CardDescription>
                 </CardContent>
