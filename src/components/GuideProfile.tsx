@@ -104,7 +104,7 @@ function GuideProfile({ isLoggedIn, userData, guideData }: PageProps): JSX.Eleme
           />}
         </span>
       </div>
-      <h1>{guideData ? `${guideData.first_name} ${guideData.last_name} <small>${guideData.birthday ? calculateAge(guideData.birthday) : 'Loading...'}</small>` : 'Loading...'}</h1>
+      <h1>{guideData ? `${guideData.first_name} ${guideData.last_name}` : 'Loading...'} <small>（{guideData?.birthday ? calculateAge(guideData?.birthday)  : 'Loading...'}）</small></h1>
       <p>1h ¥{guideData?.hourly_rate?.toLocaleString() ?? '0'}</p>
       {guideData && <ReactStarsRating className={styles.stars} value={guideData.review_average} />}
       <p><small>{guideData ? `${guideData.review_average}（${guideData.review_count} comments）` : 'Loading...'}</small></p>

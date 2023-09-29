@@ -109,6 +109,21 @@ function GuideAuth(): JSX.Element {
 
             // CSRFトークンを取得
             await fetchCsrfToken();
+            const registerData = {
+                email,
+                password,
+                password_confirmation: passwordConfirmation,
+                first_name: firstName,
+                last_name: lastName,
+                profile_image: iconUrl,
+                birthday,
+                gender,
+                level: languageLevel,
+                introduction,
+                hourly_rate: hourlyRate,
+                user_type: user_type.guide,
+            }
+            console.log(registerData);
             const response = await axios.post(`${apiUrl}/auth/guide/register`, {
                 email,
                 password,
@@ -128,18 +143,14 @@ function GuideAuth(): JSX.Element {
             console.log(response);
             // 登録が成功したら、トップページにリダイレクト
             if (response.status === 200 && response.data.message === "Registration successful") {
-                // ログイン成功
-                localStorage.setItem('organizer_token', response.data.token);
-
-                router.push('/');
-
-                await checkAuth();
+                // localStorage.setItem('user_token', response.data.token);
                 alert('Signup successful');
+                await handleLogin();
             } else {
                 // ログイン失敗
                 alert('Registration failed');
                 console.error("Registration failed", response.data.message);
-                router.push('/guide/signup');
+                router.push('/');
             }
         } catch (error) {
             console.error("Registration error", error);
@@ -165,9 +176,9 @@ function GuideAuth(): JSX.Element {
             console.log(response);
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
-                localStorage.setItem('organizer_token', response.data.token);
+                localStorage.setItem('user_token', response.data.token);
 
-                router.push('/');
+                router.push('/guide/mypage');
 
                 await checkAuth();
                 alert('Login successful');
@@ -175,7 +186,7 @@ function GuideAuth(): JSX.Element {
                 // ログイン失敗
                 alert('Login failed');
                 console.error("Login failed", response.data.message);
-                router.push('/guide/login');
+                router.push('/');
             }
         } catch (error) {
             console.error("Login error", error);

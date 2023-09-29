@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdMenu} from 'react-icons/md';
+import { PiUserCircle } from 'react-icons/pi';
 import styles from '../styles/header.module.scss';
 import Link from 'next/link';
 import {
@@ -8,52 +8,34 @@ import {
     MenubarItem,
     MenubarMenu,
     MenubarSeparator,
-    MenubarShortcut,
     MenubarTrigger,
 } from "@/components/shadcnui/menubar"
-
 import {
-    BookingStatus,
-    LanguageLevel,
     UserType,
-    UserStatus,
-    UserData,
-    GuestData,
-    GuideData,
     PageProps
 } from '../types/types';
 
-const UserMenu: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
+const UserMenu: React.FC<PageProps> = ({ isLoggedIn, userData, handleLogout }) => {
+    const userTypePath = userData?.user_type === UserType.Guide ? 'guide' : 'guest';
+
     return (
         <>
-            <MenubarTrigger className={styles.icon} style={{ padding:0 }}>
-                <MdMenu size="2rem" />
+            <MenubarTrigger className={styles.hamburger} style={{ padding: 0 }}>
+                <PiUserCircle size="2rem" />
             </MenubarTrigger>
             <MenubarContent>
                 {isLoggedIn ? (
                     <>
-                        <Link href="/event/management">
-                            <MenubarItem>イベントを管理する</MenubarItem>
-                        </Link>
-                        <Link href="/event/list">
-                            <MenubarItem>イベントを閲覧する</MenubarItem>
-                        </Link>
+                        <MenubarItem onClick={handleLogout}>ログアウト</MenubarItem>
                         <MenubarSeparator />
-                        <Link href="/article/management">
-                            <MenubarItem>記事を管理する</MenubarItem>
-                        </Link>
-                        <Link href="/article/list">
-                            <MenubarItem>記事を閲覧する</MenubarItem>
+                        <Link href={`/${userTypePath}/mypage`}>
+                            <MenubarItem>プロフィール</MenubarItem>
                         </Link>
                     </>
                 ) : (
                     <>
-                        <Link href="/event/list">
-                            <MenubarItem>イベントを閲覧する</MenubarItem>
-                        </Link>
-                        <MenubarSeparator />
-                        <Link href="/article/list">
-                            <MenubarItem>記事を閲覧する</MenubarItem>
+                        <Link href={`/${userTypePath}/auth`}>
+                            <MenubarItem>ログイン・登録</MenubarItem>
                         </Link>
                     </>
                 )}

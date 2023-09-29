@@ -30,7 +30,7 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
   const handleAcceptOffer = () => {
     const securedAxios = createSecuredAxiosInstance();
     const booking_id = bookingData?.id
-    securedAxios.post(`/api/{$booking_id}/acceptoffer`, {})
+    securedAxios.patch(`/api/bookings/${booking_id}/accept`, {})
     .then(() => {
       router.reload();
     })
@@ -40,7 +40,7 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
   const handleCancelOffer = () => {
     const securedAxios = createSecuredAxiosInstance();
     const booking_id = bookingData?.id
-    securedAxios.post(`/api/{$booking_id}/canceloffer`, {})
+    securedAxios.patch(`/api/bookings/${booking_id}/cancel`, {})
     .then(() => {
       router.reload();
     })

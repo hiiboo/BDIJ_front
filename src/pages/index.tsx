@@ -116,8 +116,8 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         setIsLoading(true);
         const securedAxios = createSecuredAxiosInstance();
         const response = await securedAxios.get('/api/guide');
-        console.log(response.data);
-        // setGuides(response.data);
+        console.log(response.data.data);
+        setGuides(response.data.data);
       } catch (error) {
         console.error('Failed to fetch guide data', error);
       } finally {
@@ -129,12 +129,6 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
   }, [isLoggedIn, userData, router]);
 
   useEffect(() => {
-    const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
-
-    if (isTestMode) {
-        console.log("Test mode is enabled. Redirects are disabled.");
-        return;
-    }
     // lastBookingStatus に基づいてリダイレクト処理
     if (isLoggedIn && userData) {
       const { booking_status, user_type } = userData;
@@ -187,12 +181,11 @@ useEffect(() => {
     case SortOption.Newest:
       newSortedGuides.sort((a, b) => (b.created_at ? b.created_at.getTime() : 0) - (a.created_at ? a.created_at.getTime() : 0));
       break;
-    // ... 同様に他のソートオプションも修正
     case SortOption.HighestRated:
-      newSortedGuides.sort((a, b) => (b.review_rate || 0) - (a.review_rate || 0));
+      newSortedGuides.sort((a, b) => (b.review_average || 0) - (a.review_average || 0));
       break;
     case SortOption.MostReviewed:
-      newSortedGuides.sort((a, b) => (b.review_sum || 0) - (a.review_sum || 0));
+      newSortedGuides.sort((a, b) => (b.review_count || 0) - (a.review_count || 0));
       break;
     case SortOption.HighestLanguageLevel:
       newSortedGuides.sort((a, b) =>
@@ -215,7 +208,7 @@ useEffect(() => {
           : Infinity;
         return distanceA !== Infinity || distanceB !== Infinity
           ? distanceA - distanceB
-          : (b.review_rate || 0) - (a.review_rate || 0);
+          : (b.review_average || 0) - (a.review_average || 0);
       });
       break;
   }
@@ -275,15 +268,14 @@ useEffect(() => {
         </div>
         <div className={styles.cardContainer}>
         {sortedGuides.map(guide => {
-          console.log(guide); // ここで各ガイドデータをコンソールに出力
-
           return (
             <Link href={`/guest/guideprofile/${guide.id}`}>
               <Card key={guide.id} className={styles.card}>
                 <CardHeader className={styles.cardHeader}>
                   <span className={styles.iconBox}>
                     <Image
-                      src={guide.profile_image ? guide.profile_image : '/image/user.jpeg'}
+                      // src={guide.profile_image ? guide.profile_image : '/image/user.jpeg'}
+                      src='/image/user.jpeg'
                       alt="icon"
                       layout="fill"
                       objectFit="cover"
@@ -300,8 +292,8 @@ useEffect(() => {
                   </CardDescription>
                   {guide.language_level && <Badge>{getLanguageLevelLabel(guide.language_level)}</Badge>}
                   <CardDescription>1h ¥{guide.hourly_rate ? guide.hourly_rate.toLocaleString() : 0}</CardDescription>
-                  <ReactStarsRating className={styles.stars} value={guide.review_rate} />
-                  <CardDescription><small>{guide.review_rate}（{guide.review_sum}comments）</small></CardDescription>
+                  <ReactStarsRating className={styles.stars} value={guide.review_average} />
+                  <CardDescription><small>{guide.review_average}（{guide.review_count}comments）</small></CardDescription>
                 </CardContent>
               </Card>
             </Link>

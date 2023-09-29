@@ -50,7 +50,7 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
         startTime: z.string(),
         endDate: z.string(),
         endTime: z.string(),
-        total_guest: z.number().min(1),
+        total_guests: z.number().min(1),
         comment: z.string().optional(),
     });
     const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
@@ -70,7 +70,7 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
             startTime: '',
             endDate: todayStr,
             endTime: '',
-            total_guest: 1,
+            total_guests: 1,
             comment: '',
         },
     });
@@ -104,7 +104,7 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
             return 0;
         }
         // フォームからの値を監視
-        const totalGuest = watch("total_guest");
+        const totalGuest = watch("total_guests");
 
         // startDate と startTime を組み合わせて、開始時刻の Date オブジェクトを作成
         const startDateTimeStr = `${startDate}T${startTime}`;
@@ -125,33 +125,32 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
     };
 
     const onSubmit = (data: z.infer<typeof reservationSchema>) => {
-        if (!guideData || !userData) {
+        if (!guideData) {
             console.error('guideData or userData is null or undefined');
             return;
         }
 
-        const { id } = guideData;
-        const { id: userId } = userData;
-        if (id === undefined || userId === undefined) {
+        const { id: guideId } = guideData;
+        if (guideId === undefined) {
             console.error('id is undefined');
             return;
         }
 
         // startDate, endDate, startTime, endTimeからstart_timeとend_timeを作成
-        const { startDate, endDate, startTime, endTime, total_guest, comment } = data;
+        const { startDate, endDate, startTime, endTime, total_guests, comment } = data;
         const { start_time, end_time } = constructDateTime(startDate, startTime, endDate, endTime);
 
         // bookingPreDataの作成
         const bookingPreData = {
             start_time: start_time.toISOString(),
             end_time: end_time.toISOString(),
-            total_guest: total_guest,
+            total_guests: total_guests,
             comment: comment,
-            guest_id: userId,
+            guide_id: guideId,
         };
 
         // 以降の処理にbookingPreDataを使用
-        if (isLoggedIn) {
+        if (isLoggedIn && userData) {
             if (userData.user_type === 'guide') {
                 alert('ガイドは予約できません。');
             } else {
@@ -314,7 +313,7 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
         <div>
         <FormField
             control={form.control}
-            name="total_guest"
+            name="total_guests"
             render={({ field }) => (
                 <FormItem className="flex flex-col">
                 <FormLabel>Guest</FormLabel>
@@ -342,7 +341,7 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
                             value={number.toString()}
                             key={number}
                             onSelect={() => {
-                                form.setValue("total_guest", number)
+                                form.setValue("total_guests", number)
                             }}
                             >
                             <Check

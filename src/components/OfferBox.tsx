@@ -46,7 +46,9 @@ function OfferBox({ isLoggedIn, userData, offers }: PageProps): JSX.Element | nu
                 return '';
         }
     };
- // <-- ---------- 表示 ---------- -->
+    function isValidDate(d: any): d is Date {
+        return d instanceof Date && !isNaN(d.getTime());
+    }
 
     return (
         <div>
@@ -56,66 +58,61 @@ function OfferBox({ isLoggedIn, userData, offers }: PageProps): JSX.Element | nu
                     <div key={offer.id}>
                         <Separator className="my-2" />
                         <Link href={`/${user_type}/offer/${offer.id}`} className="flex items-center justify-between space-x-4">
-                        <div className="flex items-center space-x-4">
-                            <Avatar>
-                            <AvatarImage src={user_type === 'guest' ? offer.guide_image : offer.guest_image} />
-                            <AvatarFallback>
-                                {(user_type === 'guest' ? offer.guide_first_name : offer.guest_first_name) || 'N/A'}
-                                {(user_type === 'guest' ? offer.guide_last_name : offer.guest_last_name) || 'N/A'}
-                            </AvatarFallback>
-                            </Avatar>
-                            <div>
-                            <p className="text-sm font-medium leading-none m-2">
-                                {(user_type === 'guest' ? offer.guide_first_name : offer.guest_first_name) || 'N/A'}
-                                {(user_type === 'guest' ? offer.guide_last_name : offer.guest_last_name) || 'N/A'}
-                            </p>
-                            <p className="text-sm text-muted-foreground m-2">
-                                {offer.booking_status !== undefined ? getBookingStatus(offer.booking_status) : "Status Unknown"}
-                            </p>
-                            </div>
-                        </div>
-                        <div className={styles.offerBox}>
-                            {
-                            // Extracting and validating start and end times
-                            (() => {
-                                let start_time: Date = new Date();
-                                let end_time: Date = new Date();
-
-                                if (offer && offer.start_time && offer.end_time) {
-                                start_time = new Date(offer.start_time);
-                                end_time = new Date(offer.end_time);
-                                } else {
-                                console.error('start_time or end_time is invalid or undefined in offer');
-                                }
-
-                                if (!isValidDate(start_time)) {
-                                alert('start_time is invalid');
-                                }
-
-                                if (!isValidDate(end_time)) {
-                                alert('end_time is invalid');
-                                }
-
-                                function isValidDate(d: any): d is Date {
-                                return d instanceof Date && !isNaN(d.getTime());
-                                }
-
-                                const startDate = extractDateAndTime(start_time, end_time).startDate;
-                                const startTime = extractDateAndTime(start_time, end_time).startTime;
-                                const endDate = extractDateAndTime(start_time, end_time).endDate;
-                                const endTime = extractDateAndTime(start_time, end_time).endTime;
-
-                                return (
-                                <p className="text-sm text-muted-foreground m-2">
-                                    {`${startDate} ${startTime} - ${endDate} ${endTime}`}
+                            <div className="flex items-center space-x-4">
+                                <Avatar>
+                                <AvatarImage src={user_type === 'guest' ? offer.guide_image : offer.guest_image} />
+                                <AvatarFallback>
+                                    {(user_type === 'guest' ? offer.guide_first_name : offer.guest_first_name) || 'N/A'}
+                                    {(user_type === 'guest' ? offer.guide_last_name : offer.guest_last_name) || 'N/A'}
+                                </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                <p className="text-sm font-medium leading-none m-2">
+                                    {(user_type === 'guest' ? offer.guide_first_name : offer.guest_first_name) || 'N/A'}
+                                    {(user_type === 'guest' ? offer.guide_last_name : offer.guest_last_name) || 'N/A'}
                                 </p>
-                                );
-                            })()
-                            }
-                        </div>
+                                <p className="text-sm text-muted-foreground m-2">
+                                    {offer.booking_status !== undefined ? getBookingStatus(offer.booking_status) : "Status Unknown"}
+                                </p>
+                                </div>
+                            </div>
+                            <div className={styles.offerBox}>
+                                {
+                                    (() => {
+                                        let start_time: Date = new Date();
+                                        let end_time: Date = new Date();
+
+                                        if (offer && offer.start_time && offer.end_time) {
+                                            start_time = new Date(offer.start_time);
+                                            end_time = new Date(offer.end_time);
+                                        } else {
+                                            console.error('start_time or end_time is invalid or undefined in offer');
+                                        }
+
+                                        if (!isValidDate(start_time)) {
+                                            alert('start_time is invalid');
+                                        }
+
+                                        if (!isValidDate(end_time)) {
+                                            alert('end_time is invalid');
+                                        }
+
+                                        const startDate = extractDateAndTime(start_time, end_time).startDate;
+                                        const startTime = extractDateAndTime(start_time, end_time).startTime;
+                                        const endDate = extractDateAndTime(start_time, end_time).endDate;
+                                        const endTime = extractDateAndTime(start_time, end_time).endTime;
+
+                                        return (
+                                            <p className="text-sm text-muted-foreground m-2">
+                                                {`${startDate} ${startTime} - ${endDate} ${endTime}`}
+                                            </p>
+                                        );
+                                    })()
+                                }
+                            </div>
                         </Link>
                     </div>
-                    ))}
+                ))}
             </div>
         </div>
     )

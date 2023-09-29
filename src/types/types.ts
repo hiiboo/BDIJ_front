@@ -79,9 +79,9 @@ export interface BookingData {
     guest_first_name?: string;
     guest_last_name?: string;
     guest_image?: string;
-    start_time?: Date;
-    end_time?: Date;
-    total_guest?: number;
+    start_time?: string;
+    end_time?: string;
+    total_guests?: number;
     comment?: string;
     created_at?: Date;
     booking_status?: BookingStatus;
