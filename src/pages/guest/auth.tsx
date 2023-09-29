@@ -85,42 +85,17 @@ function GuestAuth(): JSX.Element {
                 withCredentials: true
             });
             console.log(response);
-            // 登録が成功したら、トップページにリダイレクト
+            // 登録が成功したら、自動でログインにリダイレクト
             if (response.status === 200 && response.data.message === "Registration successful") {
-                // ログイン成功
-                localStorage.setItem('organizer_token', response.data.token);
-
-                // クエリパラメータを取得
-                const { startDate, startTime, endDate, endTime, total_guest, comment, hourly_rate, guide_id } = router.query;
-
-                // クエリパラメータが存在するかチェック
-                if (startDate && startTime && endDate && endTime && total_guest && hourly_rate && guide_id) {
-                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
-                    router.push({
-                        pathname: '/guest/offer/confirmation',
-                        query: {
-                            startDate,
-                            startTime,
-                            endDate,
-                            endTime,
-                            total_guest,
-                            comment,
-                            hourly_rate,
-                            guide_id
-                        }
-                    });
-                } else {
-                    // クエリパラメータが存在しない場合、/ へリダイレクト
-                    router.push('/');
-                }
-
-                await checkAuth();
+                // // ログイン成功
+                // localStorage.setItem('user_token', response.data.token);
                 alert('Signup successful');
+                await handleLogin();
             } else {
                 // ログイン失敗
                 alert('Registration failed');
                 console.error("Registration failed", response.data.message);
-                router.push('/guest/signup');
+                router.push('/');
             }
         } catch (error) {
             console.error("Registration error", error);
@@ -146,25 +121,18 @@ function GuestAuth(): JSX.Element {
             console.log(response);
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
-                localStorage.setItem('organizer_token', response.data.token);
+                localStorage.setItem('user_token', response.data.token);
 
                 // クエリパラメータを取得
-                const { startDate, startTime, endDate, endTime, total_guest, comment, hourly_rate, guide_id } = router.query;
+                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
 
                 // クエリパラメータが存在するかチェック
-                if (startDate && startTime && endDate && endTime && total_guest && hourly_rate && guide_id) {
+                if (start_time && end_time && total_guests && guide_id) {
                     // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
                     router.push({
                         pathname: '/guest/offer/confirmation',
                         query: {
-                            startDate,
-                            startTime,
-                            endDate,
-                            endTime,
-                            total_guest,
-                            comment,
-                            hourly_rate,
-                            guide_id
+                            start_time, end_time, total_guests, comment, guide_id
                         }
                     });
                 } else {
@@ -178,7 +146,7 @@ function GuestAuth(): JSX.Element {
                 // ログイン失敗
                 alert('Login failed');
                 console.error("Login failed", response.data.message);
-                router.push('/guest/login');
+                router.push('/');
             }
         } catch (error) {
             console.error("Login error", error);

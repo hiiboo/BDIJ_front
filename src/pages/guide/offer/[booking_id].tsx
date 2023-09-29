@@ -55,20 +55,17 @@ const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
         const fetchBookingData = async () => {
             try {
                 const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/api/booking/${bookingId}`);
-                const bookingData = response.data;
-
-                // GuideDataのhourly_rateを取得
-                const guestResponse = await securedAxios.get(`/api/booking/guest/${bookingId}`);
-                const guestData = guestResponse.data;
+                const response = await securedAxios.get(`/api/bookings/${bookingId}/related-user`);
+                const bookingData = response.data.data;
+                const guestData = response.data.data.guest;
                 setGuestData(guestData);
 
-                // bookingDataにhourly_rateを追加
-                const updatedBookingData = {
-                    ...bookingData,
-                    hourly_rate: guestData.hourly_rate,
-                };
-                setBookingData(updatedBookingData);
+                // // bookingDataにhourly_rateを追加
+                // const updatedBookingData = {
+                //     ...bookingData,
+                //     hourly_rate: guestData.hourly_rate,
+                // };
+                // setBookingData(updatedBookingData);
 
             } catch (error) {
                 console.error('Failed to fetch data', error);
@@ -88,11 +85,11 @@ const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
                 <TabsTrigger value="booking">Booking</TabsTrigger>
                 <TabsTrigger value="guide">Guide</TabsTrigger>
             </TabsList>
-            <TabsContent value="guide">
-                {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
+            <TabsContent value="booking">
+                <OfferInformation isLoggedIn={isLoggedIn} bookingData={bookingData} />
             </TabsContent>
             <TabsContent value="guide">
-                <OfferInformation isLoggedIn={isLoggedIn} bookingData={bookingData} />
+                {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
             </TabsContent>
             {userData && <BookingButton isLoggedIn={isLoggedIn} userData={userData} bookingData={bookingData} />}
         </Tabs>

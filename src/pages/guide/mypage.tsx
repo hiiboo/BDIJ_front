@@ -58,23 +58,24 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
   const [isLocationEnabled, setIsLocationEnabled] = useState(false);
   const [userStatus, setUserStatus] = useState<boolean>(false); // ステータスを管理するための新しいステート
+  const guideId = userData?.id;
 
   useEffect(() => {
 
     const fetchUserInfo = async () => {
       try {
         const securedAxios = createSecuredAxiosInstance();
-        const response = await securedAxios.get(`/api/guide`);
-        setGuideData(response.data);
-        setEmail(response.data.email);
-        setFirstName(response.data.firstName);
-        setLastName(response.data.lastName);
-        setIconUrl(response.data.iconUrl);
-        setBirthday(response.data.birthday);
-        setLanguageLevel(response.data.language_level);
-        setIntroduction(response.data.introduction);
-        setHourlyRate(response.data.hourly_rate);
-        setUserStatus(response.data.status === UserStatus.Active);
+        const response = await securedAxios.get(`/api/guide/${guideId}/private`);
+        setGuideData(response.data.data);
+        setEmail(response.data.data.email);
+        setFirstName(response.data.data.firstName);
+        setLastName(response.data.data.lastName);
+        setIconUrl(response.data.data.iconUrl);
+        setBirthday(response.data.data.birthday);
+        setLanguageLevel(response.data.data.language_level);
+        setIntroduction(response.data.data.introduction);
+        setHourlyRate(response.data.data.hourly_rate);
+        setUserStatus(response.data.data.status === UserStatus.Active);
       } catch (error) {
         console.error('Failed to fetch guide data', error);
       }
@@ -92,7 +93,7 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
   useEffect(() => {
       if (iconFile) {
           (async () => {
-              const response = await uploadImage(iconFile);
+              const response =  await uploadImage(iconFile);
               if (response?.path) {
                   setIconUrl(response.path);
               }
@@ -115,13 +116,13 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     try {
       const newStatus = userStatus ? UserStatus.Inactive : UserStatus.Active;
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.put(`/api/guide/update-status`, { status: newStatus });
+      const response = await securedAxios.put(`/user/change-status`, { status: newStatus });
 
       if (response.status === 200) {
         alert('Status updated successfully');
         setUserStatus(newStatus === UserStatus.Active);
       } else {
-        console.error("Update failed", response.data.message);
+        console.error("Update failed", response);
         alert('Update failed');
       }
     } catch (error) {
@@ -143,9 +144,8 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         return;
       }
 
-      // Update user info
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.put(`${apiUrl}/api/guide/update`, {
+      const response = await securedAxios.put(`/user/update`, {
         email,
         currentPassword,
         newPassword,
@@ -157,14 +157,12 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         language_level: languageLevel,
         introduction,
         hourly_rate: hourlyRate,
-      }, {
-        withCredentials: true
       });
 
       if (response.status === 200) {
         alert('User info updated successfully');
       } else {
-        console.error("Update failed", response.data.message);
+        console.error("Update failed", response);
         alert('Update failed');
       }
     } catch (error) {

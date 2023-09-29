@@ -33,9 +33,10 @@ function GuideProfileById({ isLoggedIn, userData }: PageProps): JSX.Element | nu
         if (router.isReady) {
             const { guide_id } = router.query;
             setGuideId(Number(guide_id));
+            console.log(guide_id);
+
         }
     }, [router.isReady]);
-
     useEffect(() => {
 
         if (!guideId) {
@@ -45,8 +46,8 @@ function GuideProfileById({ isLoggedIn, userData }: PageProps): JSX.Element | nu
         const fetchGuideData = async () => {
             try {
               const securedAxios = createSecuredAxiosInstance();
-              const response = await securedAxios.get(`/api/guide/{$guideId}`);
-              setGuideData(response.data);
+              const response = await securedAxios.get(`/api/guide/${guideId}`);
+              setGuideData(response.data.data);
             } catch (error) {
               console.error('Failed to fetch guide data', error);
             }

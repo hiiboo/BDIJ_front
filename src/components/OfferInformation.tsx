@@ -17,9 +17,9 @@ import {
 
 interface BookingPreData {
   guide_id?: number;
-  start_time?: Date;
-  end_time?: Date;
-  total_guest?: number;
+  start_time?: string;
+  end_time?: string;
+  total_guests?: number;
   comment?: string;
   total_amount?: number;
 }
@@ -76,7 +76,7 @@ interface PagePropsWithBookingPreData {
   // const startTime = bookingData ? bookingData.startTime : String(router.query.startTime);
   // const endDate = bookingData ? bookingData.endDate : String(router.query.endDate);
   // const endTime = bookingData ? bookingData.endTime : String(router.query.endTime);
-  const total_guest = bookingData ? bookingData.total_guest : bookingPreData?.total_guest;
+  const total_guests = bookingData ? bookingData.total_guests : bookingPreData?.total_guests;
   const comment = bookingData ? bookingData.comment : bookingPreData?.comment;
   const total_amount = bookingData ? bookingData.total_amount : bookingPreData?.total_amount;
 
@@ -94,8 +94,8 @@ interface PagePropsWithBookingPreData {
 //     const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 //     const baseAmount = hourly_rate * hours;
 
-//     if (total_guest > 1) {
-//         return baseAmount * total_guest * 0.75;
+//     if (total_guests > 1) {
+//         return baseAmount * total_guests * 0.75;
 //     } else {
 //         return baseAmount;
 //     }
@@ -109,7 +109,7 @@ interface PagePropsWithBookingPreData {
       <p><strong>Start Time:</strong> {startTime}</p>
       <p><strong>End Date:</strong> {endDate}</p>
       <p><strong>End Time:</strong> {endTime}</p>
-      <p><strong>Guest:</strong> {total_guest}</p>
+      <p><strong>Guest:</strong> {total_guests}</p>
       <p><strong>Comment:</strong> {comment}</p>
       <div className="">
             <div className="flex flex-col items-center justify-content-between">

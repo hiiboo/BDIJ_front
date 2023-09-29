@@ -30,6 +30,7 @@ import {
   GuideData,
   PageProps
 } from '../../types/types';
+import axios from 'axios';
 
 function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
@@ -49,17 +50,18 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [iconUrl, setIconUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const guestId = userData?.id;
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const securedAxios = createSecuredAxiosInstance();
-        const response = await securedAxios.get(`/api/guest`);
-        setGuestData(response.data);
-        setEmail(response.data.email);
-        setFirstName(response.data.firstName);
-        setLastName(response.data.lastName);
-        setIconUrl(response.data.iconUrl);
+        const response = await securedAxios.get(`/api/guest/${guestId}/private`);
+        setGuestData(response.data.data);
+        setEmail(response.data.data.email);
+        setFirstName(response.data.data.firstName);
+        setLastName(response.data.data.lastName);
+        setIconUrl(response.data.data.iconUrl);
       } catch (error) {
         console.error('Failed to fetch guest data', error);
       }
@@ -101,21 +103,19 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
       // Update user info
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.put(`${apiUrl}/api/guest/update`, {
+      const response = await securedAxios.patch(`/user/update`, {
         email,
         currentPassword,
         newPassword,
         firstName,
         lastName,
         profile_image: iconUrl,
-      }, {
-        withCredentials: true
       });
 
       if (response.status === 200) {
         alert('User info updated successfully');
       } else {
-        console.error("Update failed", response.data.message);
+        console.error("Update failed", response);
         alert('Update failed');
       }
     } catch (error) {
@@ -136,6 +136,7 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         <TabsContent value="view">
           <h3>{email ? email : 'Loading...'} </h3>
           {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
+          {userData && <StatusButton isLoggedIn={isLoggedIn} userData={userData} />}
         </TabsContent>
         <TabsContent value="edit">
         <Card>
@@ -244,7 +245,6 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
           </CardContent>
         </Card>
         </TabsContent>
-        {userData && <StatusButton isLoggedIn={isLoggedIn} userData={userData} />}
       </Tabs>
     </main>
   );

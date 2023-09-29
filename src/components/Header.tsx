@@ -110,20 +110,20 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
                     <UserMenu
                         isLoggedIn={isLoggedIn}
                         userData={userData}
+                        handleLogout={handleLogout}
                     />
                 </MenubarMenu>
                 <MenubarMenu>
                     <HamburgerMenu
                         isLoggedIn={isLoggedIn}
                         userData={userData}
-                        handleLogout={handleLogout}
                     />
                 </MenubarMenu>
             </Menubar>
             {notificationText && (
-                <div className="yourClassNameHere">
+                <div className="text-center">
                     <Link href={notificationLink}>
-                        <a>{notificationText}</a>
+                        {notificationText}
                     </Link>
                 </div>
             )}

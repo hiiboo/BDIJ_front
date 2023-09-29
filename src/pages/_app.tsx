@@ -30,6 +30,8 @@ export default function App({ Component, pageProps }: AppProps) {
 
     const [isLoading, setIsLoading] = useState(true);
 
+    const [authChecked, setAuthChecked] = useState(false);
+
 // <-- ---------- 定数の定義 ---------- -->
 
     const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
@@ -38,6 +40,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     const checkAuth = async () => {
         const storedToken = localStorage.getItem('user_token');
+        console.log(storedToken);
         if (storedToken) {
             try {
                 const securedAxios = createSecuredAxiosInstance();
@@ -48,26 +51,31 @@ export default function App({ Component, pageProps }: AppProps) {
 
                     // ログインしている場合、ユーザーの詳細情報をフェッチする
                     if (response.data.isLoggedIn) {
-                        const userDetails = await securedAxios.get(`/api/user`);
-                        console.log(userDetails.data);
-                        setUserData(userDetails.data); // ユーザーの詳細情報をステートにセット
+                        const userDetails = await securedAxios.get(`/api/user/current`);
+                        console.log(userDetails.data.data);
+                        setUserData(userDetails.data.data); // ユーザーの詳細情報をステートにセット
+                        setAuthChecked(true);
                     }
                 } else {
                     console.error("Unexpected API response format");
+                    setAuthChecked(true);
                 }
             } catch (error) {
                 setIsLoggedIn(false);
                 setUserData(null); // エラーが発生した場合、userDataをnullにセット
+                setAuthChecked(true);
             }
         } else {
             setIsLoggedIn(false);
+            setAuthChecked(true);
         }
     };
 
     const sendLocation = async (latitude: number, longitude: number) => {
         try {
             const securedAxios = createSecuredAxiosInstance();
-            securedAxios.post(`/location`, { latitude, longitude });
+            console.log('Sending location', latitude, longitude);
+            securedAxios.post(`/user/current/location`, { latitude, longitude });
             console.log('Location sent successfully');
         } catch (error) {
             console.error('Failed to send location', error);
@@ -79,6 +87,7 @@ export default function App({ Component, pageProps }: AppProps) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
+                    console.log('Location received', latitude, longitude);
                     sendLocation(latitude, longitude);
                 },
                 (error) => {
@@ -95,13 +104,6 @@ export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
 
     useEffect(() => {
-        const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
-
-        if (isTestMode) {
-            console.log("Test mode is enabled. Redirects are disabled.");
-            setIsLoading(false);
-            return;
-        }
         // checkAuth 関数が非同期処理を完了するまで、isLoading を true に設定
         const authenticate = async () => {
             await checkAuth();
@@ -112,11 +114,8 @@ export default function App({ Component, pageProps }: AppProps) {
     }, []);
 
     useEffect(() => {
-        const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
-
-        if (isTestMode) {
-            console.log("Test mode is enabled. Redirects are disabled.");
-            return;
+        if (!authChecked) {
+            return; // checkAuth関数が完了するまで何もしない
         }
         const path = router.asPath;
 
@@ -132,7 +131,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     router.push('/guide/mypage');
                 }
             } else if (userData.user_type === UserType.Guide) {
-                if (path.startsWith('/guest') && !['/guest', '/guest/guideprofile', '/guest/auth', '/guest/login', '/guest/signup'].includes(path)) {
+                if (path.startsWith('/guest/offer') || ['/guest/mypage', '/guest/review', '/guest/timer'].includes(path)) {
                     alert('アクセス権限がありません');
                     router.back();
                     return;
@@ -142,11 +141,27 @@ export default function App({ Component, pageProps }: AppProps) {
                 }
             }
         } else {
-            // ログインしていない場合
-            if (path.startsWith('/guest') && !['/test', '/guest', '/guest/guideprofile', '/guest/auth', '/guest/login', '/guest/signup'].includes(path)) {
-                alert('ログインが必要です');
-                router.push('/guest/auth');
-                return;
+            if (
+                (path.startsWith('/guest/offer') && !path.startsWith('/guest/offer/confirmation')) ||
+                ['/guest/mypage', '/guest/review', '/guest/timer'].includes(path)
+            ) {
+                const queryParams = new URLSearchParams(window.location.search);
+                const startTime = queryParams.get('start_time');
+                const endTime = queryParams.get('end_time');
+                const totalGuests = queryParams.get('total_guests');
+                const guideId = queryParams.get('guide_id');
+
+                if (
+                    !startTime ||
+                    !endTime ||
+                    !totalGuests ||
+                    !guideId ||
+                    path !== '/guest/offer/confirmation'
+                ) {
+                    alert('ログインが必要です');
+                    router.back();
+                    return;
+                }
             }
             if (path.startsWith('/guide') && !['/test', '/guide', '/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
                 alert('ログインが必要です');
@@ -158,15 +173,9 @@ export default function App({ Component, pageProps }: AppProps) {
             }
         }
 
-    }, [isLoggedIn, userData, router]);
+    }, [authChecked, isLoggedIn, userData, router]);
 
     useEffect(() => {
-        const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
-
-        if (isTestMode) {
-            console.log("Test mode is enabled. Redirects are disabled.");
-            return;
-        }
         // 現在のパスを取得
         const currentPath = router.asPath;
 

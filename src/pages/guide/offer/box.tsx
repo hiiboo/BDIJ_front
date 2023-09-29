@@ -23,12 +23,12 @@ function GuideOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null 
 
 // <-- ---------- useEffect ---------- -->
   useEffect(() => {
-    
+
       const fetchBookings = async () => {
           try {
               const securedAxios = createSecuredAxiosInstance();
-              const response = await securedAxios.get(`/api/guide/bookings`);
-              setOffers(response.data);
+              const response = await securedAxios.get(`/api/user/current/bookings/guide`);
+              setOffers(response.data.data);
           } catch (error) {
               console.error('Failed to fetch guide offers data', error);
           }

@@ -24,25 +24,28 @@ function Timer({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
     if (userData.booking_status === BookingStatus.Accepted) {
       const securedAxios = createSecuredAxiosInstance();
-      securedAxios.get('/api/timer')
-        .then(response => {
-          const { start_time, end_time } = response.data;
-          // actual_start_timeも必要そう
-          const presetTime = (end_time.getTime() - start_time.getTime()) / (1000 * 60);
-          setTime(formatDateToCustom(String(presetTime)));
-          return;
-        })
-        .catch(error => console.error(error));
+      securedAxios.get('/api/bookings/{booking}/actual-start-time')
+      .then(response => {
+        const { start_time, end_time } = response.data.data;
+        const startTimeDate = new Date(start_time);
+        const endTimeDate = new Date(end_time);
+        const presetTime = (endTimeDate.getTime() - startTimeDate.getTime()) / (1000 * 60);
+        setTime(formatDateToCustom(String(presetTime)));
+        return;
+      })
+      .catch(error => console.error(error));
     }
     if (userData.booking_status === BookingStatus.Started) {
       const securedAxios = createSecuredAxiosInstance();
-      securedAxios.get('/api/timer')
-        .then(response => {
-          const { accurate_start_time, current_time, end_time } = response.data;
+      securedAxios.get('/api/bookings/{booking}/actual-start-time')
+      .then(response => {
+        const { accurate_start_time, current_time, end_time } = response.data.data;
+        const accurateStartTimeDate = new Date(accurate_start_time);
+        const currentTimeDate = new Date(current_time);
+        const endTimeDate = new Date(end_time);
 
-          // accurate_start_timeを基準にpresetTimeとtargetTimeを計算
-          const presetTime = (end_time.getTime() - accurate_start_time.getTime()) / (1000 * 60);
-          const targetTime = accurate_start_time.getTime() + presetTime * 60 * 1000;
+        const presetTime = (endTimeDate.getTime() - accurateStartTimeDate.getTime()) / (1000 * 60);
+        const targetTime = accurateStartTimeDate.getTime() + presetTime * 60 * 1000;
 
           const intervalId = setInterval(() => {
             const currentTime = new Date(current_time).getTime();
@@ -54,9 +57,9 @@ function Timer({ isLoggedIn, userData }: PageProps): JSX.Element | null {
               // 5秒後からbook_statusを取得するAPIを15秒ごとに呼び出し
               setTimeout(() => {
                 const checkStatusIntervalId = setInterval(() => {
-                  securedAxios.get('/api/checkLastBookingStatus')
+                  securedAxios.get('/api/user/current/last-booking-status')
                     .then(statusResponse => {
-                      if (statusResponse.data.book_status === 'Ended') {
+                      if (statusResponse.data.data.book_status === BookingStatus.Finished) {
                         clearInterval(checkStatusIntervalId);
                         if (userData.user_type === 'guide') {
                           router.push('/guide/review');

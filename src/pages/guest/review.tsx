@@ -61,8 +61,8 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
             try {
                 setIsLoading(true); // データフェッチ前にローディングステートをtrueに設定
                 const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/api/booking/`);
-                setBookingData(response.data);
+                const response = await securedAxios.get(`/api/user/current/last-booking`);
+                setBookingData(response.data.data);
 
                 // lastBookingStatusがfinished以外の時は/にリダイレクト
                 if (userData && userData.booking_status !== BookingStatus.Finished) {
@@ -102,13 +102,13 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 // フォームから取得したデータに、追加のデータをマージ
                 const postData = {
                     ...data,
-                    reviewer_id: bookingData.guest_id,
-                    reviewee_id: bookingData.guide_id,
+                    // reviewer_id: bookingData.guest_id,
+                    // reviewee_id: bookingData.guide_id,
                     booking_id: bookingData.id,
                 };
                 // マージしたデータをPOSTリクエストのボディとして送信
-                const response = await axiosInstance.post('/api/review', postData);
-                console.log(response.data);
+                const response = await axiosInstance.post('/api/bookings/{booking}/reviews/guest', postData);
+                console.log(response);
                 // 予約が成功したら、適切なページにリダイレクトするなどの処理を行う
                 router.push('/');
             } else {
