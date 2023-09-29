@@ -47,6 +47,8 @@ export interface GuestData {
     first_name?: string;
     last_name?: string;
     created_at?: Date;
+    review_average?: number;
+    review_count?: number;
 }
 
 export interface GuideData {
@@ -60,8 +62,8 @@ export interface GuideData {
     birthday?: Date;
     status?: UserStatus;
     hourly_rate?: number;
-    review_rate?: number; //名前が不安
-    review_sum?: number; //名前が不安
+    review_average?: number;
+    review_count?: number;
     latitude?: number;
     longitude?: number;
     created_at?: Date;

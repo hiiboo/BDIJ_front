@@ -106,8 +106,8 @@ function GuideProfile({ isLoggedIn, userData, guideData }: PageProps): JSX.Eleme
       </div>
       <h1>{guideData ? `${guideData.first_name} ${guideData.last_name} <small>${guideData.birthday ? calculateAge(guideData.birthday) : 'Loading...'}</small>` : 'Loading...'}</h1>
       <p>1h ¥{guideData?.hourly_rate?.toLocaleString() ?? '0'}</p>
-      {guideData && <ReactStarsRating className={styles.stars} value={guideData.review_rate} />}
-      <p><small>{guideData ? `${guideData.review_rate}（${guideData.review_sum} comments）` : 'Loading...'}</small></p>
+      {guideData && <ReactStarsRating className={styles.stars} value={guideData.review_average} />}
+      <p><small>{guideData ? `${guideData.review_average}（${guideData.review_count} comments）` : 'Loading...'}</small></p>
       <p>
         <span className='bold'>{guideData && guideData.latitude && guideData.longitude
           ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, guideData.latitude, guideData.longitude).toFixed(1)

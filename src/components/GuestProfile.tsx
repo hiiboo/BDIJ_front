@@ -47,8 +47,8 @@ function GuestProfile({ isLoggedIn, userData, guestData }: PageProps): JSX.Eleme
         </span>
       </div>
       <h1>{guestData ? guestData.first_name : 'Loading...'} {guestData ? guestData.last_name : 'Loading...'}</h1>
-      {guestData && <ReactStarsRating className={styles.stars} value={guestData.review_rate} />}
-      <p><small>{guestData ? `${guestData.review_rate}（${guestData.review_sum} comments）` : 'Loading...'}</small></p>
+      {guestData && <ReactStarsRating className={styles.stars} value={guestData.review_average} />}
+      <p><small>{guestData ? `${guestData.review_average}（${guestData.review_count} comments）` : 'Loading...'}</small></p>
     </>
   );
 }
