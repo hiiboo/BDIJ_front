@@ -14,75 +14,90 @@ import {
   PageProps,
 } from '../types/types';
 
-function Timer({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | null {
   const [time, setTime] = useState<string | null>(null);
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const router = useRouter();
+  const booking_id = bookingData?.id
 
   useEffect(() => {
     if (!userData) return;
+    if(!bookingData) return;
 
     if (userData.booking_status === BookingStatus.Accepted) {
       const securedAxios = createSecuredAxiosInstance();
-      securedAxios.get('/api/bookings/{booking}/actual-start-time')
+      securedAxios.get(`/api/bookings/${booking_id}/actual-start-time`)
       .then(response => {
         const { start_time, end_time } = response.data.data;
         const startTimeDate = new Date(start_time);
         const endTimeDate = new Date(end_time);
         const presetTime = (endTimeDate.getTime() - startTimeDate.getTime()) / (1000 * 60);
-        setTime(formatDateToCustom(String(presetTime)));
+        const minutes = Math.floor(presetTime);
+        const seconds = Math.floor((presetTime % 1) * 60);
+        setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+        console.log('presetTime', presetTime);
         return;
       })
       .catch(error => console.error(error));
     }
     if (userData.booking_status === BookingStatus.Started) {
+      console.log('booking_id', booking_id);
       const securedAxios = createSecuredAxiosInstance();
-      securedAxios.get('/api/bookings/{booking}/actual-start-time')
-      .then(response => {
-        const { accurate_start_time, current_time, end_time } = response.data.data;
-        const accurateStartTimeDate = new Date(accurate_start_time);
-        const currentTimeDate = new Date(current_time);
-        const endTimeDate = new Date(end_time);
+      securedAxios.get(`/api/bookings/${booking_id}/actual-start-time`)
+        .then(response => {
+            const { actual_start_time, now, start_time, end_time } = response.data.data;
 
-        const presetTime = (endTimeDate.getTime() - accurateStartTimeDate.getTime()) / (1000 * 60);
-        const targetTime = accurateStartTimeDate.getTime() + presetTime * 60 * 1000;
+            // actual_start_time, start_time, end_timeをDateオブジェクトに変換
+            const actualStartTimeDate = new Date(actual_start_time);
+            const startTimeDate = new Date(start_time);
+            const endTimeDate = new Date(end_time);
 
-          const intervalId = setInterval(() => {
-            const currentTime = new Date(current_time).getTime();
-            const remainingTime = targetTime - currentTime;
-            if (remainingTime <= 0) {
-              clearInterval(intervalId);
-              setTime('00:00');
+            // end_timeとstart_timeの差の時間を計算し、それをactual_start_timeに加算してactualEndTimeを取得
+            const presetTime = endTimeDate.getTime() - startTimeDate.getTime();
+            const actualEndTime = actualStartTimeDate.getTime() + presetTime;
 
-              // 5秒後からbook_statusを取得するAPIを15秒ごとに呼び出し
-              setTimeout(() => {
-                const checkStatusIntervalId = setInterval(() => {
-                  securedAxios.get('/api/user/current/last-booking-status')
-                    .then(statusResponse => {
-                      if (statusResponse.data.data.book_status === BookingStatus.Finished) {
-                        clearInterval(checkStatusIntervalId);
-                        if (userData.user_type === 'guide') {
-                          router.push('/guide/review');
-                        } else if (userData.user_type === 'guest') {
-                          router.push('/guest/review');
-                        }
-                      }
-                    })
-                    .catch(error => console.error(error));
-                }, 15000);
-              }, 5000);
-            } else {
-              const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-              const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-              setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-            }
-          }, 1000);
+            const currentTimeDate = new Date(now);
 
-          return () => clearInterval(intervalId);
-        })
-        .catch(error => console.error(error));
+            // タイマーのセットアップ
+            const intervalId = setInterval(() => {
+                const elapsed = new Date().getTime() - currentTimeDate.getTime();
+
+                const currentTime = currentTimeDate.getTime() + elapsed;
+                const remainingTime = actualEndTime - currentTime;
+
+                if (remainingTime <= 0) {
+                    clearInterval(intervalId);
+                    setTime('00:00');
+
+                    // 5秒後からbooking_statusを取得するAPIを15秒ごとに呼び出し
+                    setTimeout(() => {
+                        const checkStatusIntervalId = setInterval(() => {
+                            securedAxios.get('/api/user/current/last-booking-status')
+                                .then(statusResponse => {
+                                    if (statusResponse.data.data.book_status === BookingStatus.Finished) {
+                                        clearInterval(checkStatusIntervalId);
+                                        if (userData.user_type === 'guide') {
+                                            router.push('/guide/review');
+                                        } else if (userData.user_type === 'guest') {
+                                            router.push('/guest/review');
+                                        }
+                                    }
+                                })
+                                .catch(error => console.error(error));
+                        }, 15000);
+                    }, 5000);
+                } else {
+                    const totalMinutes = Math.floor(remainingTime / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                    setTime(`${String(totalMinutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+                }
+            }, 1000);
+
+                return () => clearInterval(intervalId);
+      })
+      .catch(error => console.error(error));
     }
-  }, [userData]);
+  }, [userData, booking_id]);
 
   return (
     <div>

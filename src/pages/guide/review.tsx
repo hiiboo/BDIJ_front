@@ -90,19 +90,20 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     const onSubmit = async (data: z.infer<typeof reviewSchema>) => {
         try {
             if (bookingData) {
+                const bookingId = bookingData.id;
                 const axiosInstance = createSecuredAxiosInstance();
 
                 // フォームから取得したデータに、追加のデータをマージ
                 const postData = {
                     ...data,
+                    booking_id: bookingId,
                 };
-                const booking_id = bookingData.id
 
                 // マージしたデータをPOSTリクエストのボディとして送信
-                const response = await axiosInstance.post('/api/bookings/{booking}/reviews/guide', postData);
+                const response = await axiosInstance.post(`/api/bookings/${bookingId}/reviews/guide`, postData);
                 console.log(response);
                 // 予約が成功したら、適切なページにリダイレクトするなどの処理を行う
-                router.push('/mypage');
+                router.push('/');
             } else {
                 console.error("Booking data is not available.");
             }
@@ -157,7 +158,7 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                             <PopoverContent className="w-[200px] p-0">
                             <Command>
                                 <CommandGroup>
-                                {Array.from({ length: 4 }, (_, i) => i + 1).map((number) => (
+                                {Array.from({ length: 5 }, (_, i) => i + 1).map((number) => (
                                     <CommandItem
                                     value={number.toString()}
                                     key={number}

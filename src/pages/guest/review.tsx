@@ -49,8 +49,8 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 // <-- ---------- 定数の定義 ---------- -->
 
     const reviewSchema = z.object({
-        reviewRate: z.number().min(1),
-        comment: z.string().optional(),
+        rating: z.number().min(1),
+        content: z.string().optional(),
     });
     const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
@@ -89,8 +89,8 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     const form = useForm({
         resolver: zodResolver(reviewSchema),
          defaultValues: {
-            reviewRate: 5,
-            comment: '',
+            rating: 5,
+            content: '',
         },
     });
 
@@ -98,16 +98,18 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         try {
             if (bookingData) {
                 const axiosInstance = createSecuredAxiosInstance();
+                const bookingId = bookingData.id;
 
                 // フォームから取得したデータに、追加のデータをマージ
                 const postData = {
                     ...data,
                     // reviewer_id: bookingData.guest_id,
                     // reviewee_id: bookingData.guide_id,
-                    booking_id: bookingData.id,
+                    booking_id: bookingId,
                 };
+                console.log(postData);
                 // マージしたデータをPOSTリクエストのボディとして送信
-                const response = await axiosInstance.post('/api/bookings/{booking}/reviews/guest', postData);
+                const response = await axiosInstance.post(`/api/bookings/${bookingId}/reviews/guest`, postData);
                 console.log(response);
                 // 予約が成功したら、適切なページにリダイレクトするなどの処理を行う
                 router.push('/');
@@ -142,7 +144,7 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
-                    name="reviewRate"
+                    name="rating"
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                         <FormLabel>Value（Max:5）</FormLabel>
@@ -165,12 +167,12 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                             <PopoverContent className="w-[200px] p-0">
                             <Command>
                                 <CommandGroup>
-                                {Array.from({ length: 4 }, (_, i) => i + 1).map((number) => (
+                                {Array.from({ length: 5 }, (_, i) => i + 1).map((number) => (
                                     <CommandItem
                                     value={number.toString()}
                                     key={number}
                                     onSelect={() => {
-                                        form.setValue("reviewRate", number)
+                                        form.setValue("rating", number)
                                     }}
                                     >
                                     <Check
@@ -194,7 +196,7 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
                 <FormField
                     control={form.control}
-                    name="comment"
+                    name="content"
                     render={({ field }) => (
                     <FormItem>
                         <FormLabel>Review Comment</FormLabel>

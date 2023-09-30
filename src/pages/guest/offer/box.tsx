@@ -28,6 +28,7 @@ function GuestOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null 
           try {
               const securedAxios = createSecuredAxiosInstance();
               const response = await securedAxios.get(`/api/user/current/bookings/guest`);
+              console.log(response.data.data);
               setOffers(response.data.data);
           } catch (error) {
               console.error('Failed to fetch guest offers data', error);

@@ -19,6 +19,7 @@ import {
 function TimerPage({ isLoggedIn, userData }: PageProps): JSX.Element {
   const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const [isLoading, setIsLoading] = useState(true);
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const getBookingStatus = (status?: BookingStatus) => {
     switch (status) {
         case BookingStatus.OfferPending:
@@ -46,6 +47,18 @@ function TimerPage({ isLoggedIn, userData }: PageProps): JSX.Element {
       } else if (userData.booking_status !== BookingStatus.Accepted && userData.booking_status !== BookingStatus.Started) {
         router.push('/');
       }
+
+      const fetchBookingData = async () => {
+        try {
+          const securedAxios = createSecuredAxiosInstance();
+          const response = await securedAxios.get('/api/user/current/last-booking');
+          setBookingData(response.data.data);
+        }
+        catch (error) {
+          console.log(error);
+        }
+      }
+      fetchBookingData();
       setIsLoading(false); // リダイレクト判定後にローディングステートをfalseに設定
     }
   }, [userData]);
@@ -63,8 +76,8 @@ function TimerPage({ isLoggedIn, userData }: PageProps): JSX.Element {
     <main className={styles[BookingStatusClass]}>
         <div className={styles.container}>
             <div className={styles.logo}></div>
-            <Timer isLoggedIn={isLoggedIn} userData={userData} />
-            <TimerStartButton isLoggedIn={isLoggedIn} userData={userData} />
+            <Timer isLoggedIn={isLoggedIn} userData={userData} bookingData={bookingData} />
+            <TimerStartButton isLoggedIn={isLoggedIn} userData={userData} bookingData={bookingData} />
             <p>We will deliver<br/>the best day<br/>in Japan for you.</p>
         </div>
     </main>

@@ -111,31 +111,6 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 // <-- ---------- useEffect ---------- -->
 
   useEffect(() => {
-    if (isLoggedIn && userData) {
-      const { booking_status, user_type } = userData;
-      let redirectPath = '';
-
-      switch (booking_status) {
-        case BookingStatus.OfferPending:
-        case BookingStatus.Accepted:
-          redirectPath = `/${user_type}/offer/box`;
-          break;
-        case BookingStatus.Started:
-          redirectPath = `/${user_type}/timer`;
-          break;
-        case BookingStatus.Finished:
-          redirectPath = `/${user_type}/review`;
-          break;
-        case BookingStatus.Reviewed:
-        case BookingStatus.Cancelled:
-        case null:
-          break;
-      }
-
-      if (redirectPath) {
-        router.push(redirectPath);
-      }
-    }
     const fetchGuides = async () => {
       try {
         setIsLoading(true);

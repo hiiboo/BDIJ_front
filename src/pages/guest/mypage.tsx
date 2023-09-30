@@ -103,7 +103,7 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
       // Update user info
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.patch(`/user/update`, {
+      const response = await securedAxios.patch(`api/user/update`, {
         email,
         currentPassword,
         newPassword,
@@ -114,6 +114,7 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
       if (response.status === 200) {
         alert('User info updated successfully');
+        console.log("Update successful", response);
       } else {
         console.error("Update failed", response);
         alert('Update failed');
