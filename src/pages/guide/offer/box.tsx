@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import OfferBox from '../../../components/OfferBox';
 import { utils } from '../../../utils/utils';
+import { useRouter } from 'next/router';
 import {
   BookingStatus,
   LanguageLevel,
@@ -19,7 +20,8 @@ function GuideOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null 
   const [offers, setOffers] = useState<BookingData[]>([]);
 
 // <-- ---------- 定数の定義 ---------- -->
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
 // <-- ---------- useEffect ---------- -->
   useEffect(() => {

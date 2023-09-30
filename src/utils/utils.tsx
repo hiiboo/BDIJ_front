@@ -1,9 +1,7 @@
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import axios from 'axios';
 
 export const utils = () => {
-    const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const createSecuredAxiosInstance = () => axios.create({
@@ -26,7 +24,6 @@ export const utils = () => {
     };
 
     return {
-        router,
         apiUrl,
         createSecuredAxiosInstance,
         formatDateToCustom

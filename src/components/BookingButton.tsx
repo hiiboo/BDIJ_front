@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { utils } from '../utils/utils';
@@ -17,7 +18,8 @@ import {
 
 const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData }) => {
 
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   console.log('bookingData', bookingData);
 
   const handleCancelNoFee = () => {

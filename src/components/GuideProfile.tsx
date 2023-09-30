@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
@@ -23,7 +25,8 @@ function GuideProfile({ isLoggedIn, userData, guideData }: PageProps): JSX.Eleme
 
 // <-- ---------- 定数の定義 ---------- -->
 
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   // 原宿駅の緯度経度
   const HARAJUKU_STATION = {
     latitude: 35.6715,

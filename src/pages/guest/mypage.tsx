@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import {
   Tabs,
   TabsContent,
@@ -38,7 +39,8 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
 // <-- ---------- 定数の定義 ---------- -->
 
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
   // State
   const [email, setEmail] = useState<string>('');

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import axios from 'axios';
 import styles from '../styles/header.module.scss';
 import UserMenu from './UserMenu';
@@ -25,7 +26,8 @@ import {
 
 function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
     const { checkAuth } = useAuth();
-    const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+    const router = useRouter();
+    const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
     let logoText = ""; // ロゴテキストの初期値を空文字列に設定
     let logoLink = "/"; // ロゴリンクの初期値を/に設定

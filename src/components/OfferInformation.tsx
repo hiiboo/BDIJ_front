@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import styles from '../styles/offerInformation.module.scss';
 import { utils } from '../utils/utils';
 import { extractDateAndTime } from '../utils/utils';
@@ -37,7 +38,8 @@ interface PagePropsWithBookingPreData {
 
   const OfferInformation: React.FC<PagePropsWithBookingPreData> = ({ isLoggedIn, bookingData, bookingPreData }) => {
 // <-- ---------- 定数の定義 ---------- -->
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
   let start_time: Date = new Date();
   let end_time: Date = new Date();

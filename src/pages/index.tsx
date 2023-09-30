@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 import styles from '../styles/guest.module.scss';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import {
   Select,
   SelectContent,
@@ -54,8 +55,8 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
 
 // <-- ---------- 定数の定義 ---------- -->
-
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   // 原宿駅の緯度経度
   const HARAJUKU_STATION = {
     latitude: 35.6715,
@@ -265,8 +266,8 @@ useEffect(() => {
         <div className={styles.cardContainer}>
         {sortedGuides.map(guide => {
           return (
-            <Link href={`/guest/guideprofile/${guide.id}`}>
-              <Card key={guide.id} className={styles.card}>
+            <Link key={guide.id} href={`/guest/guideprofile/${guide.id}`}>
+              <Card className={styles.card}>
                 <CardHeader className={styles.cardHeader}>
                   <span className={styles.iconBox}>
                     <Image

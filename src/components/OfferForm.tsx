@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -53,7 +54,8 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
         total_guests: z.number().min(1),
         comment: z.string().optional(),
     });
-    const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+    const router = useRouter();
+    const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
 // <-- ---------- 関数の定義 ---------- -->
 

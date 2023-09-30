@@ -3,6 +3,7 @@ import Timer from '../../components/Timer';
 import TimerStartButton from '../../components/TimerStartButton';
 import styles from '../../styles/timer.module.scss';
 import { utils } from '../../utils/utils';
+import { useRouter } from 'next/router';
 
 import {
   BookingStatus,
@@ -17,7 +18,8 @@ import {
 } from '../../types/types';
 
 function TimerPage({ isLoggedIn, userData }: PageProps): JSX.Element {
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const [isLoading, setIsLoading] = useState(true);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const getBookingStatus = (status?: BookingStatus) => {

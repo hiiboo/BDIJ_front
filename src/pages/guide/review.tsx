@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { utils } from '../../utils/utils';
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useRouter } from 'next/router';
 import {
     Command,
     CommandGroup,
@@ -52,7 +53,8 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         rating: z.number().min(1),
         content: z.string().optional(),
     });
-    const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+    const router = useRouter();
+    const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
 // <-- ---------- useEffect ---------- -->
 

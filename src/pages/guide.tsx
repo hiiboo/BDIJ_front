@@ -5,6 +5,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useRouter } from 'next/router';
 import {
   Card,
   CardContent,
@@ -37,8 +38,8 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
   const [guideData, setGuideData] = useState<GuideData | null>(null);
 
 // <-- ---------- 定数の定義 ---------- -->
-
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
   // State
   const [email, setEmail] = useState<string>('');

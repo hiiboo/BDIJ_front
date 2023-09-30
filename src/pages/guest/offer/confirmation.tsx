@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '../../../styles/offerInformation.module.scss';
 import OfferInformation from '../../../components/OfferInformation';
 import { utils } from '../../../utils/utils';
+import { useRouter } from 'next/router';
 import {
   BookingStatus,
   LanguageLevel,
@@ -29,7 +30,8 @@ function OfferConfirmation({ isLoggedIn }: PageProps): JSX.Element | null {
   const [guideData, setGuideData] = useState<GuideData | null>(null);
 
 // <-- ---------- 定数の定義 ---------- -->
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const { start_time, end_time, total_guests, comment, guide_id } = router.query;
 
 // <-- ---------- 関数の定義 ---------- -->

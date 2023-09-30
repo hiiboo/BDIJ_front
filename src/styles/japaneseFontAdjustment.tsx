@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const japaneseFontAdjustment = () => {
+const JapaneseFontAdjustment = () => {
   useEffect(() => {
     if (navigator.userAgent.indexOf("iPhone") > 0 || navigator.userAgent.indexOf("iPad") > 0) {
       const bodyElement = document.body;
@@ -13,4 +13,4 @@ const japaneseFontAdjustment = () => {
   return null;  // このコンポーネントは何もレンダリングしません
 }
 
-export default japaneseFontAdjustment
+export default JapaneseFontAdjustment

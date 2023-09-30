@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
@@ -25,7 +26,8 @@ function GuideProfileById({ isLoggedIn, userData }: PageProps): JSX.Element | nu
 
 // <-- ---------- 定数の定義 ---------- -->
 
-  const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
 // <-- ---------- useEffect ---------- -->
 

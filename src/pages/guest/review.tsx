@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useRouter } from 'next/router';
 import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 import { useForm } from 'react-hook-form';
@@ -52,7 +53,8 @@ function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         rating: z.number().min(1),
         content: z.string().optional(),
     });
-    const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+    const router = useRouter();
+    const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
 // <-- ---------- useEffect ---------- -->
 
