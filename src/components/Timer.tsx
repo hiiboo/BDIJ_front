@@ -19,6 +19,16 @@ function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | 
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const router = useRouter();
   const booking_id = bookingData?.id
+  const finishGuide = async () => {
+    try {
+      const securedAxios = createSecuredAxiosInstance();
+      const booking_id = bookingData?.id
+      console.log('booking_id', booking_id);
+      securedAxios.patch(`/api/bookings/${booking_id}/finish`)
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     if (!userData) return;
@@ -68,18 +78,22 @@ function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | 
                 if (remainingTime <= 0) {
                     clearInterval(intervalId);
                     setTime('00:00');
-
+                    finishGuide();
                     // 5秒後からbooking_statusを取得するAPIを15秒ごとに呼び出し
                     setTimeout(() => {
                         const checkStatusIntervalId = setInterval(() => {
+                            finishGuide();
                             securedAxios.get('/api/user/current/last-booking-status')
                                 .then(statusResponse => {
-                                    if (statusResponse.data.data.book_status === BookingStatus.Finished) {
+                                  console.log('statusResponse', statusResponse);
+                                  console.log('status', statusResponse.data.data);
+                                    if (statusResponse.data.data === BookingStatus.Finished) {
                                         clearInterval(checkStatusIntervalId);
                                         if (userData.user_type === 'guide') {
-                                            router.push('/guide/review');
+                                            console.log('userData.user_type', userData.user_type);
+                                            router.reload();
                                         } else if (userData.user_type === 'guest') {
-                                            router.push('/guest/review');
+                                            router.reload();
                                         }
                                     }
                                 })
@@ -101,7 +115,7 @@ function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | 
 
   return (
     <div>
-      <h2>{time}</h2>
+      <h2 className='py-4 m-0'>{time}</h2>
     </div>
   );
 }

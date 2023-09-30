@@ -54,6 +54,24 @@ function TimerStartButton({ userData, isLoggedIn, bookingData }: PageProps): JSX
     return <p>While guiding</p>;
   }
 
+    if (userData.booking_status === BookingStatus.Finished) {
+    if (userData.user_type === 'guide') {
+      return (
+        <div>
+            <p>Finish the guide. Please review it.</p>
+            <Button onClick={() => router.push('/guide/review')}>Review</Button>
+        </div>
+      );
+    } else if (userData.user_type === 'guest') {
+      return (
+        <div>
+            <p>Finish the guide. Please review it.</p>
+            <Button onClick={() => router.push('/guest/review')}>Review</Button>
+        </div>
+      );
+    }
+  }
+
   return null;
 }
 
