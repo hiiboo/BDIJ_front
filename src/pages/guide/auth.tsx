@@ -266,6 +266,7 @@ function GuideAuth(): JSX.Element {
 
     return (
         <main className={styles.main}>
+            <h2 className='my-2 py-2'>ガイド登録・ログイン</h2>
             <Tabs defaultValue={defaultTab} className="w-100">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signup">Signup</TabsTrigger>

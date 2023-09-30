@@ -115,7 +115,7 @@ function GuideProfile({ isLoggedIn, userData, guideData }: PageProps): JSX.Eleme
         </span>
       </p>
       <p><small>from Harajuku</small></p>
-      {guideData?.language_level ? <Badge>{getLanguageLevelLabel(guideData?.language_level)}</Badge> : <Badge></Badge>}
+      {guideData?.level ? <Badge>{getLanguageLevelLabel(guideData?.level)}</Badge> : <Badge></Badge>}
       <p>{guideData ? guideData.introduction : 'Loading...'}</p>
     </>
   );

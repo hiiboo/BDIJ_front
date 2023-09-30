@@ -18,6 +18,7 @@ import {
 const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData }) => {
 
   const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
+  console.log('bookingData', bookingData);
 
   const handleCancelNoFee = () => {
     alert('under development');
@@ -27,24 +28,28 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
     alert('under development');
   };
 
-  const handleAcceptOffer = () => {
-    const securedAxios = createSecuredAxiosInstance();
-    const booking_id = bookingData?.id
-    securedAxios.patch(`/api/bookings/${booking_id}/accept`, {})
-    .then(() => {
+  const handleAcceptOffer = async () => {
+    try {
+      const securedAxios = createSecuredAxiosInstance();
+      const booking_id = bookingData?.id
+      console.log('booking_id', booking_id);
+      securedAxios.patch(`/api/bookings/${booking_id}/accept`)
       router.reload();
-    })
-    .catch(error => console.error(error));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleCancelOffer = () => {
-    const securedAxios = createSecuredAxiosInstance();
-    const booking_id = bookingData?.id
-    securedAxios.patch(`/api/bookings/${booking_id}/cancel`, {})
-    .then(() => {
+  const handleCancelOffer = async () => {
+    try {
+      const securedAxios = createSecuredAxiosInstance();
+      const booking_id = bookingData?.id
+      console.log('booking_id', booking_id);
+      securedAxios.patch(`/api/bookings/${booking_id}/cancel`)
       router.reload();
-    })
-    .catch(error => console.error(error));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const renderButton = () => {
@@ -53,17 +58,17 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
       return null;
     }
     const { user_type } = userData;
-    // bookingDataがnullか、booking_statusがnullの場合の処理
-    if (!bookingData || bookingData.booking_status == null) {
-      return (
-        <div>
-          <Link href="/guest/offer/box">
-            <Button>オファーボックスに戻る</Button>
-          </Link>
-        </div>
-      );
-    }
-    const { booking_status } = bookingData;
+    // // bookingDataがnullか、booking_statusがnullの場合の処理
+    // if (!bookingData || bookingData.booking_status == null) {
+    //   return (
+    //     <div>
+    //       <Link href="/guest/offer/box">
+    //         <Button>オファーボックスに戻る</Button>
+    //       </Link>
+    //     </div>
+    //   );
+    // }
+    const { booking_status } = userData;
 
     if (user_type === UserType.Guest) {
       switch (booking_status) {

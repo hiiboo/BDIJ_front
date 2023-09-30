@@ -2,20 +2,19 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
-import styles from '../../../styles/profile.module.scss';
+import styles from '../../../../styles/profile.module.scss';
 
-import { utils } from '../../../utils/utils';
-import GuideProfile from '../../../components/GuideProfile';
-import OfferInformation from '../../../components/OfferInformation';
-import BookingButton from '../../../components/BookingButton';
+import { utils } from '../../../../utils/utils';
+import GuestProfile from '../../../../components/GuestProfile';
+import OfferInformation from '../../../../components/OfferInformation';
+import BookingButton from '../../../../components/BookingButton';
 import {
     Tabs,
     TabsContent,
     TabsList,
     TabsTrigger,
-} from "@/components/ui/tabs"
-
-import {
+  } from "@/components/ui/tabs"
+  import {
     BookingStatus,
     LanguageLevel,
     UserType,
@@ -25,11 +24,11 @@ import {
     GuideData,
     BookingData,
     PageProps
-} from '../../../types/types';
+} from '../../../../types/types';
 
 const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
 
-    const [guideData, setGuideData] = useState<GuideData | null>(null);
+    const [guestData, setGuestData] = useState<GuestData | null>(null);
     const [bookingId, setBookingId] = useState<number | null>(null);
     const [bookingData, setBookingData] = useState<BookingData | null>(null);
 
@@ -49,22 +48,24 @@ const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
     useEffect(() => {
 
         if (!bookingId) {
+            // booking_idが存在しない場合、エラーハンドリングを行うか、別のページにリダイレクトします。
             console.error("booking_id is missing");
-            return;
         }
 
         const fetchBookingData = async () => {
             try {
                 const securedAxios = createSecuredAxiosInstance();
                 const response = await securedAxios.get(`/api/bookings/${bookingId}/related-user`);
+                console.log(response.data.data);
                 const bookingData = response.data.data;
-                const guideData = response.data.data.guide;
-                setGuideData(guideData);
+                const guestData = response.data.data.guest;
+                setBookingData(bookingData);
+                setGuestData(guestData);
 
                 // // bookingDataにhourly_rateを追加
                 // const updatedBookingData = {
                 //     ...bookingData,
-                //     hourly_rate: guideData.hourly_rate,
+                //     hourly_rate: guestData.hourly_rate,
                 // };
                 // setBookingData(updatedBookingData);
 
@@ -76,24 +77,24 @@ const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
         fetchBookingData();
     }, [bookingId]);
 
-
   // <-- ---------- 表示 ---------- -->
 
   return (
     <>
         <main className={styles.main}>
-        <Tabs defaultValue="" className="w-100">
+        <Tabs defaultValue="booking" className="w-100">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="booking">Booking</TabsTrigger>
-                <TabsTrigger value="guide">Guide</TabsTrigger>
+                <TabsTrigger value="guest">Guest</TabsTrigger>
             </TabsList>
             <TabsContent value="booking">
+                <h3 className="my-2 py-2 bold"><small>Status</small><br/>{bookingData?.status}</h3>
                 <OfferInformation isLoggedIn={isLoggedIn} bookingData={bookingData} />
             </TabsContent>
-            <TabsContent value="guide">
-                {guideData && <GuideProfile isLoggedIn={isLoggedIn} userData={userData} guideData={guideData} />}
+            <TabsContent value="guest">
+                {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
             </TabsContent>
-            {userData && <BookingButton userData={userData} isLoggedIn={isLoggedIn} bookingData={bookingData} />}
+            {userData && <BookingButton isLoggedIn={isLoggedIn} userData={userData} bookingData={bookingData} />}
         </Tabs>
         </main>
     </>

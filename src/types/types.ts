@@ -57,7 +57,7 @@ export interface GuideData {
     first_name?: string;
     last_name?: string;
     gender?: Gender;
-    language_level?: LanguageLevel;
+    level?: LanguageLevel;
     introduction?: string;
     birthday?: Date;
     status?: UserStatus;
@@ -84,7 +84,7 @@ export interface BookingData {
     total_guests?: number;
     comment?: string;
     created_at?: Date;
-    booking_status?: BookingStatus;
+    status?: BookingStatus;
     total_amount?: number;
 }
 

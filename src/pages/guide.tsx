@@ -11,16 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Icons } from "../../components/Icons";
+import { Icons } from "../components/Icons";
 import { Input } from "@/components/ui/input";
-import { uploadImage } from '../../utils/uploadImage';
+import { uploadImage } from '../utils/uploadImage';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch"
-import { utils } from '../../utils/utils';
-import GuideProfile from '../../components/GuideProfile';
-import StatusButton from '../../components/StatusButton';
-import styles from '../../styles/profile.module.scss';
+import { utils } from '../utils/utils';
+import GuideProfile from '../components/GuideProfile';
+import StatusButton from '../components/StatusButton';
+import styles from '../styles/profile.module.scss';
 import {
   BookingStatus,
   LanguageLevel,
@@ -30,7 +30,7 @@ import {
   GuestData,
   GuideData,
   PageProps
-} from '../../types/types';
+} from '../types/types';
 
 function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
@@ -67,6 +67,7 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         const securedAxios = createSecuredAxiosInstance();
         const response = await securedAxios.get(`/api/guide/${guideId}/private`);
         setGuideData(response.data.data);
+        console.log(response.data.data);
         setEmail(response.data.data.email);
         setFirstName(response.data.data.firstName);
         setLastName(response.data.data.lastName);
@@ -117,7 +118,7 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
       const newStatus = userStatus ? UserStatus.Inactive : UserStatus.Active;
       const securedAxios = createSecuredAxiosInstance();
       console.log(newStatus);
-      const response = await securedAxios.patch(`api/user/change-status`, { status: newStatus });
+      const response = await securedAxios.patch(`/user/change-status`, { status: newStatus });
 
       if (response.status === 200) {
         alert('Status updated successfully');
@@ -146,7 +147,7 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
       }
 
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.patch(`api/user/update`, {
+      const response = await securedAxios.put(`/user/update`, {
         email,
         currentPassword,
         newPassword,
@@ -162,7 +163,6 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
       if (response.status === 200) {
         alert('User info updated successfully');
-        console.log("Update successful", response);
       } else {
         console.error("Update failed", response);
         alert('Update failed');

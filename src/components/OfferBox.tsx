@@ -57,7 +57,7 @@ function OfferBox({ isLoggedIn, userData, offers }: PageProps): JSX.Element | nu
                 {offers?.map(offer => (
                     <div key={offer.id}>
                         <Separator className="my-2" />
-                        <Link href={`/${user_type}/offer/${offer.id}`} className="flex items-center justify-between space-x-4">
+                        <Link href={`/${user_type}/offer/info/${offer.id}`} className="flex items-center justify-between space-x-4">
                             <div className="flex items-center space-x-4">
                                 <Avatar>
                                 <AvatarImage src={user_type === 'guest' ? offer.guide_image : offer.guest_image} />
@@ -72,7 +72,7 @@ function OfferBox({ isLoggedIn, userData, offers }: PageProps): JSX.Element | nu
                                     {(user_type === 'guest' ? offer.guide_last_name : offer.guest_last_name) || 'N/A'}
                                 </p>
                                 <p className="text-sm text-muted-foreground m-2">
-                                    {offer.booking_status !== undefined ? getBookingStatus(offer.booking_status) : "Status Unknown"}
+                                    {offer.status !== undefined ? getBookingStatus(offer.status) : "Status Unknown"}
                                 </p>
                                 </div>
                             </div>

@@ -11,7 +11,6 @@ import {
     MenubarMenu,
     MenubarTrigger,
 } from "@/components/shadcnui/menubar"
-import { Spacer } from "@nextui-org/react";
 import { utils } from "../utils/utils"
 import {
     BookingStatus,
@@ -29,37 +28,51 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
     const { router, apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
     let logoText = ""; // ロゴテキストの初期値を空文字列に設定
+    let logoLink = "/"; // ロゴリンクの初期値を/に設定
+    let changeText = "";
+    let changeLink = "";
 
     if (router.pathname.startsWith("/guide")) {
         // 現在のパスが /guide/* の場合
         logoText = "For Guide";
+        logoLink = "/guide"; // ロゴリンクを/guideに設定
+        changeText = "Guest Mode"
+        changeLink = "/guest"
     } else if (router.pathname.startsWith("/guest") || router.pathname === "/") {
         // 現在のパスが /guest/* または / の場合
         logoText = "For Guest";
+        logoLink = "/guest"; // ロゴリンクを/guestに設定
+        changeText = "Guide Mode"
+        changeLink = "/guide"
     }
 
-    // ログアウト関数内の一部を変更
     const handleLogout = async () => {
         try {
             const response = await axios.post(`${apiUrl}/auth/user/logout`, {}, {
                 withCredentials: true
             });
-            if (response.status === 200 && response.data.message === "Logout successful") {
+
+            if (response.status === 200) {
+                // 通常のログアウト処理
                 localStorage.removeItem('user_token');
                 alert('Logout successful');
                 await checkAuth();
                 console.log("Logout successful", response);
-
-                // ログアウト後に再度ログイン状態をチェック
-                checkAuth();
+                router.push("/");
             } else {
                 alert('Logout failed');
                 console.error("Logout failed", response);
             }
         } catch (error) {
             console.error("Logout error", error);
+
+            // 強制的なクライアントサイドログアウト
+            localStorage.removeItem('user_token');
+            alert('An error occurred. You have been logged out.');
+            router.push("/");
         }
     };
+
 
     let notificationText = "";
     let notificationLink = "";
@@ -87,7 +100,7 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
             <Menubar className={styles.header}>
                 <MenubarMenu>
                     <MenubarTrigger style={{ padding:0 }}>
-                        <Link href="/">
+                    <Link href={logoLink}> {/* ロゴリンクを動的に設定 */}
                             <div className={styles.logoContainer}>
                                 <div className={styles.logoBox}>
                                     <Image
@@ -95,7 +108,7 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
                                         alt="Logo"
                                         objectFit="contain"
                                         className={styles.logo}
-                                        onClick={() => router.push('/')}
+                                        onClick={() => router.push(logoLink)}
                                         height={175}
                                         width={754}
                                     />
@@ -105,7 +118,14 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
                         </Link>
                     </MenubarTrigger>
                 </MenubarMenu>
-                <Spacer x={16} />
+                <MenubarMenu>
+                    <MenubarTrigger style={{ paddingTop:10 }}>
+                    <Link href={changeLink}>
+                                <p style={{ margin:0 }}>{changeText}<br></br>に変える</p>
+                        </Link>
+                    </MenubarTrigger>
+                </MenubarMenu>
+                {/* <Spacer x={16} /> */}
                 <MenubarMenu>
                     <UserMenu
                         isLoggedIn={isLoggedIn}
@@ -121,7 +141,7 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
                 </MenubarMenu>
             </Menubar>
             {notificationText && (
-                <div className="text-center">
+                <div className="text-center bg-muted">
                     <Link href={notificationLink}>
                         {notificationText}
                     </Link>

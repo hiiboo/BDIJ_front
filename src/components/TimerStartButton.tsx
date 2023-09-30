@@ -15,19 +15,20 @@ import {
   PageProps,
 } from '../types/types';
 
-function TimerStartButton({ userData, isLoggedIn }: PageProps): JSX.Element | null {
+function TimerStartButton({ userData, isLoggedIn, bookingData }: PageProps): JSX.Element | null {
   const router = useRouter();
   const { createSecuredAxiosInstance } = utils();
 
-  const startGuide = () => {
-    // ガイドを開始するためのAPIを呼び出し、ステータスをstartedに変更
-    const securedAxios = createSecuredAxiosInstance();
-    securedAxios.post('/api/startGuide')
-      .then(() => {
-        // ステータスが変更されたら、ページをリロードまたは適切な表示の更新
-        router.reload();
-      })
-      .catch(error => console.error(error));
+  const startGuide = async () => {
+    try {
+      const securedAxios = createSecuredAxiosInstance();
+      const booking_id = bookingData?.id
+      console.log('booking_id', booking_id);
+      securedAxios.patch(`/api/bookings/${booking_id}/start`)
+      router.reload();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (!userData) return null;

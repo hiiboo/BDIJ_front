@@ -122,48 +122,31 @@ export default function App({ Component, pageProps }: AppProps) {
         // ログインしている場合
         if (isLoggedIn && userData) {
             if (userData.user_type === UserType.Guest) {
-                if (path.startsWith('/guide') && !['/guide', '/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
-                    alert('アクセス権限がありません');
-                    router.back();
+                if (path.startsWith('/guide') && !['/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
+                    alert('Your Account is Guest Type. You cannot access.');
+                    router.push('/');
                     return;
-                }
-                if (path === '/guide') {
-                    router.push('/guide/mypage');
                 }
             } else if (userData.user_type === UserType.Guide) {
                 if (path.startsWith('/guest/offer') || ['/guest/mypage', '/guest/review', '/guest/timer'].includes(path)) {
-                    alert('アクセス権限がありません');
-                    router.back();
-                    return;
-                }
-                if (path === '/guest') {
+                    alert('このアカウントはガイド用です、アクセス権限がありません');
                     router.push('/');
+                    return;
                 }
             }
         } else {
             if (
-                (path.startsWith('/guest/offer') && !path.startsWith('/guest/offer/confirmation')) ||
-                ['/guest/mypage', '/guest/review', '/guest/timer'].includes(path)
+                (path.startsWith('/guest/offer/info')) ||
+                ['/guest/mypage', '/guest/review', '/guest/timer', '/guest/offer/box',].includes(path)
             ) {
-                const queryParams = new URLSearchParams(window.location.search);
-                const startTime = queryParams.get('start_time');
-                const endTime = queryParams.get('end_time');
-                const totalGuests = queryParams.get('total_guests');
-                const guideId = queryParams.get('guide_id');
-
-                if (
-                    !startTime ||
-                    !endTime ||
-                    !totalGuests ||
-                    !guideId ||
-                    path !== '/guest/offer/confirmation'
-                ) {
-                    alert('ログインが必要です');
-                    router.back();
-                    return;
-                }
+                alert('ログインが必要です');
+                router.push('/guest/auth');
+                return;
             }
-            if (path.startsWith('/guide') && !['/test', '/guide', '/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
+            if (
+                (path.startsWith('/guide/offer/info')) ||
+                ['/guide/mypage', '/guide/review', '/guide/timer', '/guide/offer/box',].includes(path)
+            ) {
                 alert('ログインが必要です');
                 router.push('/guide/auth');
                 return;
@@ -176,46 +159,9 @@ export default function App({ Component, pageProps }: AppProps) {
     }, [authChecked, isLoggedIn, userData, router]);
 
     useEffect(() => {
-        // 現在のパスを取得
-        const currentPath = router.asPath;
-
-        // ログイン中であるかどうかを確認
-        if (isLoggedIn) {
-            // ログイン中で、/guest/auth、/guide/auth、/guest/login、/guest/signin、/guide/login、/guide/signin のいずれかにアクセスした場合
-            if (
-                currentPath.startsWith('/guest/auth') ||
-                currentPath.startsWith('/guide/auth') ||
-                currentPath.startsWith('/guest/login') ||
-                currentPath.startsWith('/guest/signup') ||
-                currentPath.startsWith('/guide/login') ||
-                currentPath.startsWith('/guide/signup')
-            ) {
-                alert('ログイン中です');
-                router.back();
-                return;
-            }
-        } else {
-            if (currentPath.startsWith('/guest/login') || currentPath.startsWith('/guest/signup')) {
-                router.push({
-                    pathname: '/guest/auth',
-                    query: { tab: currentPath.includes('login') ? 'login' : 'signup' }
-                });
-            }
-
-            if (currentPath.startsWith('/guide/login') || currentPath.startsWith('/guide/signup')) {
-                router.push({
-                    pathname: '/guide/auth',
-                    query: { tab: currentPath.includes('login') ? 'login' : 'signup' }
-                });
-            }
+        if (!authChecked) {
+            return; // checkAuth関数が完了するまで何もしない
         }
-    }, [isLoggedIn]);
-
-    useEffect(() => {
-        checkAuth();
-    }, []);
-
-    useEffect(() => {
         if (isLoggedIn && userData) {
             const { user_type, booking_status, status } = userData;
 
