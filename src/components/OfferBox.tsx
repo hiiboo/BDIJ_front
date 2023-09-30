@@ -50,11 +50,14 @@ function OfferBox({ isLoggedIn, userData, offers }: PageProps): JSX.Element | nu
         return d instanceof Date && !isNaN(d.getTime());
     }
 
+    // offersを逆順にする
+    const reversedOffers = [...(offers || [])].reverse();
+
     return (
         <div>
             <div className="p-4">
                 <h2 className="mb-2">OfferBox</h2>
-                {offers?.map(offer => (
+                {reversedOffers.map(offer => (
                     <div key={offer.id}>
                         <Separator className="my-2" />
                         <Link href={`/${user_type}/offer/info/${offer.id}`} className="flex items-center justify-between space-x-4">

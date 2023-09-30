@@ -100,7 +100,7 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
             <Menubar className={styles.header}>
                 <MenubarMenu>
                     <MenubarTrigger style={{ padding:0 }}>
-                    <Link href={logoLink}> {/* ロゴリンクを動的に設定 */}
+                    <Link href={logoLink}>
                             <div className={styles.logoContainer}>
                                 <div className={styles.logoBox}>
                                     <Image
@@ -121,11 +121,10 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
                 <MenubarMenu>
                     <MenubarTrigger style={{ paddingTop:10 }}>
                     <Link href={changeLink}>
-                                <p style={{ margin:0 }}>{changeText}<br></br>に変える</p>
-                        </Link>
+                                <p style={{ margin:0 }}><small>Change<br/>{changeText}</small></p>
+                    </Link>
                     </MenubarTrigger>
                 </MenubarMenu>
-                {/* <Spacer x={16} /> */}
                 <MenubarMenu>
                     <UserMenu
                         isLoggedIn={isLoggedIn}
