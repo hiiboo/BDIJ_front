@@ -167,7 +167,7 @@ function GuideAuth(): JSX.Element {
             });
             console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
-            const response = await axios.post(`${apiUrl}/auth/user/login/`, {
+            const response = await axios.post(`${apiUrl}/auth/user/login`, {
                 email,
                 password,
             }, {
@@ -178,7 +178,22 @@ function GuideAuth(): JSX.Element {
                 // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
 
-                router.push('/guide/mypage');
+                // クエリパラメータを取得
+                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
+
+                // クエリパラメータが存在するかチェック
+                if (start_time && end_time && total_guests && guide_id) {
+                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
+                    router.push({
+                        pathname: '/guest/offer/confirmation',
+                        query: {
+                            start_time, end_time, total_guests, comment, guide_id
+                        }
+                    });
+                } else {
+                    // クエリパラメータが存在しない場合、/ へリダイレクト
+                    router.push('/guide/mypage');
+                }
 
                 await checkAuth();
                 alert('Login successful');
