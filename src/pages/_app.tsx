@@ -5,7 +5,6 @@ import JapaneseFontAdjustment from '../styles/japaneseFontAdjustment';
 import '../styles/japaneseFontAdjustment.scss';
 import type { AppProps } from 'next/app';
 import { AuthProvider } from '../components/AuthContext';
-import { Providers } from '../../components/nextui/providers';
 import Header from '../components/Header';
 import { useRouter } from 'next/router';
 import { utils } from '../utils/utils';
@@ -186,13 +185,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
     return (
         <>
-            <Providers>
-            <AuthProvider checkAuth={checkAuth}>
-                <Header isLoggedIn={isLoggedIn} userData={userData ?? undefined} />
-                <JapaneseFontAdjustment />
-                <Component {...pageProps} isLoggedIn={isLoggedIn} userData={userData} />
-            </AuthProvider>
-            </Providers>
+            <Header isLoggedIn={isLoggedIn} userData={userData ?? undefined} />
+            <JapaneseFontAdjustment />
+            <Component {...pageProps} isLoggedIn={isLoggedIn} userData={userData} />
         </>
     );
 }
