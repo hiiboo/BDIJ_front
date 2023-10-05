@@ -14,7 +14,7 @@ import {
   PageProps,
 } from '../types/types';
 
-function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | null {
+function Timer({ userData, bookingData }: PageProps): JSX.Element | null {
   const [time, setTime] = useState<string | null>(null);
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const router = useRouter();

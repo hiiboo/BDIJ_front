@@ -15,7 +15,7 @@ import {
   PageProps,
 } from '../types/types';
 
-function TimerStartButton({ userData, isLoggedIn, bookingData }: PageProps): JSX.Element | null {
+function TimerStartButton({ userData, bookingData }: PageProps): JSX.Element | null {
   const router = useRouter();
   const { createSecuredAxiosInstance } = utils();
 
@@ -32,6 +32,7 @@ function TimerStartButton({ userData, isLoggedIn, bookingData }: PageProps): JSX
   };
 
   if (!userData) return null;
+  if (!bookingData) return null;
 
   if (userData.booking_status === BookingStatus.Accepted) {
     if (userData.user_type === 'guide') {

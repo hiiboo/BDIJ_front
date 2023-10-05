@@ -39,7 +39,7 @@ import {
     PageProps
 } from '../types/types';
 
-const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => {
+const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
 
 // <-- ---------- 定数の定義 ---------- -->
 
@@ -152,7 +152,7 @@ const OfferForm: React.FC<PageProps> = ({ isLoggedIn, userData, guideData }) => 
         };
 
         // 以降の処理にbookingPreDataを使用
-        if (isLoggedIn && userData) {
+        if (userData) {
             if (userData.user_type === 'guide') {
                 alert('ガイドは予約できません。');
             } else {

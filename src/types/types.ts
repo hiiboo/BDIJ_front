@@ -89,7 +89,6 @@ export interface BookingData {
 }
 
 export interface PageProps {
-    isLoggedIn: boolean;
     userData?: UserData | null;
     guideData?: GuideData | null;
     guestData?: GuestData | null;

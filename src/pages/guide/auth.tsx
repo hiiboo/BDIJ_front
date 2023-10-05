@@ -4,7 +4,6 @@ const inter = Inter({ subsets: ['latin'] })
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../components/AuthContext'
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Icons } from "../../components/Icons"
@@ -76,7 +75,6 @@ function GuideAuth(): JSX.Element {
 
     const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
     const router = useRouter();
-    const { checkAuth } = useAuth();
 
     // デフォルトのタブを決定
     let defaultTab = "signup";
@@ -143,17 +141,50 @@ function GuideAuth(): JSX.Element {
             console.log(response);
             // 登録が成功したら、トップページにリダイレクト
             if (response.status === 200 && response.data.message === "Registration successful") {
-                // localStorage.setItem('user_token', response.data.token);
-                alert('Signup successful');
-                await handleLogin();
+                localStorage.setItem('user_token', response.data.token);
+                console.log("Register successfully");
+                await handleRegisterLogin();
             } else {
                 // ログイン失敗
                 alert('Registration failed');
                 console.error("Registration failed", response.data.message);
-                router.push('/');
+                router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
             console.error("Registration error", error);
+        }
+    };
+
+    const handleRegisterLogin = async () => {
+        try {
+            console.log(email);
+            console.log(password);
+            // CSRF cookieを取得
+            await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
+                withCredentials: true
+            });
+            console.log("CSRF cookie set successfully");
+            // ログインリクエストを送信
+            const response = await axios.post(`${apiUrl}/auth/user/login`, {
+                email,
+                password,
+            }, {
+                withCredentials: true
+            });
+            console.log(response);
+            if (response.status === 200 && response.data.message === "Login successful") {
+                // ログイン成功
+                localStorage.setItem('user_token', response.data.token);
+                router.push('/guide/mypage').then(() => window.location.reload());
+                alert('Register & Login successful');
+            } else {
+                // ログイン失敗
+                alert('Login failed');
+                console.error("Login failed", response.data.message);
+                router.push('/').then(() => window.location.reload());
+            }
+        } catch (error) {
+            console.error("Login error", error);
         }
     };
 
@@ -177,31 +208,13 @@ function GuideAuth(): JSX.Element {
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
-
-                // クエリパラメータを取得
-                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
-
-                // クエリパラメータが存在するかチェック
-                if (start_time && end_time && total_guests && guide_id) {
-                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
-                    router.push({
-                        pathname: '/guest/offer/confirmation',
-                        query: {
-                            start_time, end_time, total_guests, comment, guide_id
-                        }
-                    });
-                } else {
-                    // クエリパラメータが存在しない場合、/ へリダイレクト
-                    router.push('/guide/mypage');
-                }
-
-                await checkAuth();
+                router.push('/guide/mypage').then(() => window.location.reload());
                 alert('Login successful');
             } else {
                 // ログイン失敗
                 alert('Login failed');
                 console.error("Login failed", response.data.message);
-                router.push('/');
+                router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
             console.error("Login error", error);
