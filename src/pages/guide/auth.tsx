@@ -22,32 +22,38 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import styles from '../../styles/admin.module.scss';
 import { uploadImage } from '../../utils/uploadImage';
 import { utils } from '../../utils/utils';
-
-enum Gender {
-    male,
-    female,
-    other
-}
-
-enum LanguageLevel {
-    beginner,
-    elementary,
-    intermediate,
-    upper_intermediate,
-    advanced,
-    proficiency,
-}
-
-enum user_type {
-    guest,
-    guide
-}
-
+import {
+    BookingStatus,
+    LanguageLevel,
+    Gender,
+    UserType,
+    UserStatus,
+    UserData,
+    GuestData,
+    GuideData,
+    PageProps
+} from '../../types/types';
 
 function GuideAuth(): JSX.Element {
 
@@ -115,11 +121,11 @@ function GuideAuth(): JSX.Element {
                 last_name: lastName,
                 profile_image: iconUrl,
                 birthday,
-                gender,
-                level: languageLevel,
+                gender: gender || Gender.Other,
+                level: languageLevel || LanguageLevel.Beginner,
                 introduction,
                 hourly_rate: hourlyRate,
-                user_type: user_type.guide,
+                user_type: UserType.Guide,
             }
             console.log(registerData);
             const response = await axios.post(`${apiUrl}/auth/guide/register`, {
@@ -130,11 +136,11 @@ function GuideAuth(): JSX.Element {
                 last_name: lastName,
                 profile_image: iconUrl,
                 birthday,
-                gender,
-                level: languageLevel,
+                gender: gender || Gender.Other,
+                level: languageLevel || LanguageLevel.Beginner,
                 introduction,
                 hourly_rate: hourlyRate,
-                user_type: user_type.guide,
+                user_type: UserType.Guide,
             }, {
                 withCredentials: true
             });
@@ -146,12 +152,13 @@ function GuideAuth(): JSX.Element {
                 await handleRegisterLogin();
             } else {
                 // ログイン失敗
-                alert('Registration failed');
+                alert(`Registration failed, ${response.data.message}`);
                 console.error("Registration failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
             console.error("Registration error", error);
+            alert(`Registration failed, ${error}`);
         }
     };
 
@@ -179,11 +186,12 @@ function GuideAuth(): JSX.Element {
                 alert('Register & Login successful');
             } else {
                 // ログイン失敗
-                alert('Login failed');
+                alert(`Login failed, ${response.data.message}`);
                 console.error("Login failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
+            alert(`Login failed, ${error}`);
             console.error("Login error", error);
         }
     };
@@ -212,11 +220,12 @@ function GuideAuth(): JSX.Element {
                 alert('Login successful');
             } else {
                 // ログイン失敗
-                alert('Login failed');
+                alert(`Login failed, ${response.data.message}`);
                 console.error("Login failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
+            alert(`Login failed, ${error}`);
             console.error("Login error", error);
         }
     };
@@ -291,6 +300,18 @@ function GuideAuth(): JSX.Element {
         fetchIcon();
     }, []);
 
+    const isPasswordShort = password.length < 8;
+    const isPasswordDiffernt = password !== passwordConfirmation;
+
+    const isShortOfInfoRegisterFirst = !email || !password || !passwordConfirmation;
+
+    // サブミットボタンの有効・無効を管理
+    const isSubmitDisabledRegisterFirst = isPasswordShort || isPasswordDiffernt || isShortOfInfoRegisterFirst;
+    const isSubmitDisabledRegisterSecond = !firstName || !lastName || !birthday || !gender || !languageLevel || !introduction || !hourlyRate;
+
+    const isShortOfInfoLogin = !email || !password;
+    const isSubmitDisabledLogin = isPasswordShort || isShortOfInfoRegisterFirst;
+
 
     return (
         <main className={styles.main}>
@@ -304,13 +325,13 @@ function GuideAuth(): JSX.Element {
                     {showFirstCard && (
                         <Card>
                             <CardHeader className="space-y-1">
-                                <CardTitle className="text-2xl">Create an account</CardTitle>
+                                <CardTitle className="text-2xll my-2">Create an account</CardTitle>
                                 <CardDescription>
                                 Enter your email below to create your account
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="grid gap-4">
-                                <div className="grid grid-cols-2 gap-6">
+                                {/* <div className="grid grid-cols-2 gap-6">
                                 <Button variant="outline">
                                     <Icons.twitter className="mr-2 h-4 w-4" />
                                     Twitter
@@ -329,9 +350,9 @@ function GuideAuth(): JSX.Element {
                                     Or continue with
                                     </span>
                                 </div>
-                                </div>
+                                </div> */}
                                 <form onSubmit={onSubmit}>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="email">Email</Label>
                                         <Input
                                             id="email"
@@ -345,7 +366,7 @@ function GuideAuth(): JSX.Element {
                                             onChange={e => setEmail(e.target.value)}
                                         />
                                     </div>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="password">Password</Label>
                                         <Input
                                             id="password"
@@ -358,8 +379,11 @@ function GuideAuth(): JSX.Element {
                                             value={password}
                                             onChange={e => setPassword(e.target.value)}
                                         />
+                                        <p className="text-xs text-muted-foreground my-0">
+                                            Password must be at least 8 characters long.
+                                        </p>
                                     </div>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="password">Confirm Password</Label>
                                         <Input
                                             id="password"
@@ -373,7 +397,10 @@ function GuideAuth(): JSX.Element {
                                             onChange={e => setPasswordConfirmation(e.target.value)}
                                         />
                                     </div>
-                                    <Button className="w-full" disabled={isLoading} onClick={handleFirstCardButtonClick}>
+                                    {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
+                                    {isPasswordDiffernt && <div className="text-red-500 text-xs">Something wrong with confirm password.</div>}
+                                    {isShortOfInfoRegisterFirst && <div className="text-red-500 text-xs">Enter your email and password.</div>}
+                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterFirst} onClick={handleFirstCardButtonClick}>
                                         {isLoading && (
                                             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                         )}
@@ -386,11 +413,11 @@ function GuideAuth(): JSX.Element {
                     {showSecondCard && (
                         <Card>
                             <CardHeader className="space-y-1">
-                                <CardTitle className="text-2xl">Create an account</CardTitle>
+                                <CardTitle className="text-2xl my-2">Create an account</CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-4">
                                 <form onSubmit={onSubmit}>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="firstname">First Name</Label>
                                         <Input
                                             id="firstname"
@@ -404,7 +431,7 @@ function GuideAuth(): JSX.Element {
                                             onChange={e => setFirstName(e.target.value)}
                                         />
                                     </div>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="lastname">Last Name</Label>
                                         <Input
                                             id="lastname"
@@ -418,8 +445,7 @@ function GuideAuth(): JSX.Element {
                                             onChange={e => setLastName(e.target.value)}
                                         />
                                     </div>
-
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="picture">Icon</Label>
                                         <Input
                                             id="icon"
@@ -429,8 +455,7 @@ function GuideAuth(): JSX.Element {
                                             onChange={onIconChange}
                                         />
                                     </div>
-
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="birthday">Birthday</Label>
                                         <Input
                                             id="birthday"
@@ -440,44 +465,55 @@ function GuideAuth(): JSX.Element {
                                             onChange={e => setBirthday(e.target.value)}
                                         />
                                     </div>
-
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="gender">Gender</Label>
-                                        <select placeholder='' id="gender" value={gender} onChange={e => setGender(e.target.value)}>
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                            <option value="other">Other</option>
+                                        <select
+                                            id="gender"
+                                            value={gender}
+                                            onChange={e => setGender(e.target.value)}
+                                            className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                                        >
+                                            <option className='text-muted' value="" disabled hidden>（Select Your Gender）</option>
+                                            <option value={Gender.Male}>Male</option>
+                                            <option value={Gender.Female}>Female</option>
+                                            <option value={Gender.Other}>Other</option>
                                         </select>
                                     </div>
-
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="languageLevel">Available Languages</Label>
-                                        <select placeholder='' id="languageLevel" value={languageLevel} onChange={e => setLanguageLevel(e.target.value)}>
-                                            <option value="beginner">Beginner</option>
-                                            <option value="elementary">Elementary</option>
-                                            <option value="intermediate">Intermediate</option>
-                                            <option value="upper_intermediate">UpperIntermediate</option>
-                                            <option value="advanced">Advanced</option>
-                                            <option value="proficiency">Proficiency</option>
+                                        <select
+                                            id="languageLevel"
+                                            value={languageLevel}
+                                            onChange={e => setLanguageLevel(e.target.value)}
+                                            className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                                        >
+                                            <option value="" disabled hidden>（Select Your English Level）</option>
+                                            <option value={LanguageLevel.Beginner}>Beginner</option>
+                                            <option value={LanguageLevel.Elementary}>Elementary</option>
+                                            <option value={LanguageLevel.Intermediate}>Intermediate</option>
+                                            <option value={LanguageLevel.UpperIntermediate}>UpperIntermediate</option>
+                                            <option value={LanguageLevel.Advanced}>Advanced</option>
+                                            <option value={LanguageLevel.Proficiency}>Proficiency</option>
                                         </select>
                                     </div>
-
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="introduction">Introduction</Label>
-                                        <Input
+                                        <textarea
+                                            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                             id="introduction"
-                                            type="text"
                                             placeholder='Please write a self-introduction. By sharing detailed information about yourself, your hobbies, and your profession, guests are more likely to reach out to you for requests!'
                                             disabled={isLoading}
                                             value={introduction}
                                             onChange={e => setIntroduction(e.target.value)}
-                                        />
+                                            rows={6}
+                                        >
+                                            {introduction}
+                                        </textarea>
                                     </div>
-
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="hourlyRate">Hourly Rate</Label>
-                                        <p><small>Please set your hourly rate for guiding based on your language proficiency level and prior experience.</small></p>
-                                        <p>1h ¥
+                                    <div className="grid gap-2 mt-2 mb-8">
+                                        <Label htmlFor="hourlyRate">Hourly Rate (h/person)</Label>
+                                        <div className="flex">
+                                            <span className="mr-2 mt-2">￥</span>
                                             <Input
                                                 id="hourlyRate"
                                                 type="number"
@@ -485,10 +521,12 @@ function GuideAuth(): JSX.Element {
                                                 value={hourlyRate}
                                                 onChange={e => setHourlyRate(e.target.value)}
                                             />
-                                            / Person
+                                        </div>
+                                        <p className="text-xs text-muted-foreground my-0">
+                                            more than 2,500yen.
                                         </p>
                                     </div>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="locationSwitch">Location</Label>
                                         <Switch
                                             id="locationSwitch"
@@ -496,10 +534,15 @@ function GuideAuth(): JSX.Element {
                                             onCheckedChange={handleLocationToggle}
                                         />
                                     </div>
-
-                                    <Button className="w-full" disabled={isLoading} onClick={handleRegister}>
+                                    {parseInt(hourlyRate) < 2500 && hourlyRate !== '' && (
+                                        <div className="text-red-500 text-xs">
+                                            Hourly Rate must be more than 2,500yen.
+                                        </div>
+                                    )}
+                                    {isSubmitDisabledRegisterSecond && <div className="text-red-500 text-xs">Enter your information.</div>}
+                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterSecond || (parseInt(hourlyRate) < 2500 && hourlyRate !== '')} onClick={handleRegister}>
                                         {isLoading && (
-                                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                         )}
                                         Complete sign-up!
                                     </Button>
@@ -511,13 +554,13 @@ function GuideAuth(): JSX.Element {
                 <TabsContent value="login">
                     <Card>
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl">Login an account</CardTitle>
+                            <CardTitle className="text-2xl my-2">Login an account</CardTitle>
                             <CardDescription>
                             Enter your email below to login your account
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-6">
+                            {/* <div className="grid grid-cols-2 gap-6">
                             <Button variant="outline">
                                 <Icons.twitter className="mr-2 h-4 w-4" />
                                 Twitter
@@ -536,38 +579,42 @@ function GuideAuth(): JSX.Element {
                                 Or continue with
                                 </span>
                             </div>
-                            </div>
+                            </div> */}
                             <form onSubmit={onSubmit}>
-                                <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    placeholder="name@example.com"
-                                    type="email"
-                                    autoCapitalize="none"
-                                    autoComplete="email"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                />
+                                <div className="grid gap-2 mb-8">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        placeholder="name@example.com"
+                                        type="email"
+                                        autoCapitalize="none"
+                                        autoComplete="email"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                    />
                                 </div>
-                                <div className="grid gap-2">
+                                <div className="grid gap-2 mb-8">
                                 <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    placeholder="Password"
-                                    type="password"
-                                    autoCapitalize="none"
-                                    autoComplete="password"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                />
+                                    <Input
+                                        id="password"
+                                        placeholder="Password"
+                                        type="password"
+                                        autoCapitalize="none"
+                                        autoComplete="password"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                    />
+                                    <p className="text-xs text-muted-foreground my-0">
+                                        Password must be at least 8 characters long.
+                                    </p>
                                 </div>
-
-                                <Button className="w-full" disabled={isLoading} onClick={handleLogin}>
+                                {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
+                                {isShortOfInfoLogin && <div className="text-red-500 text-xs">Enter your email and password.</div>}
+                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledLogin} onClick={handleFirstCardButtonClick}>
                                     {isLoading && (
                                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}

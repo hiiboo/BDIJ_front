@@ -97,6 +97,7 @@ function GuestAuth(): JSX.Element {
             }
         } catch (error) {
             console.error("Registration error", error);
+            alert(`Registration failed, ${error}`);
         }
     };
 
@@ -139,11 +140,12 @@ function GuestAuth(): JSX.Element {
                 }
             } else {
                 // ログイン失敗
-                alert('Login failed');
+                alert(`Login failed, ${response.data.message}`);
                 console.error("Login failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
+            alert(`Login failed, ${error}`);
             console.error("Login error", error);
         }
     };
@@ -187,11 +189,12 @@ function GuestAuth(): JSX.Element {
                 }
             } else {
                 // ログイン失敗
-                alert('Login failed');
+                alert(`Login failed, ${response.data.message}`);
                 console.error("Login failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
+            alert(`Login failed, ${error}`);
             console.error("Login error", error);
         }
     };
@@ -247,9 +250,22 @@ function GuestAuth(): JSX.Element {
         fetchIcon();
     }, []);
 
+    const isPasswordShort = password.length < 8;
+    const isPasswordDiffernt = password !== passwordConfirmation;
+
+    const isShortOfInfoRegisterFirst = !email || !password || !passwordConfirmation;
+
+    // サブミットボタンの有効・無効を管理
+    const isSubmitDisabledRegisterFirst = isPasswordShort || isPasswordDiffernt || isShortOfInfoRegisterFirst;
+    const isSubmitDisabledRegisterSecond = !firstName || !lastName;
+
+    const isShortOfInfoLogin = !email || !password;
+    const isSubmitDisabledLogin = isPasswordShort || isShortOfInfoRegisterFirst;
+
 
     return (
         <main className={styles.main}>
+            <h2 className='my-2 py-2'>Guest Register Or Login</h2>
             <Tabs defaultValue={defaultTab} className="w-100">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signup">Signup</TabsTrigger>
@@ -331,7 +347,10 @@ function GuestAuth(): JSX.Element {
                                             onChange={e => setPasswordConfirmation(e.target.value)}
                                         />
                                     </div>
-                                    <Button className="w-full my-4" disabled={isLoading} onClick={handleFirstCardButtonClick}>
+                                    {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
+                                    {isPasswordDiffernt && <div className="text-red-500 text-xs">Something wrong with confirm password.</div>}
+                                    {isShortOfInfoRegisterFirst && <div className="text-red-500 text-xs">Enter your email and password.</div>}
+                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterFirst} onClick={handleFirstCardButtonClick}>
                                         {isLoading && (
                                             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                         )}
@@ -344,12 +363,12 @@ function GuestAuth(): JSX.Element {
                     {showSecondCard && (
                         <Card>
                             <CardHeader className="space-y-1">
-                                <CardTitle className="text-2xl">Create an account</CardTitle>
+                                <CardTitle className="text-2xl my-2">Create an account</CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-4">
                                 <form onSubmit={onSubmit}>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="firstname">First Name</Label>
+                                    <div className="grid gap-2 mt-2 mb-8">
+                                        {/* <Label htmlFor="firstname">First Name</Label> */}
                                         <Input
                                             id="firstname"
                                             placeholder="First"
@@ -362,8 +381,8 @@ function GuestAuth(): JSX.Element {
                                             onChange={e => setFirstName(e.target.value)}
                                         />
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="lastname">Last Name</Label>
+                                    <div className="grid gap-2 mt-2 mb-8">
+                                        {/* <Label htmlFor="lastname mt-2 mb-8">Last Name</Label> */}
                                         <Input
                                             id="lastname"
                                             placeholder="Last"
@@ -376,8 +395,7 @@ function GuestAuth(): JSX.Element {
                                             onChange={e => setLastName(e.target.value)}
                                         />
                                     </div>
-
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="picture">Icon</Label>
                                         <Input
                                             id="icon"
@@ -387,8 +405,8 @@ function GuestAuth(): JSX.Element {
                                             onChange={onIconChange}
                                         />
                                     </div>
-
-                                    <Button className="w-full" disabled={isLoading} onClick={handleRegister}>
+                                    {isSubmitDisabledRegisterSecond && <div className="text-red-500 text-xs">Enter your information.</div>}
+                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterSecond} onClick={handleRegister}>
                                         {isLoading && (
                                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                         )}
@@ -402,21 +420,21 @@ function GuestAuth(): JSX.Element {
                 <TabsContent value="login">
                     <Card>
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl">Login an account</CardTitle>
+                            <CardTitle className="text-2xl my-2">Login an account</CardTitle>
                             <CardDescription>
-                            Enter your email below to login your account
+                                Enter your email below to login your account
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-6">
-                            <Button variant="outline">
-                                <Icons.twitter className="mr-2 h-4 w-4" />
-                                Twitter
-                            </Button>
-                            <Button variant="outline">
-                                <Icons.google className="mr-2 h-4 w-4" />
-                                Google
-                            </Button>
+                            {/* <div className="grid grid-cols-2 gap-6">
+                                <Button variant="outline">
+                                    <Icons.twitter className="mr-2 h-4 w-4" />
+                                    Twitter
+                                </Button>
+                                <Button variant="outline">
+                                    <Icons.google className="mr-2 h-4 w-4" />
+                                    Google
+                                </Button>
                             </div>
                             <div className="relative">
                             <div className="absolute inset-0 flex items-center">
@@ -427,38 +445,42 @@ function GuestAuth(): JSX.Element {
                                 Or continue with
                                 </span>
                             </div>
-                            </div>
+                            </div> */}
                             <form onSubmit={onSubmit}>
-                                <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    placeholder="name@example.com"
-                                    type="email"
-                                    autoCapitalize="none"
-                                    autoComplete="email"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                />
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        placeholder="name@example.com"
+                                        type="email"
+                                        autoCapitalize="none"
+                                        autoComplete="email"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                    />
                                 </div>
-                                <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    placeholder="Password"
-                                    type="password"
-                                    autoCapitalize="none"
-                                    autoComplete="password"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                />
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        placeholder="Password"
+                                        type="password"
+                                        autoCapitalize="none"
+                                        autoComplete="password"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                    />
+                                    <p className="text-xs text-muted-foreground my-0">
+                                        Password must be at least 8 characters long.
+                                    </p>
                                 </div>
-
-                                <Button className="w-full" disabled={isLoading} onClick={handleLogin}>
+                                {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
+                                {isShortOfInfoLogin && <div className="text-red-500 text-xs">Enter your email and password.</div>}
+                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledLogin} onClick={handleFirstCardButtonClick}>
                                     {isLoading && (
                                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}

@@ -30,7 +30,7 @@ export enum UserStatus {
 
 export enum Gender {
     Male = 'male',
-    Famale = 'famale',
+    Female = 'female',
     Other = 'other',
 }
 
