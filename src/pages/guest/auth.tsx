@@ -55,13 +55,13 @@ function GuestAuth(): JSX.Element {
 
 // <-- ---------- 関数の定義 ---------- -->
 
-    const fetchCsrfToken = async () => {
-        try {
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
-        } catch (error) {
-            console.error("Error fetching CSRF token", error);
-        }
-    };
+    // const fetchCsrfToken = async () => {
+    //     try {
+    //         await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
+    //     } catch (error) {
+    //         console.error("Error fetching CSRF token", error);
+    //     }
+    // };
 
     const handleRegister = async () => {
         try {
@@ -71,7 +71,7 @@ function GuestAuth(): JSX.Element {
             console.log(lastName);
             console.log(iconUrl);
             // CSRFトークンを取得
-            await fetchCsrfToken();
+            // await fetchCsrfToken();
             const response = await axios.post(`${apiUrl}/auth/guest/register`, {
                 email,
                 password,
@@ -106,10 +106,10 @@ function GuestAuth(): JSX.Element {
             console.log(email);
             console.log(password);
             // CSRF cookieを取得
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
-                withCredentials: true
-            });
-            console.log("CSRF cookie set successfully");
+            // await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
+            //     withCredentials: true
+            // });
+            // console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
             const response = await axios.post(`${apiUrl}/auth/user/login`, {
                 email,
@@ -155,10 +155,10 @@ function GuestAuth(): JSX.Element {
             console.log(email);
             console.log(password);
             // CSRF cookieを取得
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
-                withCredentials: true
-            });
-            console.log("CSRF cookie set successfully");
+            // await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
+            //     withCredentials: true
+            // });
+            // console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
             const response = await axios.post(`${apiUrl}/auth/user/login`, {
                 email,
@@ -260,7 +260,7 @@ function GuestAuth(): JSX.Element {
     const isSubmitDisabledRegisterSecond = !firstName || !lastName;
 
     const isShortOfInfoLogin = !email || !password;
-    const isSubmitDisabledLogin = isPasswordShort || isShortOfInfoRegisterFirst;
+    const isSubmitDisabledLogin = isPasswordShort || isShortOfInfoLogin;
 
 
     return (
@@ -480,7 +480,7 @@ function GuestAuth(): JSX.Element {
                                 </div>
                                 {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
                                 {isShortOfInfoLogin && <div className="text-red-500 text-xs">Enter your email and password.</div>}
-                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledLogin} onClick={handleFirstCardButtonClick}>
+                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledLogin} onClick={handleLogin}>
                                     {isLoading && (
                                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}

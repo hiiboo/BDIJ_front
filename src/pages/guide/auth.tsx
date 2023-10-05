@@ -90,13 +90,13 @@ function GuideAuth(): JSX.Element {
 
 // <-- ---------- 関数の定義 ---------- -->
 
-    const fetchCsrfToken = async () => {
-        try {
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
-        } catch (error) {
-            console.error("Error fetching CSRF token", error);
-        }
-    };
+    // const fetchCsrfToken = async () => {
+    //     try {
+    //         await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
+    //     } catch (error) {
+    //         console.error("Error fetching CSRF token", error);
+    //     }
+    // };
 
     const handleRegister = async () => {
         try {
@@ -112,7 +112,7 @@ function GuideAuth(): JSX.Element {
             console.log(hourlyRate);
 
             // CSRFトークンを取得
-            await fetchCsrfToken();
+            // await fetchCsrfToken();
             const registerData = {
                 email,
                 password,
@@ -167,10 +167,10 @@ function GuideAuth(): JSX.Element {
             console.log(email);
             console.log(password);
             // CSRF cookieを取得
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
-                withCredentials: true
-            });
-            console.log("CSRF cookie set successfully");
+            // await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
+            //     withCredentials: true
+            // });
+            // console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
             const response = await axios.post(`${apiUrl}/auth/user/login`, {
                 email,
@@ -201,10 +201,10 @@ function GuideAuth(): JSX.Element {
             console.log(email);
             console.log(password);
             // CSRF cookieを取得
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
-                withCredentials: true
-            });
-            console.log("CSRF cookie set successfully");
+            // await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
+            //     withCredentials: true
+            // });
+            // console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
             const response = await axios.post(`${apiUrl}/auth/user/login`, {
                 email,
@@ -310,7 +310,7 @@ function GuideAuth(): JSX.Element {
     const isSubmitDisabledRegisterSecond = !firstName || !lastName || !birthday || !gender || !languageLevel || !introduction || !hourlyRate;
 
     const isShortOfInfoLogin = !email || !password;
-    const isSubmitDisabledLogin = isPasswordShort || isShortOfInfoRegisterFirst;
+    const isSubmitDisabledLogin = isPasswordShort || isShortOfInfoLogin;
 
 
     return (
@@ -614,7 +614,7 @@ function GuideAuth(): JSX.Element {
                                 </div>
                                 {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
                                 {isShortOfInfoLogin && <div className="text-red-500 text-xs">Enter your email and password.</div>}
-                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledLogin} onClick={handleFirstCardButtonClick}>
+                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledLogin} onClick={handleLogin}>
                                     {isLoading && (
                                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}
