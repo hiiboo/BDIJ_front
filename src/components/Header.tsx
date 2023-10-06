@@ -64,6 +64,7 @@ function Header({ userData }: PageProps): JSX.Element {
             const response = await axios.post(`${apiUrl}/auth/user/logout`, {}, {
                 withCredentials: true
             });
+            console.log("Logout response", response);
             if (response.status === 200) {
                 // 通常のログアウト処理
                 localStorage.removeItem('user_token');

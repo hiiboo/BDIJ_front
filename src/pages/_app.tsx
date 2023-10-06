@@ -151,21 +151,15 @@ useEffect(() => {
             }
         }
     } else {
-        if (
-            (path.startsWith('/guest/offer/info')) ||
-            ['/guest/offer/box',].includes(path)
-        ) {
+        if (path.startsWith('/guest/offer/info')){
             alert('ログインが必要です');
             router.push('/guest/auth');
             return;
-        } else if (
-            (path.startsWith('/guide/offer/info')) ||
-            ['/guide/offer/box',].includes(path)
-        ) {
+        } else if (path.startsWith('/guide/offer/info')){
             alert('ログインが必要です');
             router.push('/guide/auth');
             return;
-        }else if (path === '/guide') {
+        } else if (path === '/guide') {
             router.push('/guide/mypage');
         }
     }

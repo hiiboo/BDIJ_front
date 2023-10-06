@@ -185,6 +185,8 @@ function GuideMypage({ userData }: PageProps): JSX.Element | null {
       );
   }, []);
 
+  const isGuiding = userData?.booking_status === BookingStatus.Started || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.OfferPending;
+
   return (
     <main className={styles.main}>
       <Tabs defaultValue="view" className="w-100">
@@ -370,7 +372,8 @@ function GuideMypage({ userData }: PageProps): JSX.Element | null {
               </div>
 
               {/* Submit Button */}
-              <Button className="w-full" type="submit" disabled={isLoading}>
+              {isGuiding && <div className="text-red-500 bold">If your offer is pending, accepted or started, you cannot update your profile.</div>}
+              <Button className="w-full" type="submit" disabled={isLoading || isGuiding}>
                 {isLoading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}

@@ -121,23 +121,8 @@ function GuestAuth(): JSX.Element {
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
-
-                // クエリパラメータを取得
-                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
                 alert('Register & Login successful');
-                // クエリパラメータが存在するかチェック
-                if (start_time && end_time && total_guests && guide_id) {
-                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
-                    alert('Register & Login successful');
-                    router.push({
-                        pathname: '/guest/offer/confirmation',
-                        query: {
-                            start_time, end_time, total_guests, comment, guide_id
-                        }
-                    });
-                } else {
-                    router.push('/').then(() => window.location.reload());
-                }
+                router.push('/').then(() => window.location.reload());
             } else {
                 // ログイン失敗
                 alert(`Login failed, ${response.data.message}`);
@@ -170,24 +155,9 @@ function GuestAuth(): JSX.Element {
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
-
-                // クエリパラメータを取得
-                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
                 alert('Login successful');
-                // クエリパラメータが存在するかチェック
-                if (start_time && end_time && total_guests && guide_id) {
-                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
-                    router.push({
-                        pathname: '/guest/offer/confirmation',
-                        query: {
-                            start_time, end_time, total_guests, comment, guide_id
-                        }
-                    });
-                } else {
-                    // クエリパラメータが存在しない場合、/ へリダイレクト
-                    router.push('/').then(() => window.location.reload());
-                }
-            } else {
+                router.push('/').then(() => window.location.reload());
+            }else {
                 // ログイン失敗
                 alert(`Login failed, ${response.data.message}`);
                 console.error("Login failed", response.data.message);
@@ -265,7 +235,6 @@ function GuestAuth(): JSX.Element {
 
     return (
         <main className={styles.main}>
-            <h2 className='my-2 py-2'>Guest Register Or Login</h2>
             <Tabs defaultValue={defaultTab} className="w-100">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signup">Signup</TabsTrigger>
@@ -371,7 +340,7 @@ function GuestAuth(): JSX.Element {
                                         {/* <Label htmlFor="firstname">First Name</Label> */}
                                         <Input
                                             id="firstname"
-                                            placeholder="First"
+                                            placeholder="First name"
                                             type="text"
                                             autoCapitalize="none"
                                             autoComplete="firstname"
@@ -385,7 +354,7 @@ function GuestAuth(): JSX.Element {
                                         {/* <Label htmlFor="lastname mt-2 mb-8">Last Name</Label> */}
                                         <Input
                                             id="lastname"
-                                            placeholder="Last"
+                                            placeholder="Last name"
                                             type="text"
                                             autoCapitalize="none"
                                             autoComplete="lastname"
