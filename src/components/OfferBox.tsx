@@ -21,7 +21,7 @@ import {
     PageProps
 } from '../types/types';
 
-function OfferBox({ isLoggedIn, userData, offers }: PageProps): JSX.Element | null {
+function OfferBox({ userData, offers }: PageProps): JSX.Element | null {
 
 // <-- ---------- 定数の定義 ---------- -->
     if (!userData) {

@@ -43,7 +43,7 @@ import {
     PageProps,
   } from '../../types/types';
 
-function Review({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function Review({ userData }: PageProps): JSX.Element | null {
     const [bookingData, setBookingData] = useState<BookingData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 

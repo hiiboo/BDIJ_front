@@ -44,7 +44,7 @@ enum SortOption {
   Nearest,
 }
 
-function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function Home({ userData }: PageProps): JSX.Element | null {
 
 // <-- ---------- useState ---------- -->
 
@@ -112,7 +112,7 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 // <-- ---------- useEffect ---------- -->
 
   useEffect(() => {
-    if (isLoggedIn && userData) {
+    if (userData) {
       const { booking_status, user_type } = userData;
       let redirectPath = '';
 
@@ -152,7 +152,7 @@ function Home({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     };
 
     fetchGuides();
-  }, [isLoggedIn, userData, router]);
+  }, [userData, router]);
 
 useEffect(() => {
   let newSortedGuides = [...guides];

@@ -24,7 +24,7 @@ interface BookingPreData {
   total_amount?: number;
 }
 
-function OfferConfirmation({ isLoggedIn }: PageProps): JSX.Element | null {
+function OfferConfirmation(): JSX.Element | null {
 // <-- ---------- useState ---------- -->
   const [bookingPreData, setBookingPreData] = useState<BookingPreData | null>(null);
   const [guideData, setGuideData] = useState<GuideData | null>(null);
@@ -112,7 +112,7 @@ useEffect(() => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Confirmation</h1>
-      <OfferInformation isLoggedIn={isLoggedIn} bookingPreData={bookingPreData} />
+      <OfferInformation bookingPreData={bookingPreData} />
       <button className={styles.confirmButton} onClick={handleConfirmation}>
         Offer
       </button>

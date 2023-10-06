@@ -28,7 +28,7 @@ import {
     PageProps
 } from '../../../../types/types';
 
-const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
+const OfferById: React.FC<PageProps> = ({ userData }) => {
 
     const [guideData, setGuideData] = useState<GuideData | null>(null);
     const [bookingId, setBookingId] = useState<number | null>(null);
@@ -92,12 +92,12 @@ const OfferById: React.FC<PageProps> = ({ isLoggedIn, userData }) => {
             </TabsList>
             <TabsContent value="booking">
                 <h3 className="my-2 py-2 bold"><small>Status</small><br/>{bookingData?.status}</h3>
-                <OfferInformation isLoggedIn={isLoggedIn} bookingData={bookingData} />
+                <OfferInformation bookingData={bookingData} />
             </TabsContent>
             <TabsContent value="guide">
-                {guideData && <GuideProfile isLoggedIn={isLoggedIn} userData={userData} guideData={guideData} />}
+                {guideData && <GuideProfile userData={userData} guideData={guideData} />}
             </TabsContent>
-            {userData && <BookingButton userData={userData} isLoggedIn={isLoggedIn} bookingData={bookingData} />}
+            {userData && <BookingButton userData={userData} bookingData={bookingData} />}
         </Tabs>
         </main>
     </>

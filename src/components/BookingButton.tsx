@@ -16,7 +16,7 @@ import {
   PageProps
 } from '../types/types';
 
-const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData }) => {
+const BookingButton: React.FC<PageProps> = ({ userData ,bookingData }) => {
 
   const router = useRouter();
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();

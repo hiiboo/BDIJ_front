@@ -33,7 +33,7 @@ import {
   PageProps
 } from '../../types/types';
 
-function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function GuideMypage({ userData }: PageProps): JSX.Element | null {
 
   const [guideData, setGuideData] = useState<GuideData | null>(null);
 
@@ -194,8 +194,8 @@ function GuideMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         </TabsList>
         <TabsContent value="view">
           {/* <h3>{email ? email : 'Loading...'} </h3> */}
-          <GuideProfile isLoggedIn={isLoggedIn} userData={userData} guideData={guideData} />
-          <StatusButton isLoggedIn={isLoggedIn} userData={userData} />
+          <GuideProfile userData={userData} guideData={guideData} />
+          <StatusButton userData={userData} />
           <div className="m-2">
             <Label htmlFor="statusSwitch">Active</Label>
             <Switch

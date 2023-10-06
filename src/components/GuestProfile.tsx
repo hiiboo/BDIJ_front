@@ -21,7 +21,7 @@ import {
   PageProps,
 } from '../types/types';
 
-function GuestProfile({ isLoggedIn, userData, guestData }: PageProps): JSX.Element | null {
+function GuestProfile({ userData, guestData }: PageProps): JSX.Element | null {
 
 // <-- ---------- 定数の定義 ---------- -->
 

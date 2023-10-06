@@ -15,7 +15,7 @@ import {
     PageProps
 } from '../types/types';
 
-const UserMenu: React.FC<PageProps> = ({ isLoggedIn, userData, handleLogout }) => {
+const UserMenu: React.FC<PageProps> = ({ userData, handleLogout }) => {
     const userTypePath = userData?.user_type === UserType.Guide ? 'guide' : 'guest';
 
     return (
@@ -24,12 +24,15 @@ const UserMenu: React.FC<PageProps> = ({ isLoggedIn, userData, handleLogout }) =
                 <PiUserCircle size="2rem" />
             </MenubarTrigger>
             <MenubarContent>
-                {isLoggedIn ? (
+                {userData ? (
                     <>
                         <MenubarItem onClick={handleLogout}>ログアウト</MenubarItem>
                         <MenubarSeparator />
                         <Link href={`/${userTypePath}/mypage`}>
                             <MenubarItem>プロフィール</MenubarItem>
+                        </Link>
+                        <Link href={`/${userTypePath}/offer/box`}>
+                            <MenubarItem>オファーボックス</MenubarItem>
                         </Link>
                     </>
                 ) : (

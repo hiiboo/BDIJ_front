@@ -26,7 +26,6 @@ interface BookingPreData {
 }
 
 interface PagePropsWithBookingPreData {
-  isLoggedIn: boolean;
   userData?: UserData | null;
   guideData?: GuideData | null;
   guestData?: GuestData | null;
@@ -36,7 +35,7 @@ interface PagePropsWithBookingPreData {
   handleLogout?: () => void;
 }
 
-  const OfferInformation: React.FC<PagePropsWithBookingPreData> = ({ isLoggedIn, bookingData, bookingPreData }) => {
+  const OfferInformation: React.FC<PagePropsWithBookingPreData> = ({ bookingData, bookingPreData }) => {
 // <-- ---------- 定数の定義 ---------- -->
   const router = useRouter();
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();

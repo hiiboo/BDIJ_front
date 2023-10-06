@@ -30,7 +30,7 @@ export enum UserStatus {
 
 export enum Gender {
     Male = 'male',
-    Famale = 'famale',
+    Female = 'female',
     Other = 'other',
 }
 
@@ -89,7 +89,6 @@ export interface BookingData {
 }
 
 export interface PageProps {
-    isLoggedIn: boolean;
     userData?: UserData | null;
     guideData?: GuideData | null;
     guestData?: GuestData | null;

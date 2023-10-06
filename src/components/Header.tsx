@@ -3,10 +3,8 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import styles from '../styles/header.module.scss';
 import UserMenu from './UserMenu';
-import HamburgerMenu from './HamburgerMenu';
 import Image from "next/image"
 import Link from 'next/link';
-import { useAuth } from './AuthContext'
 import {
     Menubar,
     MenubarMenu,
@@ -24,8 +22,7 @@ import {
     PageProps
 } from '../types/types';
 
-function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
-    const { checkAuth } = useAuth();
+function Header({ userData }: PageProps): JSX.Element {
     const router = useRouter();
     const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
@@ -36,16 +33,30 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
 
     if (router.pathname.startsWith("/guide")) {
         // 現在のパスが /guide/* の場合
-        logoText = "For Guide";
-        logoLink = "/guide"; // ロゴリンクを/guideに設定
-        changeText = "Guest Mode"
-        changeLink = "/guest"
+        if(!userData) {
+            logoText = "For Guide";
+            logoLink = "/guide/auth"; // ロゴリンクを/guideに設定
+            changeText = "Guest Mode"
+            changeLink = "/"
+        } else {
+            logoText = "For Guide";
+            logoLink = "/guide/auth"; // ロゴリンクを/guideに設定
+            changeText = "Guest Mode"
+            changeLink = "/"
+        }
     } else if (router.pathname.startsWith("/guest") || router.pathname === "/") {
         // 現在のパスが /guest/* または / の場合
-        logoText = "For Guest";
-        logoLink = "/guest"; // ロゴリンクを/guestに設定
-        changeText = "Guide Mode"
-        changeLink = "/guide"
+        if(!userData) {
+            logoText = "For Guest";
+            logoLink = "/"; // ロゴリンクを/guestに設定
+            changeText = "Guide Mode"
+            changeLink = "/guide/auth"
+        } else {
+            logoText = "For Guest";
+            logoLink = "/"; // ロゴリンクを/guestに設定
+            changeText = "Guide Mode"
+            changeLink = "/guide/mypage"
+        }
     }
 
     const handleLogout = async () => {
@@ -53,14 +64,12 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
             const response = await axios.post(`${apiUrl}/auth/user/logout`, {}, {
                 withCredentials: true
             });
-
             if (response.status === 200) {
                 // 通常のログアウト処理
                 localStorage.removeItem('user_token');
                 alert('Logout successful');
-                await checkAuth();
                 console.log("Logout successful", response);
-                router.push("/");
+                router.push('/').then(() => window.location.reload());
             } else {
                 alert('Logout failed');
                 console.error("Logout failed", response);
@@ -71,7 +80,7 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
             // 強制的なクライアントサイドログアウト
             localStorage.removeItem('user_token');
             alert('An error occurred. You have been logged out.');
-            router.push("/");
+            router.push('/').then(() => window.location.reload());
         }
     };
 
@@ -129,15 +138,8 @@ function Header({ isLoggedIn, userData }: PageProps): JSX.Element {
                 </MenubarMenu>
                 <MenubarMenu>
                     <UserMenu
-                        isLoggedIn={isLoggedIn}
                         userData={userData}
                         handleLogout={handleLogout}
-                    />
-                </MenubarMenu>
-                <MenubarMenu>
-                    <HamburgerMenu
-                        isLoggedIn={isLoggedIn}
-                        userData={userData}
                     />
                 </MenubarMenu>
             </Menubar>

@@ -33,7 +33,7 @@ import {
 } from '../../types/types';
 import axios from 'axios';
 
-function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function GuestMypage({ userData }: PageProps): JSX.Element | null {
 
     const [guestData, setGuestData] = useState<GuestData | null>(null);
 
@@ -138,8 +138,8 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
         </TabsList>
         <TabsContent value="view">
           <h3>{email ? email : 'Loading...'} </h3>
-          {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
-          {userData && <StatusButton isLoggedIn={isLoggedIn} userData={userData} />}
+          {guestData && <GuestProfile userData={userData} guestData={guestData} />}
+          {userData && <StatusButton userData={userData} />}
         </TabsContent>
         <TabsContent value="edit">
         <Card>

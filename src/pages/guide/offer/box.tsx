@@ -14,7 +14,7 @@ import {
   PageProps
 } from '../../../types/types';
 
-function GuideOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function GuideOfferBox({ userData }: PageProps): JSX.Element | null {
 
   // <-- ---------- useState ---------- -->
   const [offers, setOffers] = useState<BookingData[]>([]);
@@ -42,7 +42,7 @@ function GuideOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null 
 
   return (
     <main>
-      <OfferBox isLoggedIn={isLoggedIn} userData={userData} offers={offers} />
+      <OfferBox userData={userData} offers={offers} />
     </main>
   );
 };
