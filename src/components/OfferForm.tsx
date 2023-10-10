@@ -38,6 +38,7 @@ import {
     GuideData,
     PageProps
 } from '../types/types';
+import { start } from 'repl';
 
 const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
 
@@ -86,6 +87,19 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
     const startTime = watch("startTime");
     const endTime = watch("endTime");
 
+    function toJSTISOString(date: Date): string {
+        function pad(n: number): string {
+            return n < 10 ? '0' + n : n.toString();
+        }
+
+        return date.getFullYear() + '-'
+            + pad(date.getMonth() + 1) + '-'
+            + pad(date.getDate()) + 'T'
+            + pad(date.getHours()) + ':'
+            + pad(date.getMinutes()) + ':'
+            + pad(date.getSeconds()) + '.000+09:00';
+    }
+
     // 開始時刻が終了時刻より後である場合、または開始日と終了日が一致しない場合、
     // エラーメッセージを表示し、サブミットボタンを無効化
     const invalidTime = startTime >= endTime;
@@ -126,7 +140,7 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
         }
     };
 
-    const onSubmit = (data: z.infer<typeof reservationSchema>) => {
+    const onSubmit = async (data: z.infer<typeof reservationSchema>) => {
         if (!guideData) {
             console.error('guideData or userData is null or undefined');
             return;
@@ -144,31 +158,42 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
 
         // bookingPreDataの作成
         const bookingPreData = {
-            start_time: start_time.toISOString(),
-            end_time: end_time.toISOString(),
+            start_time: toJSTISOString(start_time),
+            end_time: toJSTISOString(end_time),
             total_guests: total_guests,
             comment: comment,
             guide_id: guideId,
+            total_amount: calculateTotalAmount(),
         };
 
-        // 以降の処理にbookingPreDataを使用
-        if (userData) {
-            if (userData.user_type === 'guide') {
-                alert('ガイドは予約できません。');
-            } else {
-                router.push({
-                    pathname: '/guest/offer/confirmation',
-                    query: bookingPreData,
-                });
-            }
-        } else {
-            router.push({
-                pathname: '/guest/auth',
-                query: bookingPreData,
-            });
+        // handleConfirmation関数の呼び出し
+        await handleConfirmation(bookingPreData);
+    };
+
+    const handleConfirmation = async (bookingData: any) => {
+        // guideId を直接参照
+        const guideId = Number(router.query.guide_id);
+        console.log(bookingData);
+        console.log(startDate);
+        console.log(endDate);
+        console.log(startTime);
+        console.log(endTime);
+        console.log(constructDateTime(startDate, startTime, endDate, endTime));
+
+        try {
+          const axiosInstance = createSecuredAxiosInstance();
+          console.log(bookingData);
+          const response = await axiosInstance.post(`/api/bookings/${guideId}/reserve`, bookingData);
+          console.log(response);
+          alert('Offer is successfully created. Please wait for the guide to accept.');
+          router.push('/guest/offer/box').then(() => window.location.reload());
+        } catch (error) {
+          console.error("Booking Error:", error);
         }
     };
     
+
+    const isBookingStatusCannotOffer = userData?.booking_status === BookingStatus.OfferPending || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.Started || userData?.booking_status === BookingStatus.Finished;
 
 // <-- ---------- 表示 ---------- -->
 
@@ -423,22 +448,15 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               <FormMessage />
             </FormItem>
           )}
-        />
-        {invalidTime && (
-          <div className="text-red-500">
-            End time should be set after the start time.
-          </div>
-        )}
-        {invalidDate && (
-          <div className="text-red-500">
-            The end date should be set to the same date as the start date.
-          </div>
-        )}
-        <Button type="submit" disabled={isSubmitDisabled}>
-          Next
-        </Button>
-      </form>
-    </Form>
+      />
+        {invalidTime && <div className="text-red-500">End time should be set after the start time.</div>}
+        {invalidDate && <div className="text-red-500">The end date should be set to the same date as the start date.</div>}
+        {!userData && <div className="text-red-500 bold">Please Login or Register.</div>}
+        {isBookingStatusCannotOffer && <div className="text-red-500 bold">Please Finish or Cancell Your Offer</div>}
+        {userData?.user_type === 'guide' && <div className="text-red-500 bold">Guide Accound cannot use booking service.</div>}
+        <Button type="submit" disabled={isSubmitDisabled || !userData || userData.user_type === 'guide' || isBookingStatusCannotOffer}>Confirm Your Offer</Button>
+    </form>
+  </Form>
   );
 };
 

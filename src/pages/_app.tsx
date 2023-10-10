@@ -134,43 +134,37 @@ export default function App({ Component, pageProps }: AppProps) {
 
     // }, [authChecked, isLoggedIn, userData, router]);
 
-useEffect(() => {
-    const path = router.asPath;
-    if (userData) {
-        if (userData.user_type === UserType.Guest) {
-            if (path.startsWith('/guide') && !['/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
-                alert('Your Account is Guest Type. You cannot access.');
-                router.push('/').then(() => window.location.reload());
-                return;
+    useEffect(() => {
+        const path = router.asPath;
+        if (userData) {
+            if (userData.user_type === UserType.Guest) {
+                if (path.startsWith('/guide') && !['/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
+                    alert('Your Account is Guest Type. You cannot access.');
+                    router.push('/').then(() => window.location.reload());
+                    return;
+                }
+            } else if (userData.user_type === UserType.Guide) {
+                if (path.startsWith('/guest/offer') || ['/guest/mypage', '/guest/review', '/guest/timer'].includes(path)) {
+                    alert('このアカウントはガイド用です、アクセス権限がありません');
+                    router.push('/').then(() => window.location.reload());
+                    return;
+                }
             }
-        } else if (userData.user_type === UserType.Guide) {
-            if (path.startsWith('/guest/offer') || ['/guest/mypage', '/guest/review', '/guest/timer'].includes(path)) {
-                alert('このアカウントはガイド用です、アクセス権限がありません');
-                router.push('/').then(() => window.location.reload());
+        } else {
+            if (path.startsWith('/guest/offer/info')){
+                alert('ログインが必要です');
+                router.push('/guest/auth');
                 return;
+            } else if (path.startsWith('/guide/offer/info')){
+                alert('ログインが必要です');
+                router.push('/guide/auth');
+                return;
+            } else if (path === '/guide') {
+                router.push('/guide/mypage');
             }
         }
-    } else {
-        if (
-            (path.startsWith('/guest/offer/info')) ||
-            ['/guest/offer/box',].includes(path)
-        ) {
-            alert('ログインが必要です');
-            router.push('/guest/auth');
-            return;
-        } else if (
-            (path.startsWith('/guide/offer/info')) ||
-            ['/guide/offer/box',].includes(path)
-        ) {
-            alert('ログインが必要です');
-            router.push('/guide/auth');
-            return;
-        }else if (path === '/guide') {
-            router.push('/guide/mypage');
-        }
-    }
 
-}, [userData, router, dataChecked]);
+    }, [userData, router, dataChecked]);
 
     // useEffect(() => {
     //     if (!authChecked) {

@@ -100,58 +100,43 @@ function GuideAuth(): JSX.Element {
 
     const handleRegister = async () => {
         try {
-            console.log(email);
-            console.log(password);
-            console.log(firstName);
-            console.log(lastName);
-            console.log(iconUrl);
-            console.log(birthday);
-            console.log(gender);
-            console.log(languageLevel);
-            console.log(introduction);
-            console.log(hourlyRate);
 
             // CSRFトークンを取得
             // await fetchCsrfToken();
-            const registerData = {
-                email,
-                password,
-                password_confirmation: passwordConfirmation,
-                first_name: firstName,
-                last_name: lastName,
-                profile_image: iconUrl,
-                birthday,
-                gender: gender || Gender.Other,
-                level: languageLevel || LanguageLevel.Beginner,
-                introduction,
-                hourly_rate: hourlyRate,
-                user_type: UserType.Guide,
+
+            // Constructing a FormData object
+            const formData = new FormData();
+
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('password_confirmation', passwordConfirmation);
+            formData.append('first_name', firstName);
+            formData.append('last_name', lastName);
+            if (iconFile) {
+                formData.append('profile_image', iconFile); // Add the image file itself
             }
-            console.log(registerData);
-            const response = await axios.post(`${apiUrl}/auth/guide/register`, {
-                email,
-                password,
-                password_confirmation: passwordConfirmation,
-                first_name: firstName,
-                last_name: lastName,
-                profile_image: iconUrl,
-                birthday,
-                gender: gender || Gender.Other,
-                level: languageLevel || LanguageLevel.Beginner,
-                introduction,
-                hourly_rate: hourlyRate,
-                user_type: UserType.Guide,
-            }, {
-                withCredentials: true
+            formData.append('birthday', birthday);
+            formData.append('gender', gender || Gender.Other);
+            formData.append('level', languageLevel || LanguageLevel.Beginner);
+            formData.append('introduction', introduction);
+            formData.append('hourly_rate', hourlyRate.toString()); // Assuming hourlyRate is a number
+            formData.append('user_type', UserType.Guide);
+
+            console.log(formData);
+
+            const response = await axios.post(`${apiUrl}/auth/guide/register`, formData, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Important header when sending FormData
+                },
             });
+
             console.log(response);
-            // 登録が成功したら、トップページにリダイレクト
             if (response.status === 200 && response.data.message === "Registration successful") {
                 localStorage.setItem('user_token', response.data.token);
                 console.log("Register successfully");
                 await handleRegisterLogin();
             } else {
-                // ログイン失敗
                 alert(`Registration failed, ${response.data.message}`);
                 console.error("Registration failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
@@ -161,6 +146,7 @@ function GuideAuth(): JSX.Element {
             alert(`Registration failed, ${error}`);
         }
     };
+
 
     const handleRegisterLogin = async () => {
         try {
@@ -273,32 +259,32 @@ function GuideAuth(): JSX.Element {
         );
     }, []);
 
-    useEffect(() => {
-        if (iconFile) {
-            (async () => {
-                const response = await uploadImage(iconFile);
-                if (response?.path) {
-                    setIconUrl(response.path);
-                }
-            })();
-        }
-    }, [iconFile]);
+    // useEffect(() => {
+    //     if (iconFile) {
+    //         (async () => {
+    //             const response = await uploadImage(iconFile);
+    //             if (response?.path) {
+    //                 setIconUrl(response.path);
+    //             }
+    //         })();
+    //     }
+    // }, [iconFile]);
 
-    useEffect(() => {
-        const fetchIcon = async () => {
-            try {
-                const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/api/guide/profile_image`, {
-                    withCredentials: true
-                });
-                setIconUrl(response.data.url);
-            } catch (error) {
-                console.error("Error fetching icon URL", error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchIcon = async () => {
+    //         try {
+    //             const securedAxios = createSecuredAxiosInstance();
+    //             const response = await securedAxios.get(`/api/guide/profile_image`, {
+    //                 withCredentials: true
+    //             });
+    //             setIconUrl(response.data.url);
+    //         } catch (error) {
+    //             console.error("Error fetching icon URL", error);
+    //         }
+    //     };
 
-        fetchIcon();
-    }, []);
+    //     fetchIcon();
+    // }, []);
 
     const isPasswordShort = password.length < 8;
     const isPasswordDiffernt = password !== passwordConfirmation;
@@ -315,7 +301,6 @@ function GuideAuth(): JSX.Element {
 
     return (
         <main className={styles.main}>
-            <h2 className='my-2 py-2'>ガイド登録・ログイン</h2>
             <Tabs defaultValue={defaultTab} className="w-100">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signup">Signup</TabsTrigger>
@@ -418,7 +403,6 @@ function GuideAuth(): JSX.Element {
                             <CardContent className="grid gap-4">
                                 <form onSubmit={onSubmit}>
                                     <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="firstname">First Name</Label>
                                         <Input
                                             id="firstname"
                                             placeholder="First Name"
@@ -432,7 +416,6 @@ function GuideAuth(): JSX.Element {
                                         />
                                     </div>
                                     <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="lastname">Last Name</Label>
                                         <Input
                                             id="lastname"
                                             placeholder="Last Name"
@@ -466,38 +449,34 @@ function GuideAuth(): JSX.Element {
                                         />
                                     </div>
                                     <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="gender">Gender</Label>
                                         <select
                                             id="gender"
                                             value={gender}
                                             onChange={e => setGender(e.target.value)}
                                             className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
                                         >
-                                            <option className='text-muted' value="" disabled hidden>（Select Your Gender）</option>
+                                            <option className='text-muted' value="" disabled hidden>Select Your Gender</option>
                                             <option value={Gender.Male}>Male</option>
                                             <option value={Gender.Female}>Female</option>
                                             <option value={Gender.Other}>Other</option>
                                         </select>
                                     </div>
                                     <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="languageLevel">Available Languages</Label>
                                         <select
                                             id="languageLevel"
                                             value={languageLevel}
                                             onChange={e => setLanguageLevel(e.target.value)}
                                             className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
                                         >
-                                            <option value="" disabled hidden>（Select Your English Level）</option>
+                                            <option value="" disabled hidden>Select Your English Level</option>
                                             <option value={LanguageLevel.Beginner}>Beginner</option>
                                             <option value={LanguageLevel.Elementary}>Elementary</option>
                                             <option value={LanguageLevel.Intermediate}>Intermediate</option>
-                                            <option value={LanguageLevel.UpperIntermediate}>UpperIntermediate</option>
                                             <option value={LanguageLevel.Advanced}>Advanced</option>
-                                            <option value={LanguageLevel.Proficiency}>Proficiency</option>
+                                            <option value={LanguageLevel.Native}>Native</option>
                                         </select>
                                     </div>
                                     <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="introduction">Introduction</Label>
                                         <textarea
                                             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                             id="introduction"
