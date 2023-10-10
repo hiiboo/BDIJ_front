@@ -24,7 +24,8 @@ function Timer({ userData, bookingData }: PageProps): JSX.Element | null {
       const securedAxios = createSecuredAxiosInstance();
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
-      securedAxios.patch(`/api/bookings/${booking_id}/finish`)
+      const response = await securedAxios.patch(`/api/bookings/${booking_id}/finish`)
+      console.log('response', response);
     } catch (error) {
       console.error(error);
     }

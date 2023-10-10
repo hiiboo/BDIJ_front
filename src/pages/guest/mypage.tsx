@@ -105,13 +105,22 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
 
       // Update user info
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.patch(`api/user/update`, {
+      const patchData = {
         email,
         currentPassword,
         newPassword,
         firstName,
         lastName,
         profile_image: iconUrl,
+      };
+      console.log('patchData', patchData);
+      const response = await securedAxios.patch(`api/user/update`, {
+        email,
+        current_password: currentPassword,
+        new_password: newPassword,
+        first_name: firstName,
+        last_name: lastName,
+        profile_image: iconUrl
       });
 
       if (response.status === 200) {
@@ -128,6 +137,8 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
       setIsLoading(false);
     }
   };
+
+  const isGuiding = userData?.booking_status === BookingStatus.Started || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.OfferPending;
 
   return (
     <main className={styles.main}>
@@ -238,7 +249,8 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
               </div>
 
               {/* Submit Button */}
-              <Button className="w-full" type="submit" disabled={isLoading}>
+              {isGuiding && <div className="text-red-500 bold">If your offer is pending, accepted or started, you cannot update your profile.</div>}
+              <Button className="w-full" type="submit" disabled={isLoading || isGuiding}>
                 {isLoading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}

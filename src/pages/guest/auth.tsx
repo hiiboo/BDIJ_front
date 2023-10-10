@@ -65,32 +65,38 @@ function GuestAuth(): JSX.Element {
 
     const handleRegister = async () => {
         try {
-            console.log(email);
-            console.log(password);
-            console.log(firstName);
-            console.log(lastName);
-            console.log(iconUrl);
             // CSRFトークンを取得
             // await fetchCsrfToken();
-            const response = await axios.post(`${apiUrl}/auth/guest/register`, {
-                email,
-                password,
-                password_confirmation: passwordConfirmation,
-                first_name: firstName,
-                last_name: lastName,
-                profile_image: iconUrl
-            }, {
+
+            // FormDataオブジェクトのインスタンスを作成
+            const formData = new FormData();
+
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('password_confirmation', passwordConfirmation);
+            formData.append('first_name', firstName);
+            formData.append('last_name', lastName);
+
+            // iconFileが存在すれば、それもFormDataに追加
+            if (iconFile) {
+                formData.append('profile_image', iconFile);
+            }
+            console.log(formData);
+
+            // axiosでPOSTリクエストを送る
+            const response = await axios.post(`${apiUrl}/auth/guest/register`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
                 withCredentials: true
             });
-            console.log(response);
-            // 登録が成功したら、自動でログインにリダイレクト
+
+            // 以降の処理はそのまま...
             if (response.status === 200 && response.data.message === "Registration successful") {
-                // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
                 console.log("Register successfully");
                 await handleRegisterLogin();
             } else {
-                // ログイン失敗
                 alert('Registration failed');
                 console.error("Registration failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
@@ -100,6 +106,7 @@ function GuestAuth(): JSX.Element {
             alert(`Registration failed, ${error}`);
         }
     };
+
 
     const handleRegisterLogin = async () => {
         try {
@@ -121,23 +128,8 @@ function GuestAuth(): JSX.Element {
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
-
-                // クエリパラメータを取得
-                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
                 alert('Register & Login successful');
-                // クエリパラメータが存在するかチェック
-                if (start_time && end_time && total_guests && guide_id) {
-                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
-                    alert('Register & Login successful');
-                    router.push({
-                        pathname: '/guest/offer/confirmation',
-                        query: {
-                            start_time, end_time, total_guests, comment, guide_id
-                        }
-                    });
-                } else {
-                    router.push('/').then(() => window.location.reload());
-                }
+                router.push('/').then(() => window.location.reload());
             } else {
                 // ログイン失敗
                 alert(`Login failed, ${response.data.message}`);
@@ -170,24 +162,9 @@ function GuestAuth(): JSX.Element {
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
-
-                // クエリパラメータを取得
-                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
                 alert('Login successful');
-                // クエリパラメータが存在するかチェック
-                if (start_time && end_time && total_guests && guide_id) {
-                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
-                    router.push({
-                        pathname: '/guest/offer/confirmation',
-                        query: {
-                            start_time, end_time, total_guests, comment, guide_id
-                        }
-                    });
-                } else {
-                    // クエリパラメータが存在しない場合、/ へリダイレクト
-                    router.push('/').then(() => window.location.reload());
-                }
-            } else {
+                router.push('/').then(() => window.location.reload());
+            }else {
                 // ログイン失敗
                 alert(`Login failed, ${response.data.message}`);
                 console.error("Login failed", response.data.message);
@@ -212,16 +189,16 @@ function GuestAuth(): JSX.Element {
         }
     };
 
-    useEffect(() => {
-        if (iconFile) {
-            (async () => {
-                const response = await uploadImage(iconFile);
-                if (response?.path) {
-                    setIconUrl(response.path);
-                }
-            })();
-        }
-    }, [iconFile]);
+    // useEffect(() => {
+    //     if (iconFile) {
+    //         (async () => {
+    //             const response = await uploadImage(iconFile);
+    //             if (response?.path) {
+    //                 setIconUrl(response.path);
+    //             }
+    //         })();
+    //     }
+    // }, [iconFile]);
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -234,21 +211,21 @@ function GuestAuth(): JSX.Element {
 
 // <-- ---------- useEffect ---------- -->
 
-    useEffect(() => {
-        const fetchIcon = async () => {
-            try {
-                const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/api/guest/profile_image`, {
-                    withCredentials: true
-                });
-                setIconUrl(response.data.url);
-            } catch (error) {
-                console.error("Error fetching icon URL", error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchIcon = async () => {
+    //         try {
+    //             const securedAxios = createSecuredAxiosInstance();
+    //             const response = await securedAxios.get(`/api/guest/profile_image`, {
+    //                 withCredentials: true
+    //             });
+    //             setIconUrl(response.data.url);
+    //         } catch (error) {
+    //             console.error("Error fetching icon URL", error);
+    //         }
+    //     };
 
-        fetchIcon();
-    }, []);
+    //     fetchIcon();
+    // }, []);
 
     const isPasswordShort = password.length < 8;
     const isPasswordDiffernt = password !== passwordConfirmation;
@@ -265,7 +242,6 @@ function GuestAuth(): JSX.Element {
 
     return (
         <main className={styles.main}>
-            <h2 className='my-2 py-2'>Guest Register Or Login</h2>
             <Tabs defaultValue={defaultTab} className="w-100">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signup">Signup</TabsTrigger>
@@ -371,7 +347,7 @@ function GuestAuth(): JSX.Element {
                                         {/* <Label htmlFor="firstname">First Name</Label> */}
                                         <Input
                                             id="firstname"
-                                            placeholder="First"
+                                            placeholder="First name"
                                             type="text"
                                             autoCapitalize="none"
                                             autoComplete="firstname"
@@ -385,7 +361,7 @@ function GuestAuth(): JSX.Element {
                                         {/* <Label htmlFor="lastname mt-2 mb-8">Last Name</Label> */}
                                         <Input
                                             id="lastname"
-                                            placeholder="Last"
+                                            placeholder="Last name"
                                             type="text"
                                             autoCapitalize="none"
                                             autoComplete="lastname"

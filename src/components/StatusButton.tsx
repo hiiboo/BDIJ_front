@@ -2,6 +2,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { utils } from '../utils/utils';
 
 import {
   BookingStatus,
@@ -16,16 +18,8 @@ import {
 } from '../types/types';
 
 const StatusButton: React.FC<PageProps> = ({ userData }) => {
-
-  const handleCancelNoFee = () => {
-    alert('under development');
-    // Execute the function to display modalCancelNoFee
-  };
-
-  const handleCancelApplyFee = () => {
-    alert('under development');
-    // Execute the function to display modalCancelApplyFee
-  };
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
   const renderButton = () => {
     if (!userData) {
@@ -38,14 +32,22 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
     if (user_type === 'guest') {
       switch (booking_status) {
         case BookingStatus.OfferPending:
-          return <Button onClick={handleCancelNoFee}>Cancell</Button>;
+          return (
+            <>
+                <Link href="/guest/offer/box">
+                    <Button>Check or Cancell Your Offer</Button>
+                </Link>
+            </>
+          );
         case BookingStatus.Accepted:
           return (
             <>
                 <Link href="/guest/timer">
                     <Button>Prepare your Guide</Button>
                 </Link>
-                <Button onClick={handleCancelApplyFee}>Cancell</Button>
+                <Link href="/guest/offer/box">
+                    <Button>Check or Cancell Your Offer</Button>
+                </Link>
             </>
           );
         case BookingStatus.Started:

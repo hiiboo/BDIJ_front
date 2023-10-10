@@ -15,7 +15,7 @@ export enum LanguageLevel {
     Intermediate = 'intermediate',
     UpperIntermediate = 'upper_intermediate',
     Advanced = 'advanced',
-    Proficiency = 'proficiency',
+    Native = 'native',
 }
 
 export enum UserType {

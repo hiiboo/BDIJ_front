@@ -75,8 +75,8 @@ function Home({ userData }: PageProps): JSX.Element | null {
         return 'UpperIntermediate';
       case LanguageLevel.Advanced:
         return 'Advanced';
-      case LanguageLevel.Proficiency:
-        return 'Proficiency';
+      case LanguageLevel.Native:
+        return 'Native';
       default:
         return '';
     }
@@ -112,31 +112,31 @@ function Home({ userData }: PageProps): JSX.Element | null {
 // <-- ---------- useEffect ---------- -->
 
   useEffect(() => {
-    if (userData) {
-      const { booking_status, user_type } = userData;
-      let redirectPath = '';
+    // if (userData) {
+    //   const { booking_status, user_type } = userData;
+    //   let redirectPath = '';
 
-      switch (booking_status) {
-        case BookingStatus.OfferPending:
-        case BookingStatus.Accepted:
-          redirectPath = `/${user_type}/offer/box`;
-          break;
-        case BookingStatus.Started:
-          redirectPath = `/${user_type}/timer`;
-          break;
-        case BookingStatus.Finished:
-          redirectPath = `/${user_type}/review`;
-          break;
-        case BookingStatus.Reviewed:
-        case BookingStatus.Cancelled:
-        case null:
-          break;
-      }
+    //   switch (booking_status) {
+    //     case BookingStatus.OfferPending:
+    //     case BookingStatus.Accepted:
+    //       redirectPath = `/${user_type}/offer/box`;
+    //       break;
+    //     case BookingStatus.Started:
+    //       redirectPath = `/${user_type}/timer`;
+    //       break;
+    //     case BookingStatus.Finished:
+    //       redirectPath = `/${user_type}/review`;
+    //       break;
+    //     case BookingStatus.Reviewed:
+    //     case BookingStatus.Cancelled:
+    //     case null:
+    //       break;
+    //   }
 
-      if (redirectPath) {
-        router.push(redirectPath);
-      }
-    }
+    //   if (redirectPath) {
+    //     router.push(redirectPath);
+    //   }
+    // }
     const fetchGuides = async () => {
       try {
         setIsLoading(true);
@@ -158,7 +158,7 @@ useEffect(() => {
   let newSortedGuides = [...guides];
   const languageLevelToNumber = (level?: LanguageLevel) => {
     switch (level) {
-      case LanguageLevel.Proficiency:
+      case LanguageLevel.Native:
         return 6;
       case LanguageLevel.Advanced:
         return 5;
@@ -241,7 +241,7 @@ useEffect(() => {
           >
           </iframe>
         </div>
-        <h2 className={styles.title}><span className='bold'>Select a guide nearby.</span></h2>
+        <h2 className={styles.title}><span className='bold'>Select a Local Guide</span></h2>
         <div className={styles.selectBox}>
           <Select
             onValueChange={(value) => setSortOption(SortOption[value as keyof typeof SortOption])}
@@ -266,7 +266,7 @@ useEffect(() => {
         <div className={styles.cardContainer}>
         {sortedGuides.map(guide => {
           return (
-            <Link key={guide.id} href={`/guest/guideprofile/${guide.id}`}>
+            <Link key={guide.id} href={userData ? `/guest/guideprofile/${guide.id}` : `/guest/auth`}>
               <Card className={styles.card}>
                 <CardHeader className={styles.cardHeader}>
                   <span className={styles.iconBox}>
@@ -285,12 +285,14 @@ useEffect(() => {
                   <CardDescription>
                     <span className='bold'>{guide.latitude !== undefined && guide.longitude !== undefined
                       ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, guide.latitude, guide.longitude).toFixed(1)
-                      : '-'}km</span><br/><small>from Harajuku</small>
+                      : '-'}km</span><br />
+                    {/* <small>from Harajuku</small> */}
                   </CardDescription>
                   {guide.level && <Badge>{getLanguageLevelLabel(guide.level)}</Badge>}
-                  <CardDescription>1h ¥{guide.hourly_rate ? guide.hourly_rate.toLocaleString() : 0}</CardDescription>
+                  {/* <CardDescription className='bold'>¥{guide.hourly_rate ? guide.hourly_rate.toLocaleString() : 0} / 1h</CardDescription> */}
                   <ReactStarsRating className={styles.stars} value={guide.review_average} />
-                  <CardDescription><small>{guide.review_average}（{guide.review_count}comments）</small></CardDescription>
+                  {/* <CardDescription><small>{guide.review_average}（{guide.review_count}comments）</small></CardDescription> */}
+                  <CardDescription><small>{guide.review_count}comments</small></CardDescription>
                 </CardContent>
               </Card>
             </Link>

@@ -45,8 +45,8 @@ function GuideProfile({ userData, guideData }: PageProps): JSX.Element | null {
         return 'UpperIntermediate';
       case LanguageLevel.Advanced:
         return 'Advanced';
-      case LanguageLevel.Proficiency:
-        return 'Proficiency';
+      case LanguageLevel.Native:
+        return 'Native';
       default:
         return '';
     }
