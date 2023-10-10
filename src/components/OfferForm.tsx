@@ -191,6 +191,7 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
           console.error("Booking Error:", error);
         }
     };
+    
 
     const isBookingStatusCannotOffer = userData?.booking_status === BookingStatus.OfferPending || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.Started || userData?.booking_status === BookingStatus.Finished;
 
@@ -198,222 +199,255 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
 
   return (
     <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      <div className={styles.dateTimeRow}>
-        <FormField
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className={styles.dateTimeRow}>
+          <FormField
             control={form.control}
             name="startDate"
             render={({ field }) => (
-                <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col">
                 <FormLabel>Start Date</FormLabel>
                 <Popover>
-                    <PopoverTrigger asChild>
+                  <PopoverTrigger asChild>
                     <FormControl>
-                        <Button
+                      <Button
                         variant="outline"
                         role="combobox"
                         className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
+                          "w-[200px] justify-between",
+                          !field.value && "text-muted-foreground"
                         )}
-                        >
+                      >
                         {field.value
-                            ? `${field.value === todayStr ? 'Today' : 'Tomorrow'} ${new Date(field.value).toLocaleDateString()}`
-                            : "Select a date"}
+                          ? `${
+                              field.value === todayStr ? "Today" : "Tomorrow"
+                            } ${new Date(field.value).toLocaleDateString()}`
+                          : "Select a date"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
+                      </Button>
                     </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
                     <Command>
-                        <CommandGroup>
-                        {[{ label: `Today ${today.toLocaleDateString()}`, value: todayStr }, { label: `Tomorrow ${tomorrow.toLocaleDateString()}`, value: tomorrowStr }].map((date) => (
-                            <CommandItem
+                      <CommandGroup>
+                        {[
+                          {
+                            label: `Today ${today.toLocaleDateString()}`,
+                            value: todayStr,
+                          },
+                          {
+                            label: `Tomorrow ${tomorrow.toLocaleDateString()}`,
+                            value: tomorrowStr,
+                          },
+                        ].map((date) => (
+                          <CommandItem
                             value={date.label}
                             key={date.value}
                             onSelect={() => {
-                                form.setValue("startDate", date.value)
+                              form.setValue("startDate", date.value);
                             }}
-                            >
+                          >
                             <Check
-                                className={cn(
+                              className={cn(
                                 "mr-2 h-4 w-4",
                                 date.value === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
                             />
                             {date.label}
-                            </CommandItem>
+                          </CommandItem>
                         ))}
-                        </CommandGroup>
+                      </CommandGroup>
                     </Command>
-                    </PopoverContent>
+                  </PopoverContent>
                 </Popover>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-        />
-            <FormField
-                control={form.control}
-                name="startTime"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Start Time</FormLabel>
-                    <FormControl>
-                        <Input type="time" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-            />
+          />
+          <FormField
+            control={form.control}
+            name="startTime"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Start Time</FormLabel>
+                <FormControl>
+                  <Input type="time" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <div className={styles.dateTimeRow}>
-        <FormField
+          <FormField
             control={form.control}
             name="endDate"
             render={({ field }) => (
-                <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col">
                 <FormLabel>End Date</FormLabel>
                 <Popover>
-                    <PopoverTrigger asChild>
+                  <PopoverTrigger asChild>
                     <FormControl>
-                        <Button
+                      <Button
                         variant="outline"
                         role="combobox"
                         className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
+                          "w-[200px] justify-between",
+                          !field.value && "text-muted-foreground"
                         )}
-                        >
+                      >
                         {field.value
-                            ? `${field.value === todayStr ? 'Today' : 'Tomorrow'} ${new Date(field.value).toLocaleDateString()}`
-                            : "Select a date"}
+                          ? `${
+                              field.value === todayStr ? "Today" : "Tomorrow"
+                            } ${new Date(field.value).toLocaleDateString()}`
+                          : "Select a date"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
+                      </Button>
                     </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
                     <Command>
-                        <CommandGroup>
-                        {[{ label: `Today ${today.toLocaleDateString()}`, value: todayStr }, { label: `Tomorrow ${tomorrow.toLocaleDateString()}`, value: tomorrowStr }].map((date) => (
-                            <CommandItem
+                      <CommandGroup>
+                        {[
+                          {
+                            label: `Today ${today.toLocaleDateString()}`,
+                            value: todayStr,
+                          },
+                          {
+                            label: `Tomorrow ${tomorrow.toLocaleDateString()}`,
+                            value: tomorrowStr,
+                          },
+                        ].map((date) => (
+                          <CommandItem
                             value={date.label}
                             key={date.value}
                             onSelect={() => {
-                                form.setValue("endDate", date.value)
+                              form.setValue("endDate", date.value);
                             }}
-                            >
+                          >
                             <Check
-                                className={cn(
+                              className={cn(
                                 "mr-2 h-4 w-4",
                                 date.value === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
                             />
                             {date.label}
-                            </CommandItem>
+                          </CommandItem>
                         ))}
-                        </CommandGroup>
+                      </CommandGroup>
                     </Command>
-                    </PopoverContent>
+                  </PopoverContent>
                 </Popover>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-        />
-        <FormField
+          />
+          <FormField
             control={form.control}
             name="endTime"
             render={({ field }) => (
-                <FormItem>
+              <FormItem>
                 <FormLabel>End Time</FormLabel>
                 <FormControl>
-                    <Input type="time" {...field} />
+                  <Input type="time" {...field} />
                 </FormControl>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-        />
+          />
         </div>
         <div>
-        <FormField
+          <FormField
             control={form.control}
             name="total_guests"
             render={({ field }) => (
-                <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col">
                 <FormLabel>Guest</FormLabel>
                 <Popover>
-                    <PopoverTrigger asChild>
+                  <PopoverTrigger asChild>
                     <FormControl>
-                        <Button
+                      <Button
                         variant="outline"
                         role="combobox"
                         className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
+                          "w-[200px] justify-between",
+                          !field.value && "text-muted-foreground"
                         )}
-                        >
+                      >
                         {field.value || "select a number"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
+                      </Button>
                     </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
                     <Command>
-                        <CommandGroup>
-                        {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
+                      <CommandGroup>
+                        {Array.from({ length: 10 }, (_, i) => i + 1).map(
+                          (number) => (
                             <CommandItem
-                            value={number.toString()}
-                            key={number}
-                            onSelect={() => {
-                                form.setValue("total_guests", number)
-                            }}
+                              value={number.toString()}
+                              key={number}
+                              onSelect={() => {
+                                form.setValue("total_guests", number);
+                              }}
                             >
-                            <Check
+                              <Check
                                 className={cn(
-                                "mr-2 h-4 w-4",
-                                number === field.value
+                                  "mr-2 h-4 w-4",
+                                  number === field.value
                                     ? "opacity-100"
                                     : "opacity-0"
                                 )}
-                            />
-                            {number}
+                              />
+                              {number}
                             </CommandItem>
-                        ))}
-                        </CommandGroup>
+                          )
+                        )}
+                      </CommandGroup>
                     </Command>
-                    </PopoverContent>
+                  </PopoverContent>
                 </Popover>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-        />
-        <p><small>Please include yourself in the total count, excluding children aged 12 and below.In the case of two or more people, each additional person is calculated at a 25% discounted rate.</small></p>
+          />
+          <p>
+            <small>
+              Please include yourself in the total count, excluding children
+              aged 12 and below.In the case of two or more people, each
+              additional person is calculated at a 25% discounted rate.
+            </small>
+          </p>
         </div>
         <div className="">
-            <div className="flex flex-col items-center justify-content-between">
-                <div>
-                    <h3>Total amount</h3>
-                    <p><small>Inclusive of tax</small></p>
-                </div>
-                <p className='bold'>¥{calculateTotalAmount().toLocaleString()}</p>
+          <div className="flex flex-col items-center justify-content-between">
+            <div>
+              <>Total amount</>
             </div>
-            <p><small>Include yourself in the total count, excluding children aged 12 and below.</small></p>
+            <h1 className="Bold">
+              ¥{calculateTotalAmount().toLocaleString()}
+            </h1>
+          </div>
+          <p>
+            <small>tax included</small>
+          </p>
         </div>
-      <FormField
-        control={form.control}
-        name="comment"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>comment</FormLabel>
-            <FormControl>
-              <Input type="text" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        <FormField
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>comment</FormLabel>
+              <FormControl>
+                <Input type="text" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
       />
         {invalidTime && <div className="text-red-500">End time should be set after the start time.</div>}
         {invalidDate && <div className="text-red-500">The end date should be set to the same date as the start date.</div>}
