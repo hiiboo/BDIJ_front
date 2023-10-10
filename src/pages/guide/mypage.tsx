@@ -340,7 +340,7 @@ function GuideMypage({ userData }: PageProps): JSX.Element | null {
                       <option value="intermediate">Intermediate</option>
                       <option value="upperintermediate">UpperIntermediate</option>
                       <option value="advanced">Advanced</option>
-                      <option value="proficiency">Proficiency</option>
+                      <option value="native">Native</option>
                   </select>
               </div>
 

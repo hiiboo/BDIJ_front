@@ -105,13 +105,22 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
 
       // Update user info
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.patch(`api/user/update`, {
+      const patchData = {
         email,
         currentPassword,
         newPassword,
         firstName,
         lastName,
         profile_image: iconUrl,
+      };
+      console.log('patchData', patchData);
+      const response = await securedAxios.patch(`api/user/update`, {
+        email,
+        current_password: currentPassword,
+        new_password: newPassword,
+        first_name: firstName,
+        last_name: lastName,
+        profile_image: iconUrl
       });
 
       if (response.status === 200) {

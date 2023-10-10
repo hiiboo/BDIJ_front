@@ -75,8 +75,8 @@ function Home({ userData }: PageProps): JSX.Element | null {
         return 'UpperIntermediate';
       case LanguageLevel.Advanced:
         return 'Advanced';
-      case LanguageLevel.Proficiency:
-        return 'Proficiency';
+      case LanguageLevel.Native:
+        return 'Native';
       default:
         return '';
     }
@@ -158,7 +158,7 @@ useEffect(() => {
   let newSortedGuides = [...guides];
   const languageLevelToNumber = (level?: LanguageLevel) => {
     switch (level) {
-      case LanguageLevel.Proficiency:
+      case LanguageLevel.Native:
         return 6;
       case LanguageLevel.Advanced:
         return 5;

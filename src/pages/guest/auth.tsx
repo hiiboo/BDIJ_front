@@ -65,32 +65,38 @@ function GuestAuth(): JSX.Element {
 
     const handleRegister = async () => {
         try {
-            console.log(email);
-            console.log(password);
-            console.log(firstName);
-            console.log(lastName);
-            console.log(iconUrl);
             // CSRFトークンを取得
             // await fetchCsrfToken();
-            const response = await axios.post(`${apiUrl}/auth/guest/register`, {
-                email,
-                password,
-                password_confirmation: passwordConfirmation,
-                first_name: firstName,
-                last_name: lastName,
-                profile_image: iconUrl
-            }, {
+
+            // FormDataオブジェクトのインスタンスを作成
+            const formData = new FormData();
+
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('password_confirmation', passwordConfirmation);
+            formData.append('first_name', firstName);
+            formData.append('last_name', lastName);
+
+            // iconFileが存在すれば、それもFormDataに追加
+            if (iconFile) {
+                formData.append('profile_image', iconFile);
+            }
+            console.log(formData);
+
+            // axiosでPOSTリクエストを送る
+            const response = await axios.post(`${apiUrl}/auth/guest/register`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
                 withCredentials: true
             });
-            console.log(response);
-            // 登録が成功したら、自動でログインにリダイレクト
+
+            // 以降の処理はそのまま...
             if (response.status === 200 && response.data.message === "Registration successful") {
-                // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
                 console.log("Register successfully");
                 await handleRegisterLogin();
             } else {
-                // ログイン失敗
                 alert('Registration failed');
                 console.error("Registration failed", response.data.message);
                 router.push('/').then(() => window.location.reload());
@@ -100,6 +106,7 @@ function GuestAuth(): JSX.Element {
             alert(`Registration failed, ${error}`);
         }
     };
+
 
     const handleRegisterLogin = async () => {
         try {
@@ -182,16 +189,16 @@ function GuestAuth(): JSX.Element {
         }
     };
 
-    useEffect(() => {
-        if (iconFile) {
-            (async () => {
-                const response = await uploadImage(iconFile);
-                if (response?.path) {
-                    setIconUrl(response.path);
-                }
-            })();
-        }
-    }, [iconFile]);
+    // useEffect(() => {
+    //     if (iconFile) {
+    //         (async () => {
+    //             const response = await uploadImage(iconFile);
+    //             if (response?.path) {
+    //                 setIconUrl(response.path);
+    //             }
+    //         })();
+    //     }
+    // }, [iconFile]);
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -204,21 +211,21 @@ function GuestAuth(): JSX.Element {
 
 // <-- ---------- useEffect ---------- -->
 
-    useEffect(() => {
-        const fetchIcon = async () => {
-            try {
-                const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/api/guest/profile_image`, {
-                    withCredentials: true
-                });
-                setIconUrl(response.data.url);
-            } catch (error) {
-                console.error("Error fetching icon URL", error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchIcon = async () => {
+    //         try {
+    //             const securedAxios = createSecuredAxiosInstance();
+    //             const response = await securedAxios.get(`/api/guest/profile_image`, {
+    //                 withCredentials: true
+    //             });
+    //             setIconUrl(response.data.url);
+    //         } catch (error) {
+    //             console.error("Error fetching icon URL", error);
+    //         }
+    //     };
 
-        fetchIcon();
-    }, []);
+    //     fetchIcon();
+    // }, []);
 
     const isPasswordShort = password.length < 8;
     const isPasswordDiffernt = password !== passwordConfirmation;

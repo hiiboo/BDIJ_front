@@ -45,10 +45,10 @@ function TimerPage({ userData }: PageProps): JSX.Element {
 
     // ユーザーデータが存在する場合のみ処理を行う
     if (userData) {
-      if (userData.booking_status !== BookingStatus.Accepted && userData.booking_status === BookingStatus.Finished) {
+      if (userData.booking_status === BookingStatus.Finished) {
         router.push('/guide/review');
       } else if (userData.booking_status !== BookingStatus.Accepted && userData.booking_status !== BookingStatus.Started) {
-        router.push('/');
+        router.push('/').then(() => window.location.reload());
       }
       const fetchBookingData = async () => {
         try {
