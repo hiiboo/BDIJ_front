@@ -246,8 +246,8 @@ useEffect(() => {
             alt="Logo"
             objectFit="contain"
             className={styles.header}
-            height={155}
-            width={342}
+            height={310}
+            width={684}
           />
         </div>
         <h2 className={styles.title}><span className='bold'>Select a Local Guide</span></h2>
