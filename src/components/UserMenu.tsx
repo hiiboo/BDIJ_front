@@ -33,9 +33,9 @@ const UserMenu: React.FC<PageProps> = ({ userData, handleLogout }) => {
           ) : (
             <>
                 <Avatar>
-                <AvatarImage src={userData.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${userData.profile_image}` : '/logo.png'} />
+                <AvatarImage src={userData?.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${userData.profile_image}` : '/logo.png'} />
                 <AvatarFallback>
-                    {userData.id}
+                    {userData?.id || null}
                 </AvatarFallback>
                 </Avatar>
             </>
