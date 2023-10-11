@@ -289,7 +289,7 @@ useEffect(() => {
                   </span>
                 </CardHeader>
                 <CardContent>
-                  <CardTitle>{guide.first_name} {guide.last_name}</CardTitle>
+                  <CardTitle className="pt-3" >{guide.first_name} {guide.last_name}</CardTitle>
                   {/* <CardDescription>
                     <span className='bold'>{guide.latitude !== undefined && guide.longitude !== undefined
                       ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, guide.latitude, guide.longitude).toFixed(1)
