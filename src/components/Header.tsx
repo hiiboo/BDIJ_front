@@ -116,7 +116,7 @@ function Header({ userData }: PageProps): JSX.Element {
                             <div className={styles.logoContainer}>
                                 <div className={styles.logoBox}>
                                     <Image
-                                        src={userData?.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${userData?.profile_image}` : '/logo_3.png'}
+                                        src="/logo_3.png"
                                         alt="Logo"
                                         objectFit="contain"
                                         className={styles.logo}
