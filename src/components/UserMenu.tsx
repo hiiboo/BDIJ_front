@@ -11,6 +11,11 @@ import {
     MenubarTrigger,
 } from "@/components/shadcnui/menubar"
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
+import {
     UserType,
     PageProps
 } from '../types/types';
@@ -21,7 +26,21 @@ const UserMenu: React.FC<PageProps> = ({ userData, handleLogout }) => {
     return (
       <>
         <MenubarTrigger className={styles.hamburger} style={{ padding: 0 }}>
-          <PiUserCircle size="2rem" />
+          {userData ? (
+            <>
+                <PiUserCircle size="2rem" />
+            </>
+          ) : (
+            <>
+                <Avatar>
+                <AvatarImage src={userData.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${userData.profile_image}` : '/logo.png'} />
+                <AvatarFallback>
+                    {(user_type === 'guest' ? offer.guide_first_name : offer.guest_first_name) || 'N/A'}
+                    {(user_type === 'guest' ? offer.guide_last_name : offer.guest_last_name) || 'N/A'}
+                </AvatarFallback>
+                </Avatar>
+            </>
+          )}
         </MenubarTrigger>
         <MenubarContent>
           {userData ? (
