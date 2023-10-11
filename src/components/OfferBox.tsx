@@ -63,7 +63,7 @@ function OfferBox({ userData, offers }: PageProps): JSX.Element | null {
                         <Link href={`/${user_type}/offer/info/${offer.id}`} className="flex items-center justify-between space-x-4">
                             <div className="flex items-center space-x-4">
                                 <Avatar>
-                                <AvatarImage src={user_type === 'guest' ? offer.guide_image : offer.guest_image} />
+                                <AvatarImage src={user_type === 'guest' ? `${process.env.NEXT_PUBLIC_API_URL}${offer.guide_image}` : `${process.env.NEXT_PUBLIC_API_URL}${offer.guest_image}`} />
                                 <AvatarFallback>
                                     {(user_type === 'guest' ? offer.guide_first_name : offer.guest_first_name) || 'N/A'}
                                     {(user_type === 'guest' ? offer.guide_last_name : offer.guest_last_name) || 'N/A'}

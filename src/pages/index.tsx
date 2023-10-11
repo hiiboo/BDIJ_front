@@ -235,11 +235,20 @@ useEffect(() => {
         <h2 className={styles.title}><small>Meeting Place</small><br/><span className='bold'>Harajuku Station</span></h2>
         <div className={styles.mapBox}>
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12965.122741642823!2d139.7024662!3d35.6700901!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188cbac9b52cff%3A0x560d87a8e2d1d3d2!2z5Y6f5a6_6aeF!5e0!3m2!1sja!2sjp!4v1695444723504!5m2!1sja!2sjp"
+            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d810.3239060395547!2d139.70255559999998!3d35.669722199999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzXCsDQwJzExLjAiTiAxMznCsDQyJzA5LjIiRQ!5e0!3m2!1sja!2sjp!4v1696993104573!5m2!1sja!2sjp"
             className={styles.map}
             loading="lazy"
           >
           </iframe>
+          <div className='my-4'></div>
+          <Image
+            src="/image/meeting_place.jpg"
+            alt="Logo"
+            objectFit="contain"
+            className={styles.header}
+            height={310}
+            width={684}
+          />
         </div>
         <h2 className={styles.title}><span className='bold'>Select a Local Guide</span></h2>
         <div className={styles.selectBox}>
@@ -271,8 +280,7 @@ useEffect(() => {
                 <CardHeader className={styles.cardHeader}>
                   <span className={styles.iconBox}>
                     <Image
-                      // src={guide.profile_image ? guide.profile_image : '/image/user.jpeg'}
-                      src='/image/user.jpeg'
+                      src={guide.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${guide.profile_image}` : '/logo_3.png'}
                       alt="icon"
                       layout="fill"
                       objectFit="cover"
@@ -281,13 +289,12 @@ useEffect(() => {
                   </span>
                 </CardHeader>
                 <CardContent>
-                  <CardTitle>{guide.first_name} {guide.last_name}</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="pt-3" >{guide.first_name} {guide.last_name}</CardTitle>
+                  {/* <CardDescription>
                     <span className='bold'>{guide.latitude !== undefined && guide.longitude !== undefined
                       ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, guide.latitude, guide.longitude).toFixed(1)
-                      : '-'}km</span><br />
-                    {/* <small>from Harajuku</small> */}
-                  </CardDescription>
+                      : '-'}km</span><br/><small>from Harajuku</small>
+                  </CardDescription> */}
                   {guide.level && <Badge>{getLanguageLevelLabel(guide.level)}</Badge>}
                   {/* <CardDescription className='bold'>¥{guide.hourly_rate ? guide.hourly_rate.toLocaleString() : 0} / 1h</CardDescription> */}
                   <ReactStarsRating className={styles.stars} value={guide.review_average} />
