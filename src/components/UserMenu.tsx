@@ -56,10 +56,10 @@ const UserMenu: React.FC<PageProps> = ({ userData, handleLogout }) => {
             </>
           ) : (
             <>
-              <MenubarItem onClick={handleLogout}>Log Out</MenubarItem>
               <Link href={`/${userTypePath}/auth`}>
                 <MenubarItem>Login / Register</MenubarItem>
               </Link>
+              <MenubarItem onClick={handleLogout}>Log Out</MenubarItem>
             </>
           )}
         </MenubarContent>
