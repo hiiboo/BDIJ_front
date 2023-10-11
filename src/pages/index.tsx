@@ -250,7 +250,7 @@ useEffect(() => {
             width={342}
           />
         </div>
-        <h2 className={styles.title}><span className='bold'>Select a guide nearby.</span></h2>
+        <h2 className={styles.title}><span className='bold'>Select a Local Guide</span></h2>
         <div className={styles.selectBox}>
           <Select
             onValueChange={(value) => setSortOption(SortOption[value as keyof typeof SortOption])}
@@ -296,9 +296,10 @@ useEffect(() => {
                       : '-'}km</span><br/><small>from Harajuku</small>
                   </CardDescription> */}
                   {guide.level && <Badge>{getLanguageLevelLabel(guide.level)}</Badge>}
-                  <CardDescription>1h ¥{guide.hourly_rate ? guide.hourly_rate.toLocaleString() : 0}</CardDescription>
+                  {/* <CardDescription className='bold'>¥{guide.hourly_rate ? guide.hourly_rate.toLocaleString() : 0} / 1h</CardDescription> */}
                   <ReactStarsRating className={styles.stars} value={guide.review_average} />
-                  <CardDescription><small>{guide.review_average}（{guide.review_count}comments）</small></CardDescription>
+                  {/* <CardDescription><small>{guide.review_average}（{guide.review_count}comments）</small></CardDescription> */}
+                  <CardDescription><small>{guide.review_count}comments</small></CardDescription>
                 </CardContent>
               </Card>
             </Link>

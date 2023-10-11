@@ -24,6 +24,9 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: stretch;
+    gap: 1rem;
+    margin-top: 1rem;
     & > a {
         width: calc(33.333% - 1rem); // 3つのカードが横に並ぶようにします。
     }
@@ -36,7 +39,7 @@
 
 .card {
     max-width: 400px;
-    margin: 0.5rem; // カード同士が2remの間隔で表示されるように調整
+    overflow: hidden;
 
     box-sizing: border-box;
     p {
@@ -50,22 +53,30 @@
 }
 
 
+
+
 .cardHeader {
     align-items: center;
 }
 
+.card-footer {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 1rem 0;
+}
+
 .iconBox{
     display: flex;
-    border-radius: 50%;
-    width: 5rem;
-    height: 5rem;
+    // border-radius: 50%;
+    aspect-ratio: 1/1;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
     align-items: center;
 }
 .icon {
-    aspect-ratio: 1/1;
     width: 100%;
     height: 100%;
 }
