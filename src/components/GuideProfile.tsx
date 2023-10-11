@@ -99,7 +99,7 @@ function GuideProfile({ userData, guideData }: PageProps): JSX.Element | null {
       <div className={styles.iconContainer}>
         <span className={styles.iconBox}>
           {guideData && <Image
-            src={guideData.profile_image ? guideData.profile_image : '/image/user.jpeg'}
+            src={guideData.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${guideData.profile_image}` : '/image/user.jpeg'}
             alt="icon"
             layout="fill"
             objectFit="cover"
@@ -111,13 +111,13 @@ function GuideProfile({ userData, guideData }: PageProps): JSX.Element | null {
       <p>1h ¥{guideData?.hourly_rate?.toLocaleString() ?? '0'}</p>
       {guideData && <ReactStarsRating className={styles.stars} value={guideData.review_average} />}
       <p><small>{guideData ? `${guideData.review_average}（${guideData.review_count} comments）` : 'Loading...'}</small></p>
-      <p>
+      {/* <p>
         <span className='bold'>{guideData && guideData.latitude && guideData.longitude
           ? calculateDistance(HARAJUKU_STATION.latitude, HARAJUKU_STATION.longitude, guideData.latitude, guideData.longitude).toFixed(1)
           : '-'}km
         </span>
       </p>
-      <p><small>from Harajuku</small></p>
+      <p><small>from Harajuku</small></p> */}
       {guideData?.level ? <Badge>{getLanguageLevelLabel(guideData?.level)}</Badge> : <Badge></Badge>}
       <p>{guideData ? guideData.introduction : 'Loading...'}</p>
     </>

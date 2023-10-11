@@ -19,32 +19,32 @@ const UserMenu: React.FC<PageProps> = ({ userData, handleLogout }) => {
     const userTypePath = userData?.user_type === UserType.Guide ? 'guide' : 'guest';
 
     return (
-        <>
-            <MenubarTrigger className={styles.hamburger} style={{ padding: 0 }}>
-                <PiUserCircle size="2rem" />
-            </MenubarTrigger>
-            <MenubarContent>
-                {userData ? (
-                    <>
-                        <MenubarItem onClick={handleLogout}>ログアウト</MenubarItem>
-                        <MenubarSeparator />
-                        <Link href={`/${userTypePath}/mypage`}>
-                            <MenubarItem>プロフィール</MenubarItem>
-                        </Link>
-                        <Link href={`/${userTypePath}/offer/box`}>
-                            <MenubarItem>オファーボックス</MenubarItem>
-                        </Link>
-                    </>
-                ) : (
-                    <>
-                        <MenubarItem onClick={handleLogout}>ログアウト</MenubarItem>
-                        <Link href={`/${userTypePath}/auth`}>
-                            <MenubarItem>ログイン・登録</MenubarItem>
-                        </Link>
-                    </>
-                )}
-            </MenubarContent>
-        </>
+      <>
+        <MenubarTrigger className={styles.hamburger} style={{ padding: 0 }}>
+          <PiUserCircle size="2rem" />
+        </MenubarTrigger>
+        <MenubarContent>
+          {userData ? (
+            <>
+              <MenubarItem onClick={handleLogout}>Log Out</MenubarItem>
+              <MenubarSeparator />
+              <Link href={`/${userTypePath}/mypage`}>
+                <MenubarItem>Profile</MenubarItem>
+              </Link>
+              <Link href={`/${userTypePath}/offer/box`}>
+                <MenubarItem>Offer Box</MenubarItem>
+              </Link>
+            </>
+          ) : (
+            <>
+              <MenubarItem onClick={handleLogout}>Log Out</MenubarItem>
+              <Link href={`/${userTypePath}/auth`}>
+                <MenubarItem>Login / Register</MenubarItem>
+              </Link>
+            </>
+          )}
+        </MenubarContent>
+      </>
     );
 }
 

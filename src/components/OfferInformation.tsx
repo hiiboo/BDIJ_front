@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import styles from '../styles/offerInformation.module.scss';
 import { utils } from '../utils/utils';
 import { extractDateAndTime } from '../utils/utils';
+import Link from 'next/link';
+import Image from 'next/image';
 
 import {
   BookingStatus,
@@ -106,6 +108,24 @@ interface PagePropsWithBookingPreData {
 
   return (
     <div className={styles.bookingInfo}>
+      <p><small>Meeting Place</small><br/><span className='bold'>Harajuku Station</span></p>
+      <div className={styles.mapBox}>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d810.3239060395547!2d139.70255559999998!3d35.669722199999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzXCsDQwJzExLjAiTiAxMznCsDQyJzA5LjIiRQ!5e0!3m2!1sja!2sjp!4v1696993104573!5m2!1sja!2sjp"
+          className={styles.map}
+          loading="lazy"
+        >
+        </iframe>
+        <div className='my-4'></div>
+        <Image
+          src="/image/meeting_place.jpg"
+          alt="Logo"
+          objectFit="contain"
+          className={styles.header}
+          height={155}
+          width={342}
+        />
+      </div>
       <p><strong>Start Date:</strong> {startDate}</p>
       <p><strong>Start Time:</strong> {startTime}</p>
       <p><strong>End Date:</strong> {endDate}</p>
