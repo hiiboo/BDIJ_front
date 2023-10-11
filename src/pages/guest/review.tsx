@@ -64,6 +64,7 @@ function Review({ userData }: PageProps): JSX.Element | null {
                 setIsLoading(true); // データフェッチ前にローディングステートをtrueに設定
                 const securedAxios = createSecuredAxiosInstance();
                 const response = await securedAxios.get(`/api/user/current/last-booking`);
+                console.log(response);
                 setBookingData(response.data.data);
 
                 // lastBookingStatusがfinished以外の時は/にリダイレクト
@@ -134,7 +135,7 @@ function Review({ userData }: PageProps): JSX.Element | null {
         <>  <h2>Thank you so much!!<br/>Have a Best Day!</h2>
             <div className="flex flex-col items-center justify-content-between">
             <Image
-                src={bookingData?.guide_image || '/image/user.jpeg'}
+                src={bookingData?.guide_image ? `${process.env.NEXT_PUBLIC_API_URL}${bookingData?.guide_image}` : '/logo_3.png'}
                 alt="guide_image"
                 width={200}
                 height={200}

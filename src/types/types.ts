@@ -39,6 +39,7 @@ export interface UserData {
     user_type: UserType;
     booking_status?: BookingStatus | null;
     status: UserStatus;
+    profile_image?: string;
 }
 
 export interface GuestData {

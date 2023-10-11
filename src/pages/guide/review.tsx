@@ -125,7 +125,7 @@ function Review({ userData }: PageProps): JSX.Element | null {
         <>  <h2>Thank you so much!!<br/>Have a Best Day!</h2>
             <div className="flex flex-col items-center justify-content-between">
             <Image
-                src={bookingData?.guest_image || '/image/user.jpeg'}
+                src={bookingData?.guest_image ? `${process.env.NEXT_PUBLIC_API_URL}${bookingData?.guest_image}` : '/logo_3.png'}
                 alt="guest_image"
                 width={200}
                 height={200}

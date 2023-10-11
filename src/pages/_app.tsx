@@ -150,18 +150,6 @@ export default function App({ Component, pageProps }: AppProps) {
                     return;
                 }
             }
-        } else {
-            if (path.startsWith('/guest/offer/info')){
-                alert('ログインが必要です');
-                router.push('/guest/auth');
-                return;
-            } else if (path.startsWith('/guide/offer/info')){
-                alert('ログインが必要です');
-                router.push('/guide/auth');
-                return;
-            } else if (path === '/guide') {
-                router.push('/guide/mypage');
-            }
         }
 
     }, [userData, router, dataChecked]);

@@ -33,7 +33,7 @@ const BookingButton: React.FC<PageProps> = ({ userData ,bookingData }) => {
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
       securedAxios.patch(`/api/bookings/${booking_id}/accept`)
-      router.push(`/${user_type}/mypage`).then(() => window.location.reload());
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
@@ -45,7 +45,7 @@ const BookingButton: React.FC<PageProps> = ({ userData ,bookingData }) => {
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
       securedAxios.patch(`/api/bookings/${booking_id}/cancel`)
-      router.push(`/${user_type}/mypage`).then(() => window.location.reload());
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }

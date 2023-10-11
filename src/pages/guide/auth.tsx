@@ -505,14 +505,14 @@ function GuideAuth(): JSX.Element {
                                             more than 2,500yen.
                                         </p>
                                     </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
+                                    {/* <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="locationSwitch">Location</Label>
                                         <Switch
                                             id="locationSwitch"
                                             checked={isLocationEnabled}
                                             onCheckedChange={handleLocationToggle}
                                         />
-                                    </div>
+                                    </div> */}
                                     {parseInt(hourlyRate) < 2500 && hourlyRate !== '' && (
                                         <div className="text-red-500 text-xs">
                                             Hourly Rate must be more than 2,500yen.
