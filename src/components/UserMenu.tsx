@@ -28,16 +28,16 @@ const UserMenu: React.FC<PageProps> = ({ userData, handleLogout }) => {
         <MenubarTrigger className={styles.hamburger} style={{ padding: 0 }}>
           {userData ? (
             <>
-                <PiUserCircle size="2rem" />
-            </>
-          ) : (
-            <>
                 <Avatar>
-                <AvatarImage src={userData?.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${userData.profile_image}` : '/logo.png'} />
+                <AvatarImage src={userData.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${userData.profile_image}` : '/logo.png'} />
                 <AvatarFallback>
                     {userData?.id || null}
                 </AvatarFallback>
                 </Avatar>
+            </>
+          ) : (
+            <>
+                <PiUserCircle size="2rem" />
             </>
           )}
         </MenubarTrigger>
