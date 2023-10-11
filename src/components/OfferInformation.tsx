@@ -122,8 +122,8 @@ interface PagePropsWithBookingPreData {
           alt="Logo"
           objectFit="contain"
           className={styles.header}
-          height={155}
-          width={342}
+          height={310}
+          width={684}
         />
       </div>
       <p><strong>Start Date:</strong> {startDate}</p>
