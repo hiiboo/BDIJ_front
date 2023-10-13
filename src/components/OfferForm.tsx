@@ -173,12 +173,6 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
     const handleConfirmation = async (bookingData: any) => {
         // guideId を直接参照
         const guideId = Number(router.query.guide_id);
-        console.log(bookingData);
-        console.log(startDate);
-        console.log(endDate);
-        console.log(startTime);
-        console.log(endTime);
-        console.log(constructDateTime(startDate, startTime, endDate, endTime));
 
         try {
           const axiosInstance = createSecuredAxiosInstance();
@@ -189,6 +183,7 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
           router.push('/guest/offer/box').then(() => window.location.reload());
         } catch (error) {
           console.error("Booking Error:", error);
+          window.location.reload();
         }
     };
 
