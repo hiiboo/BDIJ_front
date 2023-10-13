@@ -192,7 +192,7 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
         }
     };
 
-    const isNotReviewed = userData?.booking_status === BookingStatus.Finished && userData?.guide_reviewed === false;
+    const isNotReviewed = userData?.booking_status === BookingStatus.Finished && !userData?.guide_reviewed === true;
     const isBookingStatusCannotOffer = userData?.booking_status === BookingStatus.OfferPending || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.Started || isNotReviewed;
 
 // <-- ---------- 表示 ---------- -->

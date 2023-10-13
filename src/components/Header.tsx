@@ -101,10 +101,10 @@ function Header({ userData }: PageProps): JSX.Element {
         } else if (booking_status === BookingStatus.Started) {
             notificationText = user_type === "guest" ? "While Guiding" : "ガイド中です";
             notificationLink = user_type === "guest" ? "/guest/timer" : "/guide/timer";
-        } else if (booking_status === BookingStatus.Finished && guest_reviewed === false && user_type === "guest") {
+        } else if (booking_status === BookingStatus.Finished && !guest_reviewed === true && user_type === "guest") {
             notificationText = "Please Review";
             notificationLink = "/guest/review";
-        } else if (booking_status === BookingStatus.Finished && guide_reviewed === false && user_type === "guide") {
+        } else if (booking_status === BookingStatus.Finished && !guide_reviewed === true && user_type === "guide") {
             notificationText = "レビューしてください";
             notificationLink = "/guide/review";
         }

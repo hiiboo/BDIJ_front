@@ -59,7 +59,7 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
             </>
           );
         case BookingStatus.Finished:
-          if (guest_reviewed) {
+          if (guest_reviewed === true) {
             return (
               <>
                   <Link href="/guest/offer/box">
@@ -108,7 +108,7 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
             </>
           );
           case BookingStatus.Finished:
-            if (guide_reviewed) {
+            if (guide_reviewed === true) {
               return (
                 <>
                     <Link href="/guide/offer/box">
