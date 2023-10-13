@@ -173,12 +173,6 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
     const handleConfirmation = async (bookingData: any) => {
         // guideId を直接参照
         const guideId = Number(router.query.guide_id);
-        console.log(bookingData);
-        console.log(startDate);
-        console.log(endDate);
-        console.log(startTime);
-        console.log(endTime);
-        console.log(constructDateTime(startDate, startTime, endDate, endTime));
 
         try {
           const axiosInstance = createSecuredAxiosInstance();
@@ -189,11 +183,12 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
           router.push('/guest/offer/box').then(() => window.location.reload());
         } catch (error) {
           console.error("Booking Error:", error);
+          window.location.reload();
         }
     };
-    
 
-    const isBookingStatusCannotOffer = userData?.booking_status === BookingStatus.OfferPending || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.Started || userData?.booking_status === BookingStatus.Finished;
+    const isNotReviewed = userData?.booking_status === BookingStatus.Finished && !userData?.guide_reviewed === true;
+    const isBookingStatusCannotOffer = userData?.booking_status === BookingStatus.OfferPending || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.Started || isNotReviewed;
 
 // <-- ---------- 表示 ---------- -->
 
@@ -383,7 +378,7 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
+                  <PopoverContent className="p-0">
                     <Command>
                       <CommandGroup>
                         {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -415,12 +410,10 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               </FormItem>
             )}
           />
-          <p>
-            <small>
-              Please include yourself in the total count, excluding children
-              aged 12 and below.In the case of two or more people, each
-              additional person is calculated at a 25% discounted rate.
-            </small>
+          <p className='lh-base text-xs'>
+            Please include yourself in the total count, excluding children
+            aged 12 and below.In the case of two or more people, each
+            additional person is calculated at a 25% discounted rate.
           </p>
         </div>
         <div className="">
@@ -432,11 +425,10 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               ¥{calculateTotalAmount().toLocaleString()}
             </h1>
           </div>
-          <p>
-            <small>tax included</small>
-          </p>
+          <p className='text-xs my-2'>tax included</p>
+          <p className='text-sm my-2'>Payment Method: Cash</p>
         </div>
-        <FormField
+        {/* <FormField
           control={form.control}
           name="comment"
           render={({ field }) => (
@@ -448,7 +440,25 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               <FormMessage />
             </FormItem>
           )}
-      />
+        /> */}
+        <FormField
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>comment</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  rows={6}
+                  className="w-full px-3 py-2 border rounded-md"
+                  // 必要に応じてこのclassNameでスタイリングを調整することができます
+                ></textarea>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {invalidTime && <div className="text-red-500">End time should be set after the start time.</div>}
         {invalidDate && <div className="text-red-500">The end date should be set to the same date as the start date.</div>}
         {!userData && <div className="text-red-500 bold">Please Login or Register.</div>}
