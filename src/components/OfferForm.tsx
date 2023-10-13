@@ -383,7 +383,7 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
+                  <PopoverContent className="p-0">
                     <Command>
                       <CommandGroup>
                         {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -415,12 +415,10 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               </FormItem>
             )}
           />
-          <p>
-            <small>
-              Please include yourself in the total count, excluding children
-              aged 12 and below.In the case of two or more people, each
-              additional person is calculated at a 25% discounted rate.
-            </small>
+          <p className='lh-base text-xs'>
+            Please include yourself in the total count, excluding children
+            aged 12 and below.In the case of two or more people, each
+            additional person is calculated at a 25% discounted rate.
           </p>
         </div>
         <div className="">
@@ -432,8 +430,8 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               ¥{calculateTotalAmount().toLocaleString()}
             </h1>
           </div>
-          <p className='text-xs'>tax included</p>
-          <p className='text-xs'>Payment Method: Cash</p>
+          <p className='text-xs my-2'>tax included</p>
+          <p className='text-sm my-2'>Payment Method: Cash</p>
         </div>
         {/* <FormField
           control={form.control}
