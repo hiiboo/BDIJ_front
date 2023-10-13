@@ -15,7 +15,7 @@ export enum LanguageLevel {
     Intermediate = 'intermediate',
     UpperIntermediate = 'upper_intermediate',
     Advanced = 'advanced',
-    Proficiency = 'proficiency',
+    Native = 'native',
 }
 
 export enum UserType {
@@ -30,7 +30,7 @@ export enum UserStatus {
 
 export enum Gender {
     Male = 'male',
-    Famale = 'famale',
+    Female = 'female',
     Other = 'other',
 }
 
@@ -39,6 +39,9 @@ export interface UserData {
     user_type: UserType;
     booking_status?: BookingStatus | null;
     status: UserStatus;
+    profile_image?: string;
+    guide_reviewed?: boolean;
+    guest_reviewed?: boolean;
 }
 
 export interface GuestData {
@@ -89,7 +92,6 @@ export interface BookingData {
 }
 
 export interface PageProps {
-    isLoggedIn: boolean;
     userData?: UserData | null;
     guideData?: GuideData | null;
     guestData?: GuestData | null;

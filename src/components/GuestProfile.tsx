@@ -21,7 +21,8 @@ import {
   PageProps,
 } from '../types/types';
 
-function GuestProfile({ isLoggedIn, userData, guestData }: PageProps): JSX.Element | null {
+function GuestProfile({ userData, guestData }: PageProps): JSX.Element | null {
+  console.log(guestData);
 
 // <-- ---------- 定数の定義 ---------- -->
 
@@ -38,7 +39,7 @@ function GuestProfile({ isLoggedIn, userData, guestData }: PageProps): JSX.Eleme
       <div className={styles.iconContainer}>
         <span className={styles.iconBox}>
           {guestData && <Image
-            src={guestData.profile_image ? guestData.profile_image : '/image/user.jpeg'}
+            src={guestData.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}${guestData.profile_image}` : '/image/user.jpeg'}
             alt="icon"
             layout="fill"
             objectFit="cover"

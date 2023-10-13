@@ -14,7 +14,7 @@ import {
   PageProps
 } from '../../../types/types';
 
-function GuestOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function GuestOfferBox({ userData }: PageProps): JSX.Element | null {
 
   // <-- ---------- useState ---------- -->
   const [offers, setOffers] = useState<BookingData[]>([]);
@@ -43,7 +43,7 @@ function GuestOfferBox({ isLoggedIn, userData }: PageProps): JSX.Element | null 
 
   return (
     <main>
-      <OfferBox isLoggedIn={isLoggedIn} userData={userData} offers={offers} />
+      <OfferBox userData={userData} offers={offers} />
     </main>
   );
 };

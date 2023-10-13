@@ -19,7 +19,7 @@ import {
     PageProps
 } from '../../../types/types';
 
-function GuideProfileById({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function GuideProfileById({ userData }: PageProps): JSX.Element | null {
 
     const [guideData, setGuideData] = useState<GuideData | null>(null);
     const [guideId, setGuideId] = useState<number | null>(null);
@@ -62,8 +62,8 @@ function GuideProfileById({ isLoggedIn, userData }: PageProps): JSX.Element | nu
   return (
     <>
         <main className={styles.main}>
-            {guideData && <GuideProfile isLoggedIn={isLoggedIn} userData={userData} guideData={guideData} />}
-            {guideData && <OfferForm isLoggedIn={isLoggedIn} userData={userData} guideData={guideData} />}
+            {guideData && <GuideProfile userData={userData} guideData={guideData} />}
+            {guideData && <OfferForm userData={userData} guideData={guideData} />}
         </main>
     </>
   );

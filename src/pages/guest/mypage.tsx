@@ -33,7 +33,7 @@ import {
 } from '../../types/types';
 import axios from 'axios';
 
-function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
+function GuestMypage({ userData }: PageProps): JSX.Element | null {
 
     const [guestData, setGuestData] = useState<GuestData | null>(null);
 
@@ -105,13 +105,22 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
 
       // Update user info
       const securedAxios = createSecuredAxiosInstance();
-      const response = await securedAxios.patch(`api/user/update`, {
+      const patchData = {
         email,
         currentPassword,
         newPassword,
         firstName,
         lastName,
         profile_image: iconUrl,
+      };
+      console.log('patchData', patchData);
+      const response = await securedAxios.patch(`api/user/update`, {
+        email,
+        current_password: currentPassword,
+        new_password: newPassword,
+        first_name: firstName,
+        last_name: lastName,
+        profile_image: iconUrl
       });
 
       if (response.status === 200) {
@@ -129,26 +138,27 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
     }
   };
 
+  const isGuiding = userData?.booking_status === BookingStatus.Started || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.OfferPending;
+
   return (
     <main className={styles.main}>
       <Tabs defaultValue="view" className="w-100">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="view">View</TabsTrigger>
-          <TabsTrigger value="edit">Edit</TabsTrigger>
+          {/* <TabsTrigger value="edit">Edit</TabsTrigger> */}
         </TabsList>
         <TabsContent value="view">
           <h3>{email ? email : 'Loading...'} </h3>
-          {guestData && <GuestProfile isLoggedIn={isLoggedIn} userData={userData} guestData={guestData} />}
-          {userData && <StatusButton isLoggedIn={isLoggedIn} userData={userData} />}
+          {guestData && <GuestProfile userData={userData} guestData={guestData} />}
+          {userData && <StatusButton userData={userData} />}
         </TabsContent>
-        <TabsContent value="edit">
+        {/* <TabsContent value="edit">
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">Update Guest Info</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
             <form onSubmit={handleSubmit}>
-              {/* Email */}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -161,7 +171,6 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
               </div>
 
-              {/* Current Password */}
               <div className="grid gap-2">
                 <Label htmlFor="currentPassword">Current Password</Label>
                 <Input
@@ -174,7 +183,6 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
               </div>
 
-              {/* New Password */}
               <div className="grid gap-2">
                 <Label htmlFor="newPassword">New Password</Label>
                 <Input
@@ -187,7 +195,6 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
               </div>
 
-              {/* Password Confirmation */}
               <div className="grid gap-2">
                 <Label htmlFor="passwordConfirmation">Confirm New Password</Label>
                 <Input
@@ -200,7 +207,6 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
               </div>
 
-              {/* First Name */}
               <div className="grid gap-2">
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
@@ -213,7 +219,6 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
               </div>
 
-              {/* Last Name */}
               <div className="grid gap-2">
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
@@ -226,7 +231,6 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
               </div>
 
-              {/* Icon */}
               <div className="grid gap-2">
                 <Label htmlFor="icon">Icon</Label>
                 <Input
@@ -237,8 +241,8 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
                 />
               </div>
 
-              {/* Submit Button */}
-              <Button className="w-full" type="submit" disabled={isLoading}>
+              {isGuiding && <div className="text-red-500 bold">If your offer is pending, accepted or started, you cannot update your profile.</div>}
+              <Button className="w-full" type="submit" disabled={isLoading || isGuiding}>
                 {isLoading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
@@ -247,7 +251,7 @@ function GuestMypage({ isLoggedIn, userData }: PageProps): JSX.Element | null {
             </form>
           </CardContent>
         </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </main>
   );

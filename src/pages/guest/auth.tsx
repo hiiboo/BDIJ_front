@@ -4,7 +4,6 @@ const inter = Inter({ subsets: ['latin'] })
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../components/AuthContext'
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Icons } from "../../components/Icons"
@@ -47,7 +46,6 @@ function GuestAuth(): JSX.Element {
 
     const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
     const router = useRouter();
-    const { checkAuth } = useAuth();
 
     // デフォルトのタブを決定
     let defaultTab = "signup";
@@ -57,60 +55,68 @@ function GuestAuth(): JSX.Element {
 
 // <-- ---------- 関数の定義 ---------- -->
 
-    const fetchCsrfToken = async () => {
-        try {
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
-        } catch (error) {
-            console.error("Error fetching CSRF token", error);
-        }
-    };
+    // const fetchCsrfToken = async () => {
+    //     try {
+    //         await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
+    //     } catch (error) {
+    //         console.error("Error fetching CSRF token", error);
+    //     }
+    // };
 
     const handleRegister = async () => {
         try {
-            console.log(email);
-            console.log(password);
-            console.log(firstName);
-            console.log(lastName);
-            console.log(iconUrl);
             // CSRFトークンを取得
-            await fetchCsrfToken();
-            const response = await axios.post(`${apiUrl}/auth/guest/register`, {
-                email,
-                password,
-                password_confirmation: passwordConfirmation,
-                first_name: firstName,
-                last_name: lastName,
-                profile_image: iconUrl
-            }, {
+            // await fetchCsrfToken();
+
+            // FormDataオブジェクトのインスタンスを作成
+            const formData = new FormData();
+
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('password_confirmation', passwordConfirmation);
+            formData.append('first_name', firstName);
+            formData.append('last_name', lastName);
+
+            // iconFileが存在すれば、それもFormDataに追加
+            if (iconFile) {
+                formData.append('profile_image', iconFile);
+            }
+            console.log(formData);
+
+            // axiosでPOSTリクエストを送る
+            const response = await axios.post(`${apiUrl}/auth/guest/register`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
                 withCredentials: true
             });
-            console.log(response);
-            // 登録が成功したら、自動でログインにリダイレクト
+
+            // 以降の処理はそのまま...
             if (response.status === 200 && response.data.message === "Registration successful") {
-                // // ログイン成功
-                // localStorage.setItem('user_token', response.data.token);
-                alert('Signup successful');
-                await handleLogin();
+                localStorage.setItem('user_token', response.data.token);
+                console.log("Register successfully");
+                await handleRegisterLogin();
             } else {
-                // ログイン失敗
                 alert('Registration failed');
                 console.error("Registration failed", response.data.message);
-                router.push('/');
+                router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
             console.error("Registration error", error);
+            alert(`Registration failed, ${error}`);
         }
     };
 
-    const handleLogin = async () => {
+
+    const handleRegisterLogin = async () => {
         try {
             console.log(email);
             console.log(password);
             // CSRF cookieを取得
-            await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
-                withCredentials: true
-            });
-            console.log("CSRF cookie set successfully");
+            // await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
+            //     withCredentials: true
+            // });
+            // console.log("CSRF cookie set successfully");
             // ログインリクエストを送信
             const response = await axios.post(`${apiUrl}/auth/user/login`, {
                 email,
@@ -122,33 +128,50 @@ function GuestAuth(): JSX.Element {
             if (response.status === 200 && response.data.message === "Login successful") {
                 // ログイン成功
                 localStorage.setItem('user_token', response.data.token);
-
-                // クエリパラメータを取得
-                const { start_time, end_time, total_guests, comment, guide_id } = router.query;
-
-                // クエリパラメータが存在するかチェック
-                if (start_time && end_time && total_guests && guide_id) {
-                    // クエリパラメータが存在する場合、/guest/offer/confirmation へリダイレクト
-                    router.push({
-                        pathname: '/guest/offer/confirmation',
-                        query: {
-                            start_time, end_time, total_guests, comment, guide_id
-                        }
-                    });
-                } else {
-                    // クエリパラメータが存在しない場合、/ へリダイレクト
-                    router.push('/');
-                }
-
-                await checkAuth();
-                alert('Login successful');
+                alert('Register & Login successful');
+                router.push('/').then(() => window.location.reload());
             } else {
                 // ログイン失敗
-                alert('Login failed');
+                alert(`Login failed, ${response.data.message}`);
                 console.error("Login failed", response.data.message);
-                router.push('/');
+                router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
+            alert(`Login failed, ${error}`);
+            console.error("Login error", error);
+        }
+    };
+
+    const handleLogin = async () => {
+        try {
+            console.log(email);
+            console.log(password);
+            // CSRF cookieを取得
+            // await axios.get(`${apiUrl}/sanctum/csrf-cookie`, {
+            //     withCredentials: true
+            // });
+            // console.log("CSRF cookie set successfully");
+            // ログインリクエストを送信
+            const response = await axios.post(`${apiUrl}/auth/user/login`, {
+                email,
+                password,
+            }, {
+                withCredentials: true
+            });
+            console.log(response);
+            if (response.status === 200 && response.data.message === "Login successful") {
+                // ログイン成功
+                localStorage.setItem('user_token', response.data.token);
+                alert('Login successful');
+                router.push('/').then(() => window.location.reload());
+            }else {
+                // ログイン失敗
+                alert(`Login failed, ${response.data.message}`);
+                console.error("Login failed", response.data.message);
+                router.push('/').then(() => window.location.reload());
+            }
+        } catch (error) {
+            alert(`Login failed, ${error}`);
             console.error("Login error", error);
         }
     };
@@ -166,16 +189,16 @@ function GuestAuth(): JSX.Element {
         }
     };
 
-    useEffect(() => {
-        if (iconFile) {
-            (async () => {
-                const response = await uploadImage(iconFile);
-                if (response?.path) {
-                    setIconUrl(response.path);
-                }
-            })();
-        }
-    }, [iconFile]);
+    // useEffect(() => {
+    //     if (iconFile) {
+    //         (async () => {
+    //             const response = await uploadImage(iconFile);
+    //             if (response?.path) {
+    //                 setIconUrl(response.path);
+    //             }
+    //         })();
+    //     }
+    // }, [iconFile]);
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -188,21 +211,33 @@ function GuestAuth(): JSX.Element {
 
 // <-- ---------- useEffect ---------- -->
 
-    useEffect(() => {
-        const fetchIcon = async () => {
-            try {
-                const securedAxios = createSecuredAxiosInstance();
-                const response = await securedAxios.get(`/api/guest/profile_image`, {
-                    withCredentials: true
-                });
-                setIconUrl(response.data.url);
-            } catch (error) {
-                console.error("Error fetching icon URL", error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchIcon = async () => {
+    //         try {
+    //             const securedAxios = createSecuredAxiosInstance();
+    //             const response = await securedAxios.get(`/api/guest/profile_image`, {
+    //                 withCredentials: true
+    //             });
+    //             setIconUrl(response.data.url);
+    //         } catch (error) {
+    //             console.error("Error fetching icon URL", error);
+    //         }
+    //     };
 
-        fetchIcon();
-    }, []);
+    //     fetchIcon();
+    // }, []);
+
+    const isPasswordShort = password.length < 8;
+    const isPasswordDiffernt = password !== passwordConfirmation;
+
+    const isShortOfInfoRegisterFirst = !email || !password || !passwordConfirmation;
+
+    // サブミットボタンの有効・無効を管理
+    const isSubmitDisabledRegisterFirst = isPasswordShort || isPasswordDiffernt || isShortOfInfoRegisterFirst;
+    const isSubmitDisabledRegisterSecond = !firstName || !lastName;
+
+    const isShortOfInfoLogin = !email || !password;
+    const isSubmitDisabledLogin = isPasswordShort || isShortOfInfoLogin;
 
 
     return (
@@ -216,13 +251,13 @@ function GuestAuth(): JSX.Element {
                     {showFirstCard && (
                         <Card>
                             <CardHeader className="space-y-1">
-                                <CardTitle className="text-2xl">Create an account</CardTitle>
+                                <CardTitle className="text-2xl my-2">Create an account</CardTitle>
                                 <CardDescription>
                                 Enter your email below to create your account
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="grid gap-4">
-                                <div className="grid grid-cols-2 gap-6">
+                                {/* <div className="grid grid-cols-2 gap-6">
                                 <Button variant="outline">
                                     <Icons.twitter className="mr-2 h-4 w-4" />
                                     Twitter
@@ -241,13 +276,13 @@ function GuestAuth(): JSX.Element {
                                     Or continue with
                                     </span>
                                 </div>
-                                </div>
+                                </div> */}
                                 <form onSubmit={onSubmit}>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="email">Email</Label>
                                         <Input
                                             id="email"
-                                            placeholder="name@example.com"
+                                            placeholder="Email"
                                             type="email"
                                             autoCapitalize="none"
                                             autoComplete="email"
@@ -257,7 +292,7 @@ function GuestAuth(): JSX.Element {
                                             onChange={e => setEmail(e.target.value)}
                                         />
                                     </div>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="password">Password</Label>
                                         <Input
                                             id="password"
@@ -270,12 +305,15 @@ function GuestAuth(): JSX.Element {
                                             value={password}
                                             onChange={e => setPassword(e.target.value)}
                                         />
+                                        <p className="text-xs text-muted-foreground my-0">
+                                            Password must be at least 8 characters long.
+                                        </p>
                                     </div>
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="password">Confirm Password</Label>
                                         <Input
                                             id="password"
-                                            placeholder="Confirm Password"
+                                            placeholder="Please Enter Your Password Again"
                                             type="password"
                                             autoCapitalize="none"
                                             autoComplete="password"
@@ -285,7 +323,10 @@ function GuestAuth(): JSX.Element {
                                             onChange={e => setPasswordConfirmation(e.target.value)}
                                         />
                                     </div>
-                                    <Button className="w-full" disabled={isLoading} onClick={handleFirstCardButtonClick}>
+                                    {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
+                                    {isPasswordDiffernt && <div className="text-red-500 text-xs">Something wrong with confirm password.</div>}
+                                    {isShortOfInfoRegisterFirst && <div className="text-red-500 text-xs">Enter your email and password.</div>}
+                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterFirst} onClick={handleFirstCardButtonClick}>
                                         {isLoading && (
                                             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                         )}
@@ -298,15 +339,15 @@ function GuestAuth(): JSX.Element {
                     {showSecondCard && (
                         <Card>
                             <CardHeader className="space-y-1">
-                                <CardTitle className="text-2xl">Create an account</CardTitle>
+                                <CardTitle className="text-2xl my-2">Create an account</CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-4">
                                 <form onSubmit={onSubmit}>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="firstname">First Name</Label>
+                                    <div className="grid gap-2 mt-2 mb-8">
+                                        {/* <Label htmlFor="firstname">First Name</Label> */}
                                         <Input
                                             id="firstname"
-                                            placeholder="First"
+                                            placeholder="First name"
                                             type="text"
                                             autoCapitalize="none"
                                             autoComplete="firstname"
@@ -316,11 +357,11 @@ function GuestAuth(): JSX.Element {
                                             onChange={e => setFirstName(e.target.value)}
                                         />
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="lastname">Last Name</Label>
+                                    <div className="grid gap-2 mt-2 mb-8">
+                                        {/* <Label htmlFor="lastname mt-2 mb-8">Last Name</Label> */}
                                         <Input
                                             id="lastname"
-                                            placeholder="Last"
+                                            placeholder="Last name"
                                             type="text"
                                             autoCapitalize="none"
                                             autoComplete="lastname"
@@ -330,8 +371,7 @@ function GuestAuth(): JSX.Element {
                                             onChange={e => setLastName(e.target.value)}
                                         />
                                     </div>
-
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 mt-2 mb-8">
                                         <Label htmlFor="picture">Icon</Label>
                                         <Input
                                             id="icon"
@@ -341,8 +381,8 @@ function GuestAuth(): JSX.Element {
                                             onChange={onIconChange}
                                         />
                                     </div>
-
-                                    <Button className="w-full" disabled={isLoading} onClick={handleRegister}>
+                                    {isSubmitDisabledRegisterSecond && <div className="text-red-500 text-xs">Enter your information.</div>}
+                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterSecond} onClick={handleRegister}>
                                         {isLoading && (
                                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                         )}
@@ -356,21 +396,21 @@ function GuestAuth(): JSX.Element {
                 <TabsContent value="login">
                     <Card>
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl">Login an account</CardTitle>
+                            <CardTitle className="text-2xl my-2">Login an account</CardTitle>
                             <CardDescription>
-                            Enter your email below to login your account
+                                Enter your email below to login your account
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-6">
-                            <Button variant="outline">
-                                <Icons.twitter className="mr-2 h-4 w-4" />
-                                Twitter
-                            </Button>
-                            <Button variant="outline">
-                                <Icons.google className="mr-2 h-4 w-4" />
-                                Google
-                            </Button>
+                            {/* <div className="grid grid-cols-2 gap-6">
+                                <Button variant="outline">
+                                    <Icons.twitter className="mr-2 h-4 w-4" />
+                                    Twitter
+                                </Button>
+                                <Button variant="outline">
+                                    <Icons.google className="mr-2 h-4 w-4" />
+                                    Google
+                                </Button>
                             </div>
                             <div className="relative">
                             <div className="absolute inset-0 flex items-center">
@@ -381,38 +421,42 @@ function GuestAuth(): JSX.Element {
                                 Or continue with
                                 </span>
                             </div>
-                            </div>
+                            </div> */}
                             <form onSubmit={onSubmit}>
-                                <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    placeholder="name@example.com"
-                                    type="email"
-                                    autoCapitalize="none"
-                                    autoComplete="email"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                />
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        placeholder="name@example.com"
+                                        type="email"
+                                        autoCapitalize="none"
+                                        autoComplete="email"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                    />
                                 </div>
-                                <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    placeholder="Password"
-                                    type="password"
-                                    autoCapitalize="none"
-                                    autoComplete="password"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                />
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        placeholder="Password"
+                                        type="password"
+                                        autoCapitalize="none"
+                                        autoComplete="password"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                    />
+                                    <p className="text-xs text-muted-foreground my-0">
+                                        Password must be at least 8 characters long.
+                                    </p>
                                 </div>
-
-                                <Button className="w-full" disabled={isLoading} onClick={handleLogin}>
+                                {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
+                                {isShortOfInfoLogin && <div className="text-red-500 text-xs">Enter your email and password.</div>}
+                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledLogin} onClick={handleLogin}>
                                     {isLoading && (
                                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}

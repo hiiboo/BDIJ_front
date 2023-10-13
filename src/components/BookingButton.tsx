@@ -16,19 +16,16 @@ import {
   PageProps
 } from '../types/types';
 
-const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData }) => {
+const BookingButton: React.FC<PageProps> = ({ userData ,bookingData }) => {
 
   const router = useRouter();
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   console.log('bookingData', bookingData);
-
-  const handleCancelNoFee = () => {
-    alert('under development');
-  };
-
-  const handleCancelApplyFee = () => {
-    alert('under development');
-  };
+  if(!userData) {
+    alert('userData is null');
+    return null;
+  }
+  const { user_type, booking_status, guest_reviewed, guide_reviewed } = userData;
 
   const handleAcceptOffer = async () => {
     try {
@@ -36,7 +33,7 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
       securedAxios.patch(`/api/bookings/${booking_id}/accept`)
-      router.reload();
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
@@ -48,65 +45,66 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
       securedAxios.patch(`/api/bookings/${booking_id}/cancel`)
-      router.reload();
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
   };
 
   const renderButton = () => {
-    if(!userData) {
-      alert('userData is null');
-      return null;
-    }
-    const { user_type } = userData;
-    // // bookingDataがnullか、booking_statusがnullの場合の処理
-    // if (!bookingData || bookingData.booking_status == null) {
-    //   return (
-    //     <div>
-    //       <Link href="/guest/offer/box">
-    //         <Button>オファーボックスに戻る</Button>
-    //       </Link>
-    //     </div>
-    //   );
-    // }
-    const { booking_status } = userData;
 
     if (user_type === UserType.Guest) {
       switch (booking_status) {
         case BookingStatus.OfferPending:
-          return <Button onClick={handleCancelNoFee}>キャンセルする</Button>;
+          return (
+              <Button onClick={handleCancelOffer}>
+                Cancell Your Offer
+              </Button>
+          );
         case BookingStatus.Accepted:
           return (
-            <>
-                <Link href="/guest/timer">
-                    <Button>ガイド準備</Button>
-                </Link>
-                <Button onClick={handleCancelApplyFee}>キャンセルする</Button>
-            </>
+            <div>
+              <Link href="/guest/timer">
+                  <Button>Prepare Guiding</Button>
+              </Link>
+              <Button onClick={handleCancelOffer}>
+                Cancell Guiding
+              </Button>
+              <p className='text-xs'>Cancell Fee 20%</p>
+            </div>
           );
         case BookingStatus.Started:
           return (
             <>
                 <Link href="/guest/timer">
-                    <Button>ガイド中</Button>
+                    <Button>While Guiding</Button>
                 </Link>
             </>
           );
         case BookingStatus.Finished:
-          return (
-            <>
-                <Link href="/guest/review">
-                    <Button>レビュー待ち</Button>
-                </Link>
-            </>
-          );
+          if (guest_reviewed === true) {
+            return (
+              <>
+                  <Link href="/guest/offer/box">
+                      <Button>Check Your Offer</Button>
+                  </Link>
+              </>
+            );
+          } else {
+            return (
+              <>
+                  <Link href="/guest/review">
+                      <Button>Please Review Guiding</Button>
+                  </Link>
+              </>
+            );
+          }
         case BookingStatus.Reviewed:
         case BookingStatus.Cancelled:
           return (
             <>
                 <Link href="/guest/offer/box">
-                    <Button>オファーボックスに戻る</Button>
+                    <Button>Check Your Offer</Button>
                 </Link>
             </>
           );
@@ -119,7 +117,7 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
           return (
             <>
                 <Link href="/guide/timer">
-                    <Button>ガイド準備</Button>
+                    <Button>ガイドの準備をする</Button>
                 </Link>
             </>
         );
@@ -127,19 +125,28 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
           return (
             <>
                 <Link href="/guide/timer">
-                    <Button>ガイド中</Button>
+                    <Button>ガイド中です</Button>
                 </Link>
             </>
           );
         case BookingStatus.Finished:
-          return (
-                <>
-                    <Link href="/guide/review">
-                        <Button>レビュー待ち</Button>
-                    </Link>
-
-                </>
+          if (guide_reviewed === true) {
+            return (
+              <>
+                  <Link href="/guide/offer/box">
+                      <Button>オファーボックスへ</Button>
+                  </Link>
+              </>
             );
+          } else {
+            return (
+              <>
+                  <Link href="/guide/review">
+                      <Button>レビューをしてください</Button>
+                  </Link>
+              </>
+            );
+          }
         case BookingStatus.OfferPending:
             return (
               <div>
@@ -156,7 +163,7 @@ const BookingButton: React.FC<PageProps> = ({ userData, isLoggedIn ,bookingData 
             return (
               <div>
                 <Link href="/guest/offer/box">
-                    <Button>オファーボックスに戻る</Button>
+                    <Button>オファーボックスへ</Button>
                 </Link>
               </div>
             );

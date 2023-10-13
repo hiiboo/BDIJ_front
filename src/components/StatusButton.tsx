@@ -2,6 +2,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { utils } from '../utils/utils';
 
 import {
   BookingStatus,
@@ -16,36 +18,36 @@ import {
 } from '../types/types';
 
 const StatusButton: React.FC<PageProps> = ({ userData }) => {
-
-  const handleCancelNoFee = () => {
-    alert('under development');
-    // Execute the function to display modalCancelNoFee
-  };
-
-  const handleCancelApplyFee = () => {
-    alert('under development');
-    // Execute the function to display modalCancelApplyFee
-  };
+  const router = useRouter();
+  const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
   const renderButton = () => {
     if (!userData) {
       return null;
     }
 
-    const { user_type, booking_status } = userData;
+    const { user_type, booking_status, guest_reviewed, guide_reviewed } = userData;
 
 
     if (user_type === 'guest') {
       switch (booking_status) {
         case BookingStatus.OfferPending:
-          return <Button onClick={handleCancelNoFee}>Cancell</Button>;
+          return (
+            <>
+                <Link href="/guest/offer/box">
+                    <Button>Check or Cancell Your Offer</Button>
+                </Link>
+            </>
+          );
         case BookingStatus.Accepted:
           return (
             <>
                 <Link href="/guest/timer">
                     <Button>Prepare your Guide</Button>
                 </Link>
-                <Button onClick={handleCancelApplyFee}>Cancell</Button>
+                <Link href="/guest/offer/box">
+                    <Button>Check or Cancell Your Offer</Button>
+                </Link>
             </>
           );
         case BookingStatus.Started:
@@ -57,13 +59,23 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
             </>
           );
         case BookingStatus.Finished:
-          return (
-            <>
-                <Link href="/guest/review">
-                    <Button>Please Review</Button>
-                </Link>
-            </>
-          );
+          if (guest_reviewed === true) {
+            return (
+              <>
+                  <Link href="/guest/offer/box">
+                      <Button>Check Your Offer</Button>
+                  </Link>
+              </>
+            );
+          } else {
+            return (
+              <>
+                  <Link href="/guest/review">
+                      <Button>Please Review Guiding</Button>
+                  </Link>
+              </>
+            );
+          }
         case BookingStatus.Reviewed:
         case BookingStatus.Cancelled:
         case null:
@@ -83,7 +95,7 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
           return (
             <>
                 <Link href="/guide/timer">
-                    <Button>Prepare your Guide</Button>
+                    <Button>ガイドの準備をする</Button>
                 </Link>
             </>
         );
@@ -91,28 +103,37 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
           return (
             <>
                 <Link href="/guide/timer">
-                    <Button>While Guiding</Button>
+                    <Button>ガイド中です</Button>
                 </Link>
             </>
           );
-        case BookingStatus.Finished:
-          return (
+          case BookingStatus.Finished:
+            if (guide_reviewed === true) {
+              return (
+                <>
+                    <Link href="/guide/offer/box">
+                        <Button>オファーボックスへ</Button>
+                    </Link>
+                </>
+              );
+            } else {
+              return (
                 <>
                     <Link href="/guide/review">
-                        <Button>Please Review</Button>
+                        <Button>レビューをしてください</Button>
                     </Link>
-
                 </>
-            );
+              );
+            }
         case BookingStatus.OfferPending:
           return (
             <div>
                 <Link href="/guide/offer/box">
                   <Badge color='primary'>
-                    You have a offer!
+                    オファーが来ています！
                   </Badge>
                   <Button>
-                    Check Your Offer
+                    オファーを確認ください
                   </Button>
                 </Link>
             </div>
@@ -124,7 +145,7 @@ const StatusButton: React.FC<PageProps> = ({ userData }) => {
               <div>
                   <Link href="/guide/offer/box">
                     <Button>
-                      OfferBox
+                      オファーボックスへ
                     </Button>
                   </Link>
               </div>

@@ -14,7 +14,7 @@ import {
   PageProps,
 } from '../types/types';
 
-function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | null {
+function Timer({ userData, bookingData }: PageProps): JSX.Element | null {
   const [time, setTime] = useState<string | null>(null);
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
   const router = useRouter();
@@ -24,7 +24,8 @@ function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | 
       const securedAxios = createSecuredAxiosInstance();
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
-      securedAxios.patch(`/api/bookings/${booking_id}/finish`)
+      const response = await securedAxios.patch(`/api/bookings/${booking_id}/finish`)
+      console.log('response', response);
     } catch (error) {
       console.error(error);
     }
@@ -79,7 +80,7 @@ function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | 
                     clearInterval(intervalId);
                     setTime('00:00');
                     finishGuide();
-                    // 5秒後からbooking_statusを取得するAPIを15秒ごとに呼び出し
+                    // 3秒後からbooking_statusを取得するAPIを15秒ごとに呼び出し
                     setTimeout(() => {
                         const checkStatusIntervalId = setInterval(() => {
                             finishGuide();
@@ -90,16 +91,15 @@ function Timer({ isLoggedIn, userData, bookingData }: PageProps): JSX.Element | 
                                     if (statusResponse.data.data === BookingStatus.Finished) {
                                         clearInterval(checkStatusIntervalId);
                                         if (userData.user_type === 'guide') {
-                                            console.log('userData.user_type', userData.user_type);
-                                            router.reload();
+                                            window.location.reload();
                                         } else if (userData.user_type === 'guest') {
-                                            router.reload();
+                                            window.location.reload();
                                         }
                                     }
                                 })
                                 .catch(error => console.error(error));
                         }, 15000);
-                    }, 5000);
+                    }, 3000);
                 } else {
                     const totalMinutes = Math.floor(remainingTime / (1000 * 60));
                     const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
