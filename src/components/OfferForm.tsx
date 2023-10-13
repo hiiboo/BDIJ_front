@@ -369,7 +369,7 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
                         variant="outline"
                         role="combobox"
                         className={cn(
-                          "w-[200px] justify-between",
+                          "justify-between",
                           !field.value && "text-muted-foreground"
                         )}
                       >
