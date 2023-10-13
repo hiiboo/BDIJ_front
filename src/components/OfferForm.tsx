@@ -191,9 +191,9 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
           console.error("Booking Error:", error);
         }
     };
-    
 
-    const isBookingStatusCannotOffer = userData?.booking_status === BookingStatus.OfferPending || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.Started || userData?.booking_status === BookingStatus.Finished;
+    const isNotReviewed = userData?.booking_status === BookingStatus.Finished && userData?.guide_reviewed === false;
+    const isBookingStatusCannotOffer = userData?.booking_status === BookingStatus.OfferPending || userData?.booking_status === BookingStatus.Accepted || userData?.booking_status === BookingStatus.Started || isNotReviewed;
 
 // <-- ---------- 表示 ---------- -->
 
@@ -432,11 +432,10 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               ¥{calculateTotalAmount().toLocaleString()}
             </h1>
           </div>
-          <p>
-            <small>tax included</small>
-          </p>
+          <p className='text-xs'>tax included</p>
+          <p className='text-xs'>Payment Method: Cash</p>
         </div>
-        <FormField
+        {/* <FormField
           control={form.control}
           name="comment"
           render={({ field }) => (
@@ -448,7 +447,25 @@ const OfferForm: React.FC<PageProps> = ({ userData, guideData }) => {
               <FormMessage />
             </FormItem>
           )}
-      />
+        /> */}
+        <FormField
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>comment</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  rows={6}
+                  className="w-full px-3 py-2 border rounded-md"
+                  // 必要に応じてこのclassNameでスタイリングを調整することができます
+                ></textarea>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {invalidTime && <div className="text-red-500">End time should be set after the start time.</div>}
         {invalidDate && <div className="text-red-500">The end date should be set to the same date as the start date.</div>}
         {!userData && <div className="text-red-500 bold">Please Login or Register.</div>}

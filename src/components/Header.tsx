@@ -90,7 +90,7 @@ function Header({ userData }: PageProps): JSX.Element {
     let notificationLink = "";
 
     if (userData) {
-        const { user_type, booking_status } = userData;
+        const { user_type, booking_status, guest_reviewed, guide_reviewed } = userData;
 
         if (booking_status === BookingStatus.OfferPending) {
             notificationText = user_type === "guest" ? "Your offer is Pending" : "オファーを確認ください";
@@ -101,9 +101,12 @@ function Header({ userData }: PageProps): JSX.Element {
         } else if (booking_status === BookingStatus.Started) {
             notificationText = user_type === "guest" ? "While Guiding" : "ガイド中です";
             notificationLink = user_type === "guest" ? "/guest/timer" : "/guide/timer";
-        } else if (booking_status === BookingStatus.Finished) {
-            notificationText = user_type === "guest" ? "Please Review" : "レビューしてください";
-            notificationLink = user_type === "guest" ? "/guest/review" : "/guide/review";
+        } else if (booking_status === BookingStatus.Finished && guest_reviewed === false && user_type === "guest") {
+            notificationText = "Please Review";
+            notificationLink = "/guest/review";
+        } else if (booking_status === BookingStatus.Finished && guide_reviewed === false && user_type === "guide") {
+            notificationText = "レビューしてください";
+            notificationLink = "/guide/review";
         }
     }
 

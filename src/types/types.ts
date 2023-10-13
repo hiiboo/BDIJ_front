@@ -40,6 +40,8 @@ export interface UserData {
     booking_status?: BookingStatus | null;
     status: UserStatus;
     profile_image?: string;
+    guide_reviewed?: boolean;
+    guest_reviewed?: boolean;
 }
 
 export interface GuestData {
