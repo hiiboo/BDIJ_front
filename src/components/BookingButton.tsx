@@ -32,7 +32,8 @@ const BookingButton: React.FC<PageProps> = ({ userData ,bookingData }) => {
       const securedAxios = createSecuredAxiosInstance();
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
-      securedAxios.patch(`/api/bookings/${booking_id}/accept`)
+      const response = await securedAxios.patch(`/api/bookings/${booking_id}/accept`);
+      console.log('response', response);
       window.location.reload();
     } catch (error) {
       console.error(error);
@@ -44,7 +45,8 @@ const BookingButton: React.FC<PageProps> = ({ userData ,bookingData }) => {
       const securedAxios = createSecuredAxiosInstance();
       const booking_id = bookingData?.id
       console.log('booking_id', booking_id);
-      securedAxios.patch(`/api/bookings/${booking_id}/cancel`)
+      const response = await securedAxios.patch(`/api/bookings/${booking_id}/cancel`);
+      console.log('response', response);
       window.location.reload();
     } catch (error) {
       console.error(error);
