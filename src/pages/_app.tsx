@@ -51,7 +51,8 @@ export default function App({ Component, pageProps }: AppProps) {
         try {
             const securedAxios = createSecuredAxiosInstance();
             console.log('Sending location', latitude, longitude);
-            securedAxios.post(`/user/current/location`, { latitude, longitude });
+            const response = await securedAxios.post(`/user/current/location`, { latitude, longitude });
+            console.log(response.data);
             console.log('Location sent successfully');
         } catch (error) {
             console.error('Failed to send location', error);
