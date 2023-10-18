@@ -34,19 +34,12 @@ function Home({ userData }: PageProps): JSX.Element | null {
 
 // <-- ---------- useState ---------- -->
 
-  const [isLoading, setIsLoading] = useState(true);
-
 
 // <-- ---------- 定数の定義 ---------- -->
   const router = useRouter();
   const { apiUrl, createSecuredAxiosInstance, formatDateToCustom } = utils();
 
 // <-- ---------- 表示 ---------- -->
-
-  // 表示
-  if (isLoading) {
-    return <div>Loading...</div>; // ローディング画面の表示
-  }
 
   return (
     <>
