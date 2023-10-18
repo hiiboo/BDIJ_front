@@ -43,17 +43,17 @@ function Home({ userData }: PageProps): JSX.Element | null {
 
   return (
     <>
-      <div className="relative h-screen w-full bg-center bg-cover" style={{ backgroundImage: 'url(/top_image.webp)' }}>
+      <div className="relative h-screen w-full bg-center bg-cover p-16" style={{ backgroundImage: 'url(/top_image.webp)' }}>
 
         {/* ロゴの配置 */}
-        <img src="/top_logo.webp" alt="Top Logo" className="mt-4 mx-4" />
+        <img src="/top_logo.webp" alt="Top Logo" className="" />
 
         {/* ボタンの配置 */}
-        <Link href="/guest">
-          <Button className="bg-blue-500 text-white py-2 px-4 w-full">For Guide</Button>
+        <Link href="/guest" className="py-4">
+          <Button className="bg-blue-500 text-white p-4 w-full">For Guest</Button>
         </Link>
-        <Link href="/guide/auth">
-          <Button className="bg-red-500 text-white py-2 px-4 w-full">For Guest</Button>
+        <Link href="/guide/auth" className="py-4">
+          <Button className="bg-red-500 text-white p-4 w-full">For Guide</Button>
         </Link>
       </div>
     </>
