@@ -68,7 +68,7 @@ function Review({ userData }: PageProps): JSX.Element | null {
                 // booking_statusがfinished以外の時は/にリダイレクト
                 // ここばbookingData.booking_statusではない、userData.booking_statusを使う
                 if (userData && userData.booking_status !== BookingStatus.Finished) {
-                    router.push('/');
+                    router.push('/guide/mypage');
                 }
             } catch (error) {
                 console.error('Failed to fetch booking data', error);
@@ -105,7 +105,7 @@ function Review({ userData }: PageProps): JSX.Element | null {
                 const response = await axiosInstance.post(`/api/bookings/${bookingId}/reviews/guide`, postData);
                 console.log(response);
                 // 予約が成功したら、適切なページにリダイレクトするなどの処理を行う
-                router.push('/');
+                router.push('/guide/mypage');
             } else {
                 console.error("Booking data is not available.");
             }

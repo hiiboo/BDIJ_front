@@ -69,14 +69,7 @@ function Review({ userData }: PageProps): JSX.Element | null {
 
                 // lastBookingStatusがfinished以外の時は/にリダイレクト
                 if (userData && userData.booking_status !== BookingStatus.Finished) {
-                    const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'on';
-
-                    if (isTestMode) {
-                        console.log("Test mode is enabled. Redirects are disabled.");
-                        setIsLoading(false);
-                        return;
-                    }
-                    router.push('/');
+                    router.push('/guest');
                 }
             } catch (error) {
                 console.error('Failed to fetch booking data', error);
@@ -115,7 +108,7 @@ function Review({ userData }: PageProps): JSX.Element | null {
                 const response = await axiosInstance.post(`/api/bookings/${bookingId}/reviews/guest`, postData);
                 console.log(response);
                 // 予約が成功したら、適切なページにリダイレクトするなどの処理を行う
-                router.push('/');
+                router.push('/guest');
             } else {
                 console.error("Booking data is not available.");
             }

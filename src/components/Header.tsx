@@ -48,12 +48,12 @@ function Header({ userData }: PageProps): JSX.Element {
         // 現在のパスが /guest/* または / の場合
         if(!userData) {
             logoText = "For Guest";
-            logoLink = "/"; // ロゴリンクを/guestに設定
+            logoLink = "/guest"; // ロゴリンクを/guestに設定
             changeText = "Guide Mode"
             changeLink = "/guide/auth"
         } else {
             logoText = "For Guest";
-            logoLink = "/"; // ロゴリンクを/guestに設定
+            logoLink = "/guest"; // ロゴリンクを/guestに設定
             changeText = "Guide Mode"
             changeLink = "/guide/mypage"
         }
