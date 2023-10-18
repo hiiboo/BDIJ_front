@@ -46,18 +46,15 @@ function Home({ userData }: PageProps): JSX.Element | null {
       <div className="relative h-screen w-full bg-center bg-cover" style={{ backgroundImage: 'url(/top_image.webp)' }}>
 
         {/* ロゴの配置 */}
-        <img src="/top_logo.webp" alt="Top Logo" className="absolute top-16 left-16" />
+        <img src="/top_logo.webp" alt="Top Logo" className="mt-4 mx-4" />
 
         {/* ボタンの配置 */}
-        <div className="absolute left-16 mt-28">
-            <Link href="/guest">
-              <Button className="bg-blue-500 text-white py-2 px-4 mr-3 rounded">For Guide</Button>
-            </Link>
-            <Link href="/guide/auth">
-              <Button className="bg-red-500 text-white py-2 px-4 rounded">For Guest</Button>
-            </Link>
-        </div>
-
+        <Link href="/guest">
+          <Button className="bg-blue-500 text-white py-2 px-4 w-full">For Guide</Button>
+        </Link>
+        <Link href="/guide/auth">
+          <Button className="bg-red-500 text-white py-2 px-4 w-full">For Guest</Button>
+        </Link>
       </div>
     </>
   );
