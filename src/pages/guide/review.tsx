@@ -122,16 +122,18 @@ function Review({ userData }: PageProps): JSX.Element | null {
     }
 
     return (
-        <>  <h2>Thank you so much!!<br/>Have a Best Day!</h2>
-            <div className="flex flex-col items-center justify-content-between">
+        <>
+        <main className='m-3'>
+            <h2 className='my-6 bold text-center'>Thank you so much!!<br/>Have a Best Day!</h2>
+            <div className="flex flex-col items-center justify-content-between my-6">
             <Image
                 src={bookingData?.guest_image ? `${process.env.NEXT_PUBLIC_API_URL}${bookingData?.guest_image}` : '/logo_3.png'}
                 alt="guest_image"
-                width={200}
-                height={200}
+                width={100}
+                height={100}
                 className="rounded-full"
             />
-                <p>{bookingData?.guest_first_name} {bookingData?.guest_last_name}</p>
+            <p className='p-3 m-3'>{bookingData?.guest_first_name} {bookingData?.guest_last_name}</p>
             </div>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -203,16 +205,17 @@ function Review({ userData }: PageProps): JSX.Element | null {
                 <div className="">
                     <div className="flex flex-col items-center justify-content-between">
                         <div>
-                            <h3>Total amount</h3>
-                            <p><small>Inclusive of tax</small></p>
+                            <h3 className='my-2'>Total amount</h3>
+                            <p className='my-2 text-sm'>Inclusive of tax</p>
                         </div>
-                        <p className='bold'>¥{bookingData?.total_amount}</p>
+                        <p className='bold my-2 text-lg'>¥{bookingData?.total_amount}</p>
+                        <p className='my-3 text-center text-sm'>Include yourself in the total count, excluding children aged 12 and below.</p>
+                        <Button type="submit" className='mt-3'>Complete</Button>
                     </div>
-                    <p><small>Include yourself in the total count, excluding children aged 12 and below.</small></p>
                 </div>
-                <Button type="submit">Complete</Button>
             </form>
-        </Form>
+            </Form>
+        </main>
         </>
     );
 }

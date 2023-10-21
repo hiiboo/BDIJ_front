@@ -133,13 +133,13 @@ function Header({ userData }: PageProps): JSX.Element {
                         </Link>
                     </MenubarTrigger>
                 </MenubarMenu>
-                <MenubarMenu>
+                {/* <MenubarMenu>
                     <MenubarTrigger style={{ paddingTop:10 }}>
                     <Link href={changeLink}>
                                 <p style={{ margin:0 }}><small>Change<br/>{changeText}</small></p>
                     </Link>
                     </MenubarTrigger>
-                </MenubarMenu>
+                </MenubarMenu> */}
                 <MenubarMenu>
                     <UserMenu
                         userData={userData}

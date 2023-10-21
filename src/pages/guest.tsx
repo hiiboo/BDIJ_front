@@ -222,14 +222,18 @@ useEffect(() => {
   return (
     <>
       <header>
-      <Image
-          src="/image/header_guest.png"
+      {/* <Image
+          src="/top_image.webp"
           alt="Logo"
           objectFit="contain"
           className={styles.header}
           height={175}
           width={754}
-      />
+      /> */}
+      <div className="relative w-full bg-center bg-cover p-8" style={{ backgroundImage: 'url(/top_image.webp)' }}>
+        {/* ロゴの配置 */}
+        <img src="/guest_logo.webp" alt="Guest Logo" className="" />
+      </div>
       </header>
       <main className={styles.main}>
         <h2 className={styles.title}><small>Meeting Place</small><br/><span className='bold'>Harajuku Station</span></h2>

@@ -43,7 +43,7 @@ function Home({ userData }: PageProps): JSX.Element | null {
 
   return (
     <>
-      <div className="relative h-screen w-full bg-center bg-cover p-16" style={{ backgroundImage: 'url(/top_image.webp)' }}>
+      <div className="relative h-screen w-full bg-center bg-cover p-16 pt-24" style={{ backgroundImage: 'url(/top_image.webp)' }}>
 
         {/* ロゴの配置 */}
         <img src="/top_logo.webp" alt="Top Logo" className="" />

@@ -199,7 +199,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     return (
         <>
-            <Header userData={userData ?? undefined} />
+            {router.asPath !== '/' && <Header userData={userData ?? undefined} />}
             <JapaneseFontAdjustment />
             <Component {...pageProps} userData={userData ?? undefined} />
         </>

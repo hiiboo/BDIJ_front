@@ -137,7 +137,7 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
       <Tabs defaultValue="view" className="w-100">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="view">View</TabsTrigger>
-          <TabsTrigger value="edit">Edit</TabsTrigger>
+          {/* <TabsTrigger value="edit">Edit</TabsTrigger> */}
         </TabsList>
         <TabsContent value="view">
           <h3>{email ? email : 'Loading...'} </h3>

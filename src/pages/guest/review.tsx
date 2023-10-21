@@ -125,97 +125,100 @@ function Review({ userData }: PageProps): JSX.Element | null {
     }
 
     return (
-        <>  <h2>Thank you so much!!<br/>Have a Best Day!</h2>
-            <div className="flex flex-col items-center justify-content-between">
-            <Image
-                src={bookingData?.guide_image ? `${process.env.NEXT_PUBLIC_API_URL}${bookingData?.guide_image}` : '/logo_3.png'}
-                alt="guide_image"
-                width={200}
-                height={200}
-                className="rounded-full"
-            />
-                <p>{bookingData?.guide_first_name} {bookingData?.guide_last_name}</p>
-            </div>
-            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="rating"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                        <FormLabel>Value（Max:5）</FormLabel>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                            <FormControl>
-                                <Button
-                                variant="outline"
-                                role="combobox"
-                                className={cn(
-                                    "w-[200px] justify-between",
-                                    !field.value && "text-muted-foreground"
-                                )}
-                                >
-                                {field.value || "Select a Value"}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                            </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[200px] p-0">
-                            <Command>
-                                <CommandGroup>
-                                {Array.from({ length: 5 }, (_, i) => i + 1).map((number) => (
-                                    <CommandItem
-                                    value={number.toString()}
-                                    key={number}
-                                    onSelect={() => {
-                                        form.setValue("rating", number)
-                                    }}
-                                    >
-                                    <Check
-                                        className={cn(
-                                        "mr-2 h-4 w-4",
-                                        number === field.value
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        )}
-                                    />
-                                    {number}
-                                    </CommandItem>
-                                ))}
-                                </CommandGroup>
-                            </Command>
-                            </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Review Comment</FormLabel>
-                        <FormControl>
-                        <Input type="text" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                <div className="">
-                    <div className="flex flex-col items-center justify-content-between">
-                        <div>
-                            <h3>Total amount</h3>
-                            <p><small>Inclusive of tax</small></p>
-                        </div>
-                        <p className='bold'>¥{bookingData?.total_amount}</p>
-                    </div>
-                    <p><small>Include yourself in the total count, excluding children aged 12 and below.</small></p>
+        <>
+            <main className='m-3'>
+                <h2 className='my-6 bold text-center'>Thank you so much!!<br/>Have a Best Day!</h2>
+                <div className="flex flex-col items-center justify-content-between my-6">
+                    <Image
+                        src={bookingData?.guide_image ? `${process.env.NEXT_PUBLIC_API_URL}${bookingData?.guide_image}` : '/logo_3.png'}
+                        alt="guide_image"
+                        width={100}
+                        height={100}
+                        className="rounded-full"
+                    />
+                    <p className='p-3 m-3'>{bookingData?.guide_first_name} {bookingData?.guide_last_name}</p>
                 </div>
-                <Button type="submit">Complete</Button>
-            </form>
-        </Form>
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <FormField
+                        control={form.control}
+                        name="rating"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                            <FormLabel>Value（Max:5）</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                <FormControl>
+                                    <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    className={cn(
+                                        "w-[200px] justify-between",
+                                        !field.value && "text-muted-foreground"
+                                    )}
+                                    >
+                                    {field.value || "Select a Value"}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[200px] p-0">
+                                <Command>
+                                    <CommandGroup>
+                                    {Array.from({ length: 5 }, (_, i) => i + 1).map((number) => (
+                                        <CommandItem
+                                        value={number.toString()}
+                                        key={number}
+                                        onSelect={() => {
+                                            form.setValue("rating", number)
+                                        }}
+                                        >
+                                        <Check
+                                            className={cn(
+                                            "mr-2 h-4 w-4",
+                                            number === field.value
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                            )}
+                                        />
+                                        {number}
+                                        </CommandItem>
+                                    ))}
+                                    </CommandGroup>
+                                </Command>
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="content"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Review Comment</FormLabel>
+                            <FormControl>
+                            <Input type="text" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <div className="">
+                        <div className="flex flex-col items-center justify-content-between">
+                            <div>
+                                <h3 className='my-2'>Total amount</h3>
+                                <p className='my-2 text-sm'>Inclusive of tax</p>
+                            </div>
+                            <p className='bold my-2 text-lg'>¥{bookingData?.total_amount}</p>
+                            <p className='my-3 text-center text-sm'>Include yourself in the total count, excluding children aged 12 and below.</p>
+                            <Button type="submit" className='mt-3'>Complete</Button>
+                        </div>
+                    </div>
+                </form>
+            </Form>
+        </main>
         </>
     );
 }
