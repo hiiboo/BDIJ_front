@@ -49,12 +49,16 @@ function Home({ userData }: PageProps): JSX.Element | null {
         <img src="/top_logo.webp" alt="Top Logo" className="" />
 
         {/* ボタンの配置 */}
-        <Link href="/guest" className="py-4">
-          <Button className="bg-blue-500 text-white p-4 w-full">For Guest</Button>
-        </Link>
-        <Link href="/guide/auth" className="py-4">
-          <Button className="bg-red-500 text-white p-4 w-full">For Guide</Button>
-        </Link>
+        <div className='mt-8'>
+          <Link href="/guest">
+            <Button className="bg-maincolor text-white p-4 w-full">For Guest</Button>
+          </Link>
+        </div>
+        <div className='mt-4'>
+          <Link href="/guide/auth">
+            <Button className="bg-white text-slate-900 p-4 w-full">For Local Guide</Button>
+          </Link>
+        </div>
       </div>
     </>
   );
