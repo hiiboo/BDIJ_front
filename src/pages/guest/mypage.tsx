@@ -50,7 +50,6 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [iconFile, setIconFile] = useState<File | null>(null);
-  const [iconUrl, setIconUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const guestId = userData?.id;
 
@@ -63,7 +62,6 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
         setEmail(response.data.data.email);
         setFirstName(response.data.data.firstName);
         setLastName(response.data.data.lastName);
-        setIconUrl(response.data.data.iconUrl);
       } catch (error) {
         console.error('Failed to fetch guest data', error);
       }
@@ -78,18 +76,6 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
     }
   };
 
-  useEffect(() => {
-      if (iconFile) {
-          (async () => {
-              const response = await uploadImage(iconFile);
-              if (response?.path) {
-                  setIconUrl(response.path);
-              }
-          })();
-      }
-  }, [iconFile]);
-
-
   // Handle form submission
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -103,32 +89,38 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
         return;
       }
 
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", newPassword);
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+
+    if (iconFile) {
+      formData.append("profile_image", iconFile);
+    }
+    console.log("email", email);
+    console.log("newPassword", newPassword);
+    console.log("firstName", firstName);
+    console.log("lastName", lastName);
+    console.log("iconFile", iconFile);
+
       // Update user info
       const securedAxios = createSecuredAxiosInstance();
-      const patchData = {
-        email,
-        currentPassword,
-        newPassword,
-        firstName,
-        lastName,
-        profile_image: iconUrl,
-      };
-      console.log('patchData', patchData);
-      const response = await securedAxios.patch(`api/user/update`, {
-        email,
-        current_password: currentPassword,
-        new_password: newPassword,
-        first_name: firstName,
-        last_name: lastName,
-        profile_image: iconUrl
+      console.log("formData", formData);
+      const response = await securedAxios.patch(`api/user/update`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',  // 追加: Content-Typeヘッダーの設定
+        }
       });
 
       if (response.status === 200) {
-        alert('User info updated successfully');
-        console.log("Update successful", response);
+          alert('User info updated successfully');
+          console.log("Update successful", response);
+      } else if (response.status === 403) {
+          alert(response.data.message); // Laravelからのエラーメッセージを表示
       } else {
-        console.error("Update failed", response);
-        alert('Update failed');
+          console.error("Update failed", response);
+          alert('Update failed');
       }
     } catch (error) {
       console.error("Update error", error);
@@ -152,7 +144,7 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
           {guestData && <GuestProfile userData={userData} guestData={guestData} />}
           {userData && <StatusButton userData={userData} />}
         </TabsContent>
-        {/* <TabsContent value="edit">
+        <TabsContent value="edit">
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">Update Guest Info</CardTitle>
@@ -167,18 +159,6 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="currentPassword">Current Password</Label>
-                <Input
-                  id="currentPassword"
-                  placeholder="Current Password"
-                  type="password"
-                  value={currentPassword}
-                  onChange={e => setCurrentPassword(e.target.value)}
                   disabled={isLoading}
                 />
               </div>
@@ -251,7 +231,7 @@ function GuestMypage({ userData }: PageProps): JSX.Element | null {
             </form>
           </CardContent>
         </Card>
-        </TabsContent> */}
+        </TabsContent>
       </Tabs>
     </main>
   );

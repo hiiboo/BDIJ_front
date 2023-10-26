@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import * as React from "react"
@@ -142,8 +142,17 @@ function GuideAuth(): JSX.Element {
                 router.push('/').then(() => window.location.reload());
             }
         } catch (error) {
-            console.error("Registration error", error);
-            alert(`Registration failed, ${error}`);
+            if (axios.isAxiosError(error)) { // <-- ここでエラーがAxiosErrorかどうかを確認
+                if (error.response && error.response.status === 422) {
+                    alert('The email address is already registered.');
+                } else {
+                    console.error("Registration error", error);
+                    alert(`Registration failed: ${error.message}`);
+                }
+            } else {
+                console.error("Registration error", error);
+                alert('An unexpected error occurred.');
+            }
         }
     };
 
@@ -227,12 +236,6 @@ function GuideAuth(): JSX.Element {
       }
     };
 
-    // ボタンがクリックされたときの処理
-    const handleFirstCardButtonClick = () => {
-        setShowFirstCard(false); // 1枚目のカードを非表示
-        setShowSecondCard(true); // 2枚目のカードを表示
-    };
-
     const onIconChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const uploadedFile = event.target.files?.[0];
         if (uploadedFile) {
@@ -307,228 +310,209 @@ function GuideAuth(): JSX.Element {
                     <TabsTrigger value="login">LogIn</TabsTrigger>
                 </TabsList>
                 <TabsContent value="signup">
-                    {showFirstCard && (
-                        <Card>
-                            <CardHeader className="space-y-1">
-                                <CardTitle className="text-2xll my-2">Create an account</CardTitle>
-                                <CardDescription>
-                                Enter your email below to create your account
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="grid gap-4">
-                                {/* <div className="grid grid-cols-2 gap-6">
-                                <Button variant="outline">
-                                    <Icons.twitter className="mr-2 h-4 w-4" />
-                                    Twitter
-                                </Button>
-                                <Button variant="outline">
-                                    <Icons.google className="mr-2 h-4 w-4" />
-                                    Google
-                                </Button>
+                    <Card>
+                        <CardHeader className="space-y-1">
+                            <CardTitle className="text-2xll m-4">Create an account</CardTitle>
+                            <CardDescription>
+                            Enter your email below to create your account
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid gap-4">
+                            {/* <div className="grid grid-cols-2 gap-6">
+                            <Button variant="outline">
+                                <Icons.twitter className="mr-2 h-4 w-4" />
+                                Twitter
+                            </Button>
+                            <Button variant="outline">
+                                <Icons.google className="mr-2 h-4 w-4" />
+                                Google
+                            </Button>
+                            </div>
+                            <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-background px-2 text-muted-foreground">
+                                Or continue with
+                                </span>
+                            </div>
+                            </div> */}
+                            <form onSubmit={onSubmit}>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        placeholder="name@example.com"
+                                        type="email"
+                                        autoCapitalize="none"
+                                        autoComplete="email"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                    />
                                 </div>
-                                <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t" />
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        placeholder="Password"
+                                        type="password"
+                                        autoCapitalize="none"
+                                        autoComplete="password"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                    />
+                                    <p className="text-xs text-muted-foreground my-0">
+                                        Password must be at least 8 characters long.
+                                    </p>
                                 </div>
-                                <div className="relative flex justify-center text-xs uppercase">
-                                    <span className="bg-background px-2 text-muted-foreground">
-                                    Or continue with
-                                    </span>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="password">Confirm Password</Label>
+                                    <Input
+                                        id="password"
+                                        placeholder="Confirm Password"
+                                        type="password"
+                                        autoCapitalize="none"
+                                        autoComplete="password"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={passwordConfirmation}
+                                        onChange={e => setPasswordConfirmation(e.target.value)}
+                                    />
                                 </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Input
+                                        id="firstname"
+                                        placeholder="First Name"
+                                        type="text"
+                                        autoCapitalize="none"
+                                        autoComplete="firstname"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={firstName}
+                                        onChange={e => setFirstName(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Input
+                                        id="lastname"
+                                        placeholder="Last Name"
+                                        type="text"
+                                        autoCapitalize="none"
+                                        autoComplete="lastname"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        value={lastName}
+                                        onChange={e => setLastName(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="picture">Icon</Label>
+                                    <Input
+                                        id="icon"
+                                        type="file"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        onChange={onIconChange}
+                                    />
+                                </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="birthday">Birthday</Label>
+                                    <Input
+                                        id="birthday"
+                                        type="date"
+                                        disabled={isLoading}
+                                        value={birthday}
+                                        onChange={e => setBirthday(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <select
+                                        id="gender"
+                                        value={gender}
+                                        onChange={e => setGender(e.target.value)}
+                                        className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                                    >
+                                        <option className='text-muted' value="" disabled hidden>Select Your Gender</option>
+                                        <option value={Gender.Male}>Male</option>
+                                        <option value={Gender.Female}>Female</option>
+                                        <option value={Gender.Other}>Other</option>
+                                    </select>
+                                </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <select
+                                        id="languageLevel"
+                                        value={languageLevel}
+                                        onChange={e => setLanguageLevel(e.target.value)}
+                                        className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                                    >
+                                        <option value="" disabled hidden>Select Your English Level</option>
+                                        <option value={LanguageLevel.Beginner}>Beginner</option>
+                                        <option value={LanguageLevel.Elementary}>Elementary</option>
+                                        <option value={LanguageLevel.Intermediate}>Intermediate</option>
+                                        <option value={LanguageLevel.Advanced}>Advanced</option>
+                                        <option value={LanguageLevel.Native}>Native</option>
+                                    </select>
+                                </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <textarea
+                                        className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        id="introduction"
+                                        placeholder='Please write a self-introduction. By sharing detailed information about yourself, your hobbies, and your profession, guests are more likely to reach out to you for requests!'
+                                        disabled={isLoading}
+                                        value={introduction}
+                                        onChange={e => setIntroduction(e.target.value)}
+                                        rows={6}
+                                    >
+                                        {introduction}
+                                    </textarea>
+                                </div>
+                                <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="hourlyRate">Hourly Rate (h/person)</Label>
+                                    <div className="flex">
+                                        <span className="mr-2 mt-2">￥</span>
+                                        <Input
+                                            id="hourlyRate"
+                                            type="number"
+                                            disabled={isLoading}
+                                            value={hourlyRate}
+                                            onChange={e => setHourlyRate(e.target.value)}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground my-0">
+                                        more than 2,500yen.
+                                    </p>
+                                </div>
+                                {/* <div className="grid gap-2 mt-2 mb-8">
+                                    <Label htmlFor="locationSwitch">Location</Label>
+                                    <Switch
+                                        id="locationSwitch"
+                                        checked={isLocationEnabled}
+                                        onCheckedChange={handleLocationToggle}
+                                    />
                                 </div> */}
-                                <form onSubmit={onSubmit}>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="email">Email</Label>
-                                        <Input
-                                            id="email"
-                                            placeholder="name@example.com"
-                                            type="email"
-                                            autoCapitalize="none"
-                                            autoComplete="email"
-                                            autoCorrect="off"
-                                            disabled={isLoading}
-                                            value={email}
-                                            onChange={e => setEmail(e.target.value)}
-                                        />
+                                {parseInt(hourlyRate) < 2500 && hourlyRate !== '' && (
+                                    <div className="text-red-500 text-xs">
+                                        Hourly Rate must be more than 2,500yen.
                                     </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="password">Password</Label>
-                                        <Input
-                                            id="password"
-                                            placeholder="Password"
-                                            type="password"
-                                            autoCapitalize="none"
-                                            autoComplete="password"
-                                            autoCorrect="off"
-                                            disabled={isLoading}
-                                            value={password}
-                                            onChange={e => setPassword(e.target.value)}
-                                        />
-                                        <p className="text-xs text-muted-foreground my-0">
-                                            Password must be at least 8 characters long.
-                                        </p>
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="password">Confirm Password</Label>
-                                        <Input
-                                            id="password"
-                                            placeholder="Confirm Password"
-                                            type="password"
-                                            autoCapitalize="none"
-                                            autoComplete="password"
-                                            autoCorrect="off"
-                                            disabled={isLoading}
-                                            value={passwordConfirmation}
-                                            onChange={e => setPasswordConfirmation(e.target.value)}
-                                        />
-                                    </div>
-                                    {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
-                                    {isPasswordDiffernt && <div className="text-red-500 text-xs">Something wrong with confirm password.</div>}
-                                    {isShortOfInfoRegisterFirst && <div className="text-red-500 text-xs">Enter your email and password.</div>}
-                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterFirst} onClick={handleFirstCardButtonClick}>
-                                        {isLoading && (
-                                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                                        )}
-                                        Sign up with Email
-                                    </Button>
-                                </form>
-                            </CardContent>
-                        </Card>
-                    )}
-                    {showSecondCard && (
-                        <Card>
-                            <CardHeader className="space-y-1">
-                                <CardTitle className="text-2xl my-2">Create an account</CardTitle>
-                            </CardHeader>
-                            <CardContent className="grid gap-4">
-                                <form onSubmit={onSubmit}>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Input
-                                            id="firstname"
-                                            placeholder="First Name"
-                                            type="text"
-                                            autoCapitalize="none"
-                                            autoComplete="firstname"
-                                            autoCorrect="off"
-                                            disabled={isLoading}
-                                            value={firstName}
-                                            onChange={e => setFirstName(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Input
-                                            id="lastname"
-                                            placeholder="Last Name"
-                                            type="text"
-                                            autoCapitalize="none"
-                                            autoComplete="lastname"
-                                            autoCorrect="off"
-                                            disabled={isLoading}
-                                            value={lastName}
-                                            onChange={e => setLastName(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="picture">Icon</Label>
-                                        <Input
-                                            id="icon"
-                                            type="file"
-                                            autoCorrect="off"
-                                            disabled={isLoading}
-                                            onChange={onIconChange}
-                                        />
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="birthday">Birthday</Label>
-                                        <Input
-                                            id="birthday"
-                                            type="date"
-                                            disabled={isLoading}
-                                            value={birthday}
-                                            onChange={e => setBirthday(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <select
-                                            id="gender"
-                                            value={gender}
-                                            onChange={e => setGender(e.target.value)}
-                                            className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-                                        >
-                                            <option className='text-muted' value="" disabled hidden>Select Your Gender</option>
-                                            <option value={Gender.Male}>Male</option>
-                                            <option value={Gender.Female}>Female</option>
-                                            <option value={Gender.Other}>Other</option>
-                                        </select>
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <select
-                                            id="languageLevel"
-                                            value={languageLevel}
-                                            onChange={e => setLanguageLevel(e.target.value)}
-                                            className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-                                        >
-                                            <option value="" disabled hidden>Select Your English Level</option>
-                                            <option value={LanguageLevel.Beginner}>Beginner</option>
-                                            <option value={LanguageLevel.Elementary}>Elementary</option>
-                                            <option value={LanguageLevel.Intermediate}>Intermediate</option>
-                                            <option value={LanguageLevel.Advanced}>Advanced</option>
-                                            <option value={LanguageLevel.Native}>Native</option>
-                                        </select>
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <textarea
-                                            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                            id="introduction"
-                                            placeholder='Please write a self-introduction. By sharing detailed information about yourself, your hobbies, and your profession, guests are more likely to reach out to you for requests!'
-                                            disabled={isLoading}
-                                            value={introduction}
-                                            onChange={e => setIntroduction(e.target.value)}
-                                            rows={6}
-                                        >
-                                            {introduction}
-                                        </textarea>
-                                    </div>
-                                    <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="hourlyRate">Hourly Rate (h/person)</Label>
-                                        <div className="flex">
-                                            <span className="mr-2 mt-2">￥</span>
-                                            <Input
-                                                id="hourlyRate"
-                                                type="number"
-                                                disabled={isLoading}
-                                                value={hourlyRate}
-                                                onChange={e => setHourlyRate(e.target.value)}
-                                            />
-                                        </div>
-                                        <p className="text-xs text-muted-foreground my-0">
-                                            more than 2,500yen.
-                                        </p>
-                                    </div>
-                                    {/* <div className="grid gap-2 mt-2 mb-8">
-                                        <Label htmlFor="locationSwitch">Location</Label>
-                                        <Switch
-                                            id="locationSwitch"
-                                            checked={isLocationEnabled}
-                                            onCheckedChange={handleLocationToggle}
-                                        />
-                                    </div> */}
-                                    {parseInt(hourlyRate) < 2500 && hourlyRate !== '' && (
-                                        <div className="text-red-500 text-xs">
-                                            Hourly Rate must be more than 2,500yen.
-                                        </div>
+                                )}
+                                {isPasswordShort && <div className="text-red-500 text-xs">Password must be at least 8 characters long.</div>}
+                                {isPasswordDiffernt && <div className="text-red-500 text-xs">Something wrong with confirm password.</div>}
+                                {isShortOfInfoRegisterFirst && <div className="text-red-500 text-xs">Enter your email and password.</div>}
+                                {isSubmitDisabledRegisterSecond && <div className="text-red-500 text-xs">Enter your information.</div>}
+                                <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterFirst || isSubmitDisabledRegisterSecond || (parseInt(hourlyRate) < 2500 && hourlyRate !== '')} onClick={handleRegister}>
+                                    {isLoading && (
+                                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}
-                                    {isSubmitDisabledRegisterSecond && <div className="text-red-500 text-xs">Enter your information.</div>}
-                                    <Button className="w-full my-4" disabled={isLoading || isSubmitDisabledRegisterSecond || (parseInt(hourlyRate) < 2500 && hourlyRate !== '')} onClick={handleRegister}>
-                                        {isLoading && (
-                                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                                        )}
-                                        Complete sign-up!
-                                    </Button>
-                                </form>
-                            </CardContent>
-                        </Card>
-                    )}
+                                    Complete sign-up!
+                                </Button>
+                            </form>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
                 <TabsContent value="login">
                     <Card>

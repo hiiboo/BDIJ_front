@@ -141,13 +141,13 @@ export default function App({ Component, pageProps }: AppProps) {
             if (userData.user_type === UserType.Guest) {
                 if (path.startsWith('/guide') && !['/guide/auth', '/guide/login', '/guide/signup'].includes(path)) {
                     alert('Your Account is Guest Type. You cannot access.');
-                    router.push('/').then(() => window.location.reload());
+                    router.push('/guest').then(() => window.location.reload());
                     return;
                 }
             } else if (userData.user_type === UserType.Guide) {
                 if (path.startsWith('/guest/offer') || ['/guest/mypage', '/guest/review', '/guest/timer'].includes(path)) {
                     alert('このアカウントはガイド用です、アクセス権限がありません');
-                    router.push('/').then(() => window.location.reload());
+                    router.push('/guide/mypage').then(() => window.location.reload());
                     return;
                 }
             }
@@ -199,7 +199,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     return (
         <>
-            <Header userData={userData ?? undefined} />
+            {router.asPath !== '/' && <Header userData={userData ?? undefined} />}
             <JapaneseFontAdjustment />
             <Component {...pageProps} userData={userData ?? undefined} />
         </>

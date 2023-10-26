@@ -48,7 +48,7 @@ function TimerPage({ userData }: PageProps): JSX.Element {
       if (userData.booking_status === BookingStatus.Finished) {
         router.push('/guide/review');
       } else if (userData.booking_status !== BookingStatus.Accepted && userData.booking_status !== BookingStatus.Started) {
-        router.push('/').then(() => window.location.reload());
+        router.push('/guide/mypage').then(() => window.location.reload());
       }
       const fetchBookingData = async () => {
         try {
